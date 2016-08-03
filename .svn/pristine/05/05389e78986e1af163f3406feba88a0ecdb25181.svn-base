@@ -1,6 +1,0 @@
-package org.system.mapper.service.visits;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.service.visits.TnbFollowupDragRecords;
-
-public interface TnbFollowupDragRecordsMapper extends IBaseMapper<TnbFollowupDragRecords> {}

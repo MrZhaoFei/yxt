@@ -1,7 +1,0 @@
-package org.system.mapper.self;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.self.SelfTestAnswer;
-
-public interface SelfTestAnswerMapper extends IBaseMapper<SelfTestAnswer> {
-}

@@ -1,7 +1,0 @@
-package org.system.mapper.service.transfer;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.service.transfer.MedicalRecordDocInfo;
-
-public interface MedicalRecordDocInfoMapper extends IBaseMapper<MedicalRecordDocInfo> {
-}

@@ -1,8 +1,0 @@
-package org.system.mapper.order;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.order.PayType;
-
-public interface PackagePayTypeMapper extends IBaseMapper<PayType>{
-
-}

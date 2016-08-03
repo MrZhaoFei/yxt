@@ -1,6 +1,0 @@
-package org.system.mapper.user.healthinfo;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.user.healthinfo.HealthInfo;
-
-public interface HealthInfoMapper extends IBaseMapper<HealthInfo> {}

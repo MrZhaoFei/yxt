@@ -1,6 +1,0 @@
-package org.system.mapper.service;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.service.ProductService;
-
-public interface ProductServiceMapper extends IBaseMapper<ProductService> {}

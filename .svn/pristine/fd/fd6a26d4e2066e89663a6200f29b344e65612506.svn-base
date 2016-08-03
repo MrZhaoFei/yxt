@@ -1,7 +1,0 @@
-package org.system.mapper.user.healthinfo;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.user.healthinfo.AllergicHistory;
-
-public interface AllergicHistoryMapper extends IBaseMapper<AllergicHistory> {
-}

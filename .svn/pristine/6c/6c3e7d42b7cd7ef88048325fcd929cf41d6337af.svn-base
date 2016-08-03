@@ -1,6 +1,0 @@
-package org.system.mapper.order;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.order.UserOrder;
-
-public interface UserOrderMapper extends IBaseMapper<UserOrder> {}

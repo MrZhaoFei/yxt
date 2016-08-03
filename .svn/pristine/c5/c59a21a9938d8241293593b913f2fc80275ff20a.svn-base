@@ -1,8 +1,0 @@
-package org.system.mapper.order;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.order.PayInfo;
-
-public interface PackagePayInfoMapper extends IBaseMapper<PayInfo>{
-
-}

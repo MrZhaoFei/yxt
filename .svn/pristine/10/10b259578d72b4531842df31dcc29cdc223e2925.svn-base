@@ -1,7 +1,0 @@
-system.error=\u7CFB\u7EDF\u5185\u90E8\u9519\u8BEF
-
-error.msg.key=errorinfo
-
-result.code.key=stateCode
-result.message.key=message
-result.date.key=data

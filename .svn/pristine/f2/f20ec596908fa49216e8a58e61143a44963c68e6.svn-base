@@ -1,8 +1,0 @@
-package org.system.mapper.doctor;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.doctor.DoctorDoctorGroupRecord;
-
-public interface DoctorDoctorGroupRecordMapper extends IBaseMapper<DoctorDoctorGroupRecord>  {
-
-}

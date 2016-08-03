@@ -1,7 +1,0 @@
-package org.system.mapper.user;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.user.Follow;
-
-public interface FollowMapper extends IBaseMapper<Follow> {
-}

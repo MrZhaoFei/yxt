@@ -1,7 +1,0 @@
-package org.system.mapper.doc;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.doc.DocTmplate;
-
-public interface DocTmplateMapper extends IBaseMapper<DocTmplate> {
-}

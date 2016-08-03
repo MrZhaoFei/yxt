@@ -1,6 +1,0 @@
-package org.system.mapper.service.resp;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.service.resp.TaskType;
-
-public interface TaskTypeMapper extends IBaseMapper<TaskType> {}

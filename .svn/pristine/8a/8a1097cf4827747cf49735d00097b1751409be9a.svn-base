@@ -1,7 +1,0 @@
-package org.system.mapper.hospital;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.hospital.Hospital;
-
-public interface HospitalMapper extends IBaseMapper<Hospital> {
-}

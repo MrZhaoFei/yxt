@@ -1,9 +1,0 @@
-package org.system.mapper.admin;
-
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.AdminUser;
-
-public interface AdminUserMapper  extends IBaseMapper<AdminUser>  {
-   
-}

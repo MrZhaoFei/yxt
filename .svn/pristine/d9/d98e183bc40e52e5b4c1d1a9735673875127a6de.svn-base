@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.system.mapper.service.resp.TransRecordsInfoMapper" >
-	<!-- 新增 -->
-	<insert id="insert" parameterType="org.system.entity.service.resp.TransRecordsInfo" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO `trans_records_info` (`service_resp_task_id`, `src_doctor_id`, `desc_doctor_id`, `trans_date`, `trans_desc`) VALUES 
-		(#{serviceRespTaskId},#{srcDoctorId},#{descDoctorId},#{transDate},#{transDesc})
-	</insert>
-</mapper>

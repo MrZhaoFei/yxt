@@ -1,7 +1,0 @@
-package org.system.mapper.sys;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.sys.SysCodeRecords;
-
-public interface SysCodeRecordsMapper extends IBaseMapper<SysCodeRecords> {
-}

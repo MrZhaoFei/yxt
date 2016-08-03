@@ -1,9 +1,0 @@
-package org.system.service.iface.sys;
-
-import org.system.entity.sys.SysUserFeedback;
-
-public interface ISysUserFeedbackService {
-
-	public int insertSysUserFeedback(SysUserFeedback sysUserFeedback);
-
-}

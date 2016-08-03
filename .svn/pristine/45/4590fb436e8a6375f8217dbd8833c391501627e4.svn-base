@@ -1,6 +1,0 @@
-package org.system.mapper.user.healthtest;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.user.healthtest.SelfTestQuestion;
-
-public interface SelfTestQuestionMapper extends IBaseMapper<SelfTestQuestion> {}

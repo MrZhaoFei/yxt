@@ -1,8 +1,0 @@
-package org.system.mapper.content;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.content.Content;
-
-public interface ContentMapper  extends IBaseMapper<Content>{
-
-}

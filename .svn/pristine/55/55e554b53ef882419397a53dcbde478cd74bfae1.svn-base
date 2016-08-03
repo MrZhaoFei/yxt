@@ -1,8 +1,0 @@
-package org.system.mapper.contract;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.contract.Contract;
-
-public interface ContractMapper extends  IBaseMapper<Contract> {
-
-}

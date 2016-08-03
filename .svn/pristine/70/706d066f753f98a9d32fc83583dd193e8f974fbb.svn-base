@@ -1,8 +1,0 @@
-package org.system.mapper.userService;
-
-import org.core.mapper.IBaseMapper;
-import org.system.entity.userService.UserService;
-
-public interface UserServiceMapper extends IBaseMapper<UserService>  {
-
-}
