@@ -1,0 +1,70 @@
+package org.system.entity.userService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+
+import org.core.entity.BaseEntity;
+
+public class UserServicePack extends BaseEntity{
+	private Integer id;
+	private Integer userId;
+	private Integer servicePackId;
+	private Integer state;
+	private Date createTime;
+	private BigDecimal price;
+	private Date expireTime;
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public Integer getUserId() {
+		return userId;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	public Integer getServicePackId() {
+		return servicePackId;
+	}
+	public void setServicePackId(Integer servicePackId) {
+		this.servicePackId = servicePackId;
+	}
+	public Integer getState() {
+		return state;
+	}
+	public void setState(Integer state) {
+		this.state = state;
+	}
+	public Date getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+	public Date getExpireTime() {
+		return expireTime;
+	}
+	public void setExpireTime(Date expireTime) {
+		this.expireTime = expireTime;
+	}
+	
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+}

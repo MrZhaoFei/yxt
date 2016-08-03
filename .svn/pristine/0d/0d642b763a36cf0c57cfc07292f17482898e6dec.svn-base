@@ -1,0 +1,168 @@
+package org.system.entity.order;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.system.entity.service.ServicePack;
+import org.utils.spring.Groups;
+
+public class UserOrder extends BaseEntity {
+
+	private Integer id;
+
+	private Integer hospitalId;
+
+	private String orderNum;
+
+	private Integer state;
+	@NotNull(message = "{servicePack.price.notnull.valid}", groups = { Groups.Update.class })
+	private BigDecimal price;
+
+	@NotNull(message = "{payType.id.notnull.valid}", groups = { Groups.Update.class })
+	private Integer payTypeId;
+
+	private Date createTime;
+	
+	private ServicePack servicePack;
+
+	@NotNull(message = "{servicePack.id.notnull.valid}", groups = { Groups.Insert.class })
+	private Integer servicePackId;
+
+	// @NotNull(message = "{user.id.notnull.valid}", groups = {
+	// Groups.Insert.class })
+	private Integer userId;
+
+	private Integer doctorId;
+	private String evidenceSn;
+	private String evidenceObjectId;
+	private Integer orderType;
+	
+
+	public ServicePack getServicePack() {
+		return servicePack;
+	}
+
+	public void setServicePack(ServicePack servicePack) {
+		this.servicePack = servicePack;
+	}
+
+	public Integer getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(Integer doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getEvidenceSn() {
+		return evidenceSn;
+	}
+
+	public void setEvidenceSn(String evidenceSn) {
+		this.evidenceSn = evidenceSn;
+	}
+
+	public String getEvidenceObjectId() {
+		return evidenceObjectId;
+	}
+
+	public void setEvidenceObjectId(String evidenceObjectId) {
+		this.evidenceObjectId = evidenceObjectId;
+	}
+
+	public Integer getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(Integer orderType) {
+		this.orderType = orderType;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(Integer hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getOrderNum() {
+		return orderNum;
+	}
+
+	public void setOrderNum(String orderNum) {
+		this.orderNum = orderNum;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public Integer getPayTypeId() {
+		return payTypeId;
+	}
+
+	public void setPayTypeId(Integer payTypeId) {
+		this.payTypeId = payTypeId;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Integer getServicePackId() {
+		return servicePackId;
+	}
+
+	public void setServicePackId(Integer servicePackId) {
+		this.servicePackId = servicePackId;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+}

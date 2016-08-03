@@ -1,0 +1,8 @@
+package org.system.service.iface.user;
+
+import org.system.entity.user.SysUserLogs;
+
+public interface ISysUserLogsService {
+
+	int insertSysUserLogs(SysUserLogs sysUserLogs);
+}

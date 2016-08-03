@@ -1,0 +1,19 @@
+package org.system.service.iface.service.resp;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.resp.TransRecordsInfo;
+
+public interface ITransRecordsInfoService{
+
+	Map<String, Object> getTransRecordsInfoByFild(TransRecordsInfo transRecordsInfo);
+
+	int insertTransRecordsInfo(TransRecordsInfo transRecordsInfo);
+
+	int updateTransRecordsInfo(TransRecordsInfo transRecordsInfo);
+
+	List<Map<String, Object>> getTransRecordsInfoList(TransRecordsInfo transRecordsInfo);
+
+	Map<String, Object> getTransRecordsInfoDetail(TransRecordsInfo transRecordsInfo);
+}

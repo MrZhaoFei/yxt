@@ -1,0 +1,244 @@
+package org.system.controller.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.IHospitalController;
+import org.system.entity.Hospital;
+import org.system.message.Message;
+import org.system.service.iface.IHospitalService;
+import org.system.service.iface.doctor.IDoctorGroupService;
+
+@Controller
+public class HospitalController implements IHospitalController {
+	
+	Logger log = LoggerFactory.getLogger(HospitalController.class);
+	
+	@Resource
+	private IHospitalService hospitalService;
+	
+	@Resource
+	private IDoctorGroupService doctorGroupService;
+	
+	/**
+	 * @description 新增医疗机构
+	 * @param hosptial
+	 *  1  判断name是否重复
+	 *  2  判断 code_value是否重复
+	 *  3  根据地址的code_value的查询出地址id，设置在机构地址中 
+	 *  4  判断新增机构的唯一性
+	 *  5  执行新增
+	 */
+	@Override
+	public Map<String, Object> insertHospital(Hospital hospital, BindingResult result) {
+		
+		
+			// 还需要判断code_value是否重复
+			Hospital hospitalCodeValu= new Hospital();
+			hospitalCodeValu.setCodeValue(hospital.getCodeValue());	
+					Map<String, Object> doctorMapForCodeValue = hospitalService.getHospitalByFiled(hospitalCodeValu);
+					if (doctorMapForCodeValue != null && doctorMapForCodeValue.size() > 0) {
+						return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("hosptial.insert.codeValue.exists"));
+					}
+			
+		     // 还需要判断name是否重复
+				Hospital hospitalName= new Hospital();
+				hospitalName.setName(hospital.getName());			
+						Map<String, Object> doctorMapForName = hospitalService.getHospitalByFiled(hospitalName);						
+						if (doctorMapForName != null && doctorMapForName.size() > 0) {
+							return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("hosptial.insert.name.exists"));
+						}
+		     // 根据地址的code_value的查询出地址id，设置在机构地址中  
+			 int id=(int)hospitalService.queryCodeId(hospital);
+			 hospital.setAddressId(id);		
+				// 检查数据是否存在
+				Map<String, Object> dataMap = hospitalService.getHospitalByFiled(hospital);
+				if (dataMap != null && dataMap.size() > 0) {
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+				}
+				if (hospitalService.insertHospital(hospital)> 0) {
+					// 新增成功
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+				}
+				// 新增失败
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+	}
+
+	/**
+	 * @description 修改机构
+	 * @param id,hospital
+	 * 
+	 * 
+	 * 
+	 */
+	@Override
+	@Transactional
+	public Map<String, Object> updateHospital(Integer id, Hospital hospital, BindingResult result) {
+		// 修改机构的地址 
+              int idd=(int)hospitalService.queryCodeId(hospital);
+	      	  hospital.setAddressId(idd);
+			  hospital.setId(id);
+			  
+			  int num = hospitalService.getHospitalContract(hospital);
+			
+			if(num!=0){// 该机构是否存在团队中
+					if(hospitalService.updateHospitalContract(hospital)>0){
+						return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+					}else{
+						return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("hospital.exists.contract"));
+					}
+			}else{
+				 //检查数据是否存在
+				Map<String, Object> dataMap = hospitalService.getHospitalByFiled(hospital);
+				if (dataMap != null && dataMap.size() > 0) {
+					 // 数据已存在
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+				}
+				
+				// 设置实例的id属性
+				if (hospitalService.updateHospital(hospital) > 0) {
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+				}else{
+					throw new RuntimeException();
+					/*return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));*/
+				}
+			}
+		
+	
+	}
+
+	/**
+	 * 得到机构列表
+	 */
+	@Override
+	public Map<String, Object> getHospitalList(Hospital hospital, BindingResult result,HttpServletRequest req) {
+
+		 HttpSession session=req.getSession();
+		 if(session.getAttribute("user")!=null){
+			 
+			 Map<String, Object> resultMap = new HashMap<>();
+			 //得到返回数据
+			 List<Map<String, Object>> dataList = hospitalService.getHospitalList(hospital);
+			 if (dataList != null && dataList.size() > 0) {
+				 //得到数据总数
+				 resultMap.put(Global.DATA_TOTAL, hospital.getTotal());
+				 resultMap.put(Global.DATA_ROWS, dataList);
+				 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			 }
+			 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		 }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		 }
+		 
+	}
+
+	/**
+	 * 得到单个机构信息
+	 * @param id
+	 */
+	@Override	
+	public Map<String, Object> getHospitalDetail(Integer id, Hospital hospital) {
+			// 设置实例的id属性
+			hospital.setId(id);
+			Map<String, Object> resultList = hospitalService.getHospitalDetail(hospital);
+			if (resultList != null && resultList.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultList, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	 /**
+	  * 删除机构
+	  *  1 判读机构是否存在团队中  （）
+	  */
+	@Override
+	@Transactional
+	public  Map<String, Object> deleteHospital(Integer id, Hospital hospital) {	
+		// 设置实例的id属性
+	    hospital.setId(id);
+		  int num = hospitalService.getHospitalContract(hospital);// 查看该机构是否存在团队中
+	    if(num>0){
+		   return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY,Message.bundle("doctor.exists.doctorGroup")); 
+	    }
+		Map<String, Object> resultList = hospitalService.getHospitalDetail(hospital);
+		if (resultList == null || resultList.size() <= 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY,Message.bundle("hospital.empty"));
+		}
+		//执行删除
+		if (hospitalService.deleteHospital(hospital)>0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS,Message.bundle("delete.success"));
+		}else{
+			throw new RuntimeException();
+		}
+	}
+    
+	/**
+	 * 机构卫生服务中心 和医院列表
+	 */
+	@Override
+	public Map<String, Object> getWeiAndYi(Hospital hospital, BindingResult result, HttpServletRequest req) {
+		Map<String, Object> resultMap = new HashMap<>();
+		 //得到返回数据
+		 List<Map<String, Object>> dataList = hospitalService.getWeiAndYi(hospital);
+		 if (dataList != null && dataList.size() > 0) {
+			 //得到数据总数
+			 resultMap.put(Global.DATA_TOTAL, hospital.getTotal());
+			 resultMap.put(Global.DATA_ROWS, dataList);
+			 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		 }
+		 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	/**
+	 * 所有的机构五级地址查询的
+	 */
+	@Override
+	public Map<String, Object> getAllHospitalList(Hospital hospital, BindingResult result, HttpServletRequest req) {
+		 HttpSession session=req.getSession();
+		 if(session.getAttribute("user")!=null){
+			 Map<String, Object> resultMap = new HashMap<>();
+			 //得到返回数据
+			 List<Map<String, Object>> dataList = hospitalService.getAllHospitalList(hospital);
+			 if (dataList != null && dataList.size() > 0) {
+				 //得到数据总数
+				 resultMap.put(Global.DATA_TOTAL, hospital.getTotal());
+				 resultMap.put(Global.DATA_ROWS, dataList);
+				 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			 }
+			 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		 }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		 }
+	}
+
+	/**
+	 * 签约的机构
+	 * @return int
+	 */
+	@Override
+	public int getHospitalContract(Integer id, Hospital hospital) {
+		    hospital.setId(id);
+			int num = hospitalService.getHospitalContract(hospital);
+		  return num;
+	}
+	
+	
+	
+	
+
+	
+
+}

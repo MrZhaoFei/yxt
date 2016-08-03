@@ -1,0 +1,51 @@
+package org.system.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.DoctorType;
+import org.system.mapper.doctorType.DoctorTypeMapper;
+import org.system.service.iface.IDoctorTypeService;
+@Service
+public class DoctorTypeService implements IDoctorTypeService{
+	
+	@Resource
+	private DoctorTypeMapper doctorTypeMapper;
+
+	@Override
+	public int insertDoctorType(DoctorType doctorType) {
+		return doctorTypeMapper.insert(doctorType);
+	}
+
+	@Override
+	public int updateDoctorType(DoctorType doctorType) {
+		return doctorTypeMapper.update(doctorType);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorTypeList(DoctorType doctorType) {
+		return doctorTypeMapper.queryAll(doctorType);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorTypeDetail(DoctorType doctorType) {
+		return doctorTypeMapper.queryOne(doctorType);
+	}
+
+	@Override
+	public int deleteDoctorType(DoctorType doctorType) {
+		return doctorTypeMapper.delete(doctorType);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorTypeByFiled(DoctorType doctorType) {
+		return doctorTypeMapper.checkExists(doctorType);
+	}
+
+
+	
+
+}

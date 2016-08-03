@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.ServicePackMapper" >
+
+
+   <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.service.ServicePack"  useGeneratedKeys="true" keyColumn="id">
+	  insert into service_pack (name,price,`desc`,package_type_id,create_date,acquisitive,state,pkg_pic_url,pkg_pic_detail_url) 
+	   values (#{name},#{price},#{desc},#{packageTypeId},now(),#{acquisitive},#{state},#{pkgPicUrl},#{pkgPicDetailUrl})		 
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.service.ServicePack">
+		delete from service_pack where id=#{id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.service.ServicePack">
+		update service_pack set id=#{id}
+		<if test="name !=null and name !=''">
+			,name=#{name}
+		</if>
+		<if test="price !=null and price !=''">
+			,price=#{price}
+		</if>		
+		<if test="desc !=null and desc !=''">
+			,`desc`=#{desc}
+		</if>
+		<if test="packageTypeId!=null and packageTypeId!='' ">
+		,package_type_id=#{packageTypeId}
+		</if>
+		<if test="acquisitive!=null and acquisitive!='' ">
+		,acquisitive=#{acquisitive}
+		</if>
+		<if test="state!=null ">
+		,state=#{state}
+		</if>
+		<if test="pkgPicUrl!=null and pkgPicUrl!='' ">
+		,pkg_pic_url=#{pkgPicUrl}
+		</if>
+		<if test="pkgPicDetailUrl!=null and pkgPicDetailUrl!='' ">
+		,pkg_pic_detail_url=#{pkgPicDetailUrl}
+		</if>
+		<if test="createDate!=null">
+		,create_date=date(#{createDate,jdbcType=TIMESTAMP})
+		</if>
+		 where id=#{id}	
+	</update>
+	
+	<!-- 查询列表 -->
+	<select id="queryAll" parameterType="org.system.entity.service.ServicePack" resultType="map">
+				select sp.id,sp.name servicePackName,sp.`desc` as de,sp.create_date createDate, sum((psc.price*ps.times)) price,sp.acquisitive as acquisitive ,sp.state state,
+				sp.package_type_id packageTypeId,sp.pkg_pic_url pkgPicUrl,sp.pkg_pic_detail_url pkgPicDetailUrl,
+				pt.name packageTypeName,rs.name rsName from service_pack as sp 
+				left join package_type pt on pt.id=sp.package_type_id 
+				left join service_pack_condition spc  on sp.id=spc.service_pack_id
+				left join register_source rs on rs.id=spc.package_source_id 
+				left join address a on a.id=spc.address_id 
+		        left join package_service ps on spc.id=ps.service_pack_condition_id 	
+		        left join product_service psc on ps.service_id = psc.id
+		
+		<where>
+			<if test="state!=null and state!='' ">
+			   sp.state=#{state}
+			</if>
+			<if test="name !=null and name !=''">
+			and	sp.name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="packageTypeId !=null">
+				and sp.package_type_id=#{packageTypeId}
+			</if>
+		</where>
+			 group by sp.id
+	</select>
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.service.ServicePack" resultType="map">
+		select sp.id,sp.name servicePackName,sp.`desc` de,sp.create_date createDate,sp.acquisitive acquisitive,
+		sp.state state,sp.pkg_pic_url pkgPicUrl ,sp.pkg_pic_detail_url pkgPicDetailUrl,sp.package_type_id packageTypeId,
+		pt.id packageTypeName from service_pack sp 
+		left join package_type pt on pt.id=sp.package_type_id where sp.id=#{id}
+	</select>
+	
+	<!-- 根据约束键查询数据是否存在 -->
+	<select id="checkExists" parameterType="org.system.entity.service.ServicePack" resultType="map">
+		select id,name,`desc`,create_date,acquisitive,state,package_type_id from service_pack where name= #{name} and pkg_pic_url =#{pkgPicUrl} and price=#{price} and `desc`=#{desc} and package_type_id=#{packageTypeId} and create_date= #{createDate} and acquisitive=#{acquisitive} and state=#{state}
+	</select>
+	
+	
+	
+	<!--删除产品包的时候  需要查询产品发布管理是是否存在这个产品包-->
+	<select id="queryServicePackCondition" parameterType="org.system.entity.service.ServicePack" resultType="map">
+	select   spc.id  from service_pack  sp  left join service_pack_condition  spc on sp.id=spc.service_pack_id where sp.id =#{id}
+	</select> 
+	
+	<!-- 基础产品包是否被用户购买 -->
+	<select id="queryIsBuyByUser"  parameterType="org.system.entity.service.ServicePack" resultType="int"> 
+	 select count(tbs.num) from (select count(us.product_service_id) num from  product_service ps left join user_service us on ps.id=us.product_service_id
+		     where  ps.id= #{id}  having num >0  limit 1 ) tbs 
+	</select>
+	
+	<!-- 当用户购买了这个基础产品服务包之后的修改(可以修改图片，状态，描述) -->
+	<update id="updatePic" parameterType="org.system.entity.service.ServicePack">
+		update service_pack set id=#{id}
+		<if test="desc !=null and desc !=''">
+			,`desc`=#{desc}
+		</if>
+		<if test="state!=null and state!='' ">
+		,state=#{state}
+		</if>
+		<if test="pkgPicUrl!=null and pkgPicUrl!='' ">
+		,pkg_pic_url=#{pkgPicUrl}
+		</if>
+		<if test="pkgPicDetailUrl!=null and pkgPicDetailUrl!='' ">
+		,pkg_pic_detail_url=#{pkgPicDetailUrl}
+		</if>
+		 where id=#{id}	
+	</update>
+	
+
+</mapper>

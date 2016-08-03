@@ -1,0 +1,12 @@
+package org.system.service.iface.sys;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.sys.SysCodeRecords;
+
+public interface ISysCodeRecordsService {
+
+	public List<Map<String, Object>> getSysCodeRecordsList(SysCodeRecords sysCodeRecords);
+
+}

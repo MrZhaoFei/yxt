@@ -1,0 +1,47 @@
+package org.system.service.impl.service.transfer;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.transfer.ImageConsultationDetaily;
+import org.system.mapper.service.transfer.ImageConsultationDetailyMapper;
+import org.system.service.iface.service.transfer.IImageConsultationDetailyService;
+
+@Service
+public class ImageConsultationDetailyService implements IImageConsultationDetailyService {
+	@Resource
+	private ImageConsultationDetailyMapper mapper;
+
+	@Override
+	public Map<String, Object> getImageConsultationDetailyByFild(ImageConsultationDetaily imageConsultationDetaily) {
+		return mapper.checkExists(imageConsultationDetaily);
+	}
+
+	@Override
+	public int insertImageConsultationDetaily(ImageConsultationDetaily imageConsultationDetaily) {
+		return mapper.insert(imageConsultationDetaily);
+	}
+
+	@Override
+	public int updateImageConsultationDetaily(ImageConsultationDetaily imageConsultationDetaily) {
+		return mapper.update(imageConsultationDetaily);
+	}
+
+	@Override
+	public List<Map<String, Object>> getImageConsultationDetailyList(ImageConsultationDetaily imageConsultationDetaily) {
+		return mapper.queryAll(imageConsultationDetaily);
+	}
+
+	@Override
+	public Map<String, Object> getImageConsultationDetailyDetail(ImageConsultationDetaily imageConsultationDetaily) {
+		return mapper.queryOne(imageConsultationDetaily);
+	}
+
+	@Override
+	public int insertImageConsultationDetailyFiles(ImageConsultationDetaily imageConsultationDetaily) {
+		return mapper.insertImageConsultationDetailyFiles(imageConsultationDetaily);
+	}
+}

@@ -1,0 +1,63 @@
+package org.system.entity;
+
+
+
+
+import org.core.entity.BaseEntity;
+import org.hibernate.validator.constraints.NotBlank;
+import org.utils.spring.Groups;
+
+
+public class DoctorType extends BaseEntity{
+		
+	private Integer id;	
+	@NotBlank(message = "{name.notblank.valid}", groups = { Groups.Insert.class})
+	private String name;
+	@NotBlank(message = "{code.notblank.valid}", groups = { Groups.Insert.class})
+	private String code;
+	
+	private Integer oderLevel;
+	
+	private Integer state;
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public Integer getState() {
+		return state;
+	}
+	public void setState(Integer state) {
+		this.state = state;
+	}
+	public Integer getOderLevel() {
+		return oderLevel;
+	}
+	public void setOderLevel(Integer oderLevel) {
+		this.oderLevel = oderLevel;
+	}
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+	
+}

@@ -1,0 +1,64 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.ServicePack;
+import org.system.mapper.service.ServicePackMapper;
+import org.system.service.iface.service.IServicePackService;
+
+@Service
+public class ServicePackService implements IServicePackService{
+	
+	@Resource
+	private ServicePackMapper  servicePackMapper;
+
+	@Override
+	public int insertServicePack(ServicePack servicePack) {
+		return servicePackMapper.insert(servicePack);
+	}
+
+	@Override
+	public int updateServicePack(ServicePack servicePack) {
+		return servicePackMapper.update(servicePack);
+	}
+
+	@Override
+	public int deleteServicePack(ServicePack servicePack) {
+		return servicePackMapper.delete(servicePack);
+	}
+
+	@Override
+	public Map<String, Object> getServicePackByFild(ServicePack servicePack) {
+		return servicePackMapper.checkExists(servicePack);
+	}
+
+	@Override
+	public List<Map<String, Object>> getServicePackList(ServicePack servicePack) {
+		return servicePackMapper.queryAll(servicePack);
+	}
+
+	@Override
+	public Map<String, Object> getServicePackDetail(ServicePack servicePack) {
+		return servicePackMapper.queryOne(servicePack);
+	}
+
+	@Override
+	public List<Map<String, Object>> getServicePackCondition(ServicePack servicePack) {
+		return servicePackMapper.queryServicePackCondition(servicePack);
+	}
+
+	@Override
+	public int getIsBuyByUser(ServicePack servicePack) {
+		return servicePackMapper.queryIsBuyByUser(servicePack);
+	}
+
+	@Override
+	public int updatePic(ServicePack servicePack) {
+		return servicePackMapper.updatePic(servicePack);
+	}
+
+}

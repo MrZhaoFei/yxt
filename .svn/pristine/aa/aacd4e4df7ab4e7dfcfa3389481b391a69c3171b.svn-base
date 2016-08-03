@@ -1,0 +1,10 @@
+package org.system.mapper.service;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.ServicePackCondition;
+
+public interface ServicePackConditionMapper extends IBaseMapper<ServicePackCondition> {
+       public 	int queryCodeId(ServicePackCondition servicePackCondition);
+       
+       public int queryConditionByBuy(ServicePackCondition servicePackCondition);
+}

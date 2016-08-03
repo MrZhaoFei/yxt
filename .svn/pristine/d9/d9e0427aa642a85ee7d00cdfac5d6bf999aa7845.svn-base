@@ -1,0 +1,127 @@
+package org.system.entity.user.healthinfo;
+
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.utils.spring.Groups;
+
+public class OperateHistory extends BaseEntity {
+    private Long id;
+
+    private String ssid;
+
+    private String yljgbm;
+
+    private String jkdabh;
+
+    private String ssmc;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date sssj;
+
+    private String bz;
+
+    private String zfbz;
+
+    private Date updateTime;
+
+    @NotNull(message = "{healthInfo1.id.notnull.valid}", groups = { Groups.Insert.class,Groups.Select.class })
+    private Long healthInfoId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
+    }
+
+    public String getYljgbm() {
+        return yljgbm;
+    }
+
+    public void setYljgbm(String yljgbm) {
+        this.yljgbm = yljgbm;
+    }
+
+    public String getJkdabh() {
+        return jkdabh;
+    }
+
+    public void setJkdabh(String jkdabh) {
+        this.jkdabh = jkdabh;
+    }
+
+    public String getSsmc() {
+        return ssmc;
+    }
+
+    public void setSsmc(String ssmc) {
+        this.ssmc = ssmc;
+    }
+
+    public Date getSssj() {
+        return sssj;
+    }
+
+    public void setSssj(Date sssj) {
+        this.sssj = sssj;
+    }
+
+    public String getBz() {
+        return bz;
+    }
+
+    public void setBz(String bz) {
+        this.bz = bz;
+    }
+
+    public String getZfbz() {
+        return zfbz;
+    }
+
+    public void setZfbz(String zfbz) {
+        this.zfbz = zfbz;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+ 
+	public Long getHealthInfoId() {
+		return healthInfoId;
+	}
+
+	public void setHealthInfoId(Long healthInfoId) {
+		this.healthInfoId = healthInfoId;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+    
+}

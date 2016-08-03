@@ -1,0 +1,22 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.UserServicePack;
+
+public interface IUserServicePackService {
+
+	Map<String, Object> getUserServicePackByFild(UserServicePack userServicePack);
+
+	int insertUserServicePack(UserServicePack userServicePack);
+
+	List<Map<String, Object>> getUserServicePackList(UserServicePack userServicePack);
+
+	Map<String, Object> getUserServicePackDetail(UserServicePack userServicePack);
+
+	List<Map<String, Object>> getUserComboListByUser(UserServicePack userServicePack);
+
+	List<Map<String, Object>> getNoExpireUserServicePackList(UserServicePack userServicePack);
+
+}

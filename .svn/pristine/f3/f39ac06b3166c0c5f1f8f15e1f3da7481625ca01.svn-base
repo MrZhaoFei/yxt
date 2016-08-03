@@ -1,0 +1,51 @@
+package org.system.service.impl.hospital;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.hospital.HospiDepartDoctorRelation;
+import org.system.mapper.hospital.HospiDepartDoctorRelationMapper;
+import org.system.service.iface.hospital.IHospiDepartDoctorRelationService;
+
+@Service
+public class HospiDepartDoctorRelationService implements IHospiDepartDoctorRelationService{
+
+	@Resource
+	private HospiDepartDoctorRelationMapper mapper;
+	
+	
+	@Override
+	public int insertHospiDepartDoctorRelation(HospiDepartDoctorRelation hospiDepartDoctorRelation) {
+		return mapper.insert(hospiDepartDoctorRelation);
+	}
+
+	@Override
+	public int updateHospiDepartDoctorRelation(HospiDepartDoctorRelation hospiDepartDoctorRelation) {
+		return mapper.update(hospiDepartDoctorRelation);
+	}
+
+	@Override
+	public int deleteHospiDepartDoctorRelation(HospiDepartDoctorRelation hospiDepartDoctorRelation) {
+		return mapper.delete(hospiDepartDoctorRelation);
+	}
+
+	@Override
+	public Map<String, Object> getHospiDepartDoctorRelationFiled(HospiDepartDoctorRelation hospiDepartDoctorRelation) {
+		return mapper.checkExists(hospiDepartDoctorRelation);
+	}
+
+	@Override
+	public Map<String, Object> getHospiDepartDoctorRelationDetail(HospiDepartDoctorRelation hospiDepartDoctorRelation) {
+		return mapper.queryOne(hospiDepartDoctorRelation);
+	}
+
+	@Override
+	public List<Map<String, Object>> getHospiDepartDoctorRelationList(
+			HospiDepartDoctorRelation hospiDepartDoctorRelation) {
+		return mapper.queryAll(hospiDepartDoctorRelation);
+	}
+
+}

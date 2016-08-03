@@ -1,0 +1,159 @@
+package org.system.entity.doctor;
+
+import java.util.Date;
+import java.util.Map;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.hibernate.validator.constraints.NotBlank;
+import org.system.entity.address.Address;
+import org.utils.spring.Groups;
+
+public class DoctorGroup extends BaseEntity {
+	
+	@NotNull(message = "{doctorGroup.id.notnull.valid}", groups = { Groups.Other.class })
+	private Integer id;
+
+	//@NotNull(message = "{hospital.id.notnull.valid}", groups = { Groups.Other.class })
+	private Integer hospitalId;
+
+	@NotNull(message = "{doctor.id.notnull.valid}", groups = { Groups.Insert.class })
+	private Integer doctorId;
+	
+	private Integer doctorGroupTypeId;
+
+	private Date createDate;
+	@NotBlank(message = "{doctorGroup.name.notblank.valid}", groups = { Groups.Insert.class })
+	private String name;
+
+	private Address address;
+	
+	private Integer state;
+
+	private String remark;
+	
+	private String groupTel;
+	
+	private Doctor doctor;
+	
+	private DoctorDetail doctorDetail;
+	
+	private Map<String, Object> geography;
+
+	public String getGroupTel() {
+		return groupTel;
+	}
+
+	public void setGroupTel(String groupTel) {
+		this.groupTel = groupTel;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public Integer getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(Integer hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Map<String, Object> getGeography() {
+		return geography;
+	}
+
+	public void setGeography(Map<String, Object> geography) {
+		this.geography = geography;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getDoctorGroupTypeId() {
+		return doctorGroupTypeId;
+	}
+
+	public void setDoctorGroupTypeId(Integer doctorGroupTypeId) {
+		this.doctorGroupTypeId = doctorGroupTypeId;
+	}
+
+	public Integer getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(Integer doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	
+	public Doctor getDoctor() {
+		return doctor;
+	}
+
+	public void setDoctor(Doctor doctor) {
+		this.doctor = doctor;
+	}
+
+	public DoctorDetail getDoctorDetail() {
+		return doctorDetail;
+	}
+
+	public void setDoctorDetail(DoctorDetail doctorDetail) {
+		this.doctorDetail = doctorDetail;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class,Groups.Other.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class,Groups.Other.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

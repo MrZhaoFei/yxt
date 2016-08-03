@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.self.SelfTestQuestionMapper" >
+
+<!-- 删除问题 （通过问题的id值 或者问题表中的试卷id值） -->
+  <delete id="delete" parameterType="org.system.entity.self.SelfTestQuestion">
+    delete from self_test_question    
+   <where>
+      <if test="id!=null">
+      id = #{id}
+      </if>
+      <if test="titleId!=null">
+      title_id=#{titleId}
+      </if>
+   </where>
+  </delete>
+  <!-- 新增 -->
+  <insert id="insert" parameterType="org.system.entity.self.SelfTestQuestion" >
+    insert into self_test_question (title_id, question, 
+      view_order)
+    values ( #{titleId,jdbcType=INTEGER}, #{question,jdbcType=VARCHAR}, 
+      #{viewOrder,jdbcType=INTEGER})
+  </insert>
+  <!-- 修改 -->
+  <update id="update" parameterType="org.system.entity.self.SelfTestQuestion" >
+    update self_test_question set id=#{id}
+    <if test=" titleId !=null ">
+     	,title_id = #{titleId}
+    </if>
+    <if test=" question !=null and  question !='' ">
+     	,question = #{question}
+    </if>
+    <if test=" viewOrder !=null ">
+     	,view_order = #{viewOrder}
+    </if>
+    where id = #{id}
+  </update>
+  <!-- 详情 -->
+  <select id="queryOne" resultType="map" parameterType="org.system.entity.self.SelfTestQuestion" >
+    select id, title_id titleId, question, view_order viewOrder
+    from self_test_question
+    where id = #{id}
+  </select>
+  <!-- 问题列表 -->
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.self.SelfTestQuestion">
+    select id, title_id titleId, question, view_order viewOrder
+    from self_test_question
+    <where>
+    	<if test="id !=null ">
+    			id=#{id}
+    	</if>
+    	<if test="titleId !=null ">
+    			and title_id=#{titleId}
+    	</if>
+    	<if test="question !=null and question !=''">
+    			and question like CONCAT(CONCAT('%', #{question}), '%') 
+    	</if>
+    	<if test="viewOrder !=null ">
+    			and view_order=#{viewOrder}
+    	</if>
+    </where>
+  </select>
+  <!-- 检查唯一性 -->
+  <select id="checkExists" parameterType="org.system.entity.self.SelfTestTitle" resultType="map">
+    select id, title_id titleId, question, view_order viewOrder
+    from self_test_question where title_id=#{titleId} and question=#{question} and view_order=#{viewOrder}
+  </select>
+  
+  
+  <select id="queryQuestionOfAnswer" parameterType="org.system.entity.self.SelfTestTitle" resultType="map">
+  select  sta.id id from self_test_question stq left join self_test_answer  sta on sta.question_id=stq.id   where stq.id=#{id}
+  </select>
+  
+</mapper>

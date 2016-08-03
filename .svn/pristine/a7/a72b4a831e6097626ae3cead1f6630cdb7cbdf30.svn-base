@@ -1,0 +1,33 @@
+package org.system.service.impl.address;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.address.Address;
+import org.system.mapper.address.AddressMapper;
+import org.system.service.iface.address.IAddressService;
+
+@Service
+public class AddressService implements IAddressService {
+	@Resource
+	private AddressMapper mapper;
+
+	@Override
+	public List<Map<String, Object>> getAddressList(Address address) {
+		return mapper.queryAll(address);
+	}
+
+	@Override
+	public Map<String, Object> getAddressDetail(Address address) {
+		return mapper.queryOne(address);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAddressListByRaidus(Map<String, Object> map) {
+		return mapper.getAddressListByRaidus(map);
+	}
+
+}

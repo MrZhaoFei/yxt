@@ -1,0 +1,91 @@
+package org.system.controller.iface.user.healthInfo;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.user.healthinfo.DiseaseHistory;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IDiseaseHistoryController {
+	
+	/**
+	 * 新增 既往疾病史
+	 * 
+	 * @param diseaseHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/diseaseHistory" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertDiseaseHistory(
+			@Validated({ Groups.Insert.class }) DiseaseHistory diseaseHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	
+	/**
+	 * 修改 既往疾病史
+	 * 
+	 * @param allergicHistoryId
+	 * @param diseaseHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/diseaseHistory/{archivesId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updatetDiseaseHistory(@PathVariable("archivesId") Integer diseaseHistoryId,
+			@Validated({ Groups.Update.class }) DiseaseHistory diseaseHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	/**
+	 * 查询  既往疾病史列表
+	 * 
+	 * @param diseaseHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/diseaseHistorys", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getDiseaseHistoryList(@Validated({ Groups.Select.class }) DiseaseHistory diseaseHistory,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	/**
+	 * 删除 既往疾病史
+	 * 
+	 * @param allergicHistoryId
+	 * @param diseaseHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/diseaseHistory/{archivesId}" }, method = RequestMethod.DELETE)
+	@ResponseBody
+	public Map<String, Object> deletetDiseaseHistory(@PathVariable("archivesId") Integer diseaseHistoryId,
+			@Validated({ Groups.Delete.class }) DiseaseHistory diseaseHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 用户  查询  既往疾病史列表
+	 * 
+	 * @param diseaseHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/user/diseaseHistorys", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getDiseaseHistoryListByUser(@Validated({ Groups.Select.class }) DiseaseHistory diseaseHistory,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+}
+

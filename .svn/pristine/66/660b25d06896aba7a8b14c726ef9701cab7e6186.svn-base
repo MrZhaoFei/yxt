@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	 <style type="text/css">
+	body, html {width: 100%;height: 100%;overflow:hidden;margin:0;font-family:"微软雅黑"; font-size: 15px;}
+	#addressbut{height:35px;width:800px;position: relative;right: 0px;top:0px}
+	#allmap{height:96%;width:100%;}
+		#r-result{width:100%; font-size:14px;}
+	</style> 
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=H3GzE6XDyPl4NsWxTLWGN5ycAMvVN1mF"></script>
+   
+	 <base href="/yxt-admin/" /> 
+  <title>医疗机构地图展示</title> 
+  <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+   <META HTTP-EQUIV="Expires" CONTENT="0"> 
+   
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/js/easyui/themes/icon.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/js/easyui/themes/gray/easyui.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/jquery.flex-images.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/icon/font-awesome.min.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/upload/webuploader.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/upload/style.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/web.css" /> 
+  <link rel="stylesheet" href="/yxt-admin/webuploader/styles/default.css?ver=v1.001">
+  <link rel="stylesheet" href="/yxt-admin/webuploader/styles/webuploader.css?ver=v1.001">
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/jquery-1.12.1.min.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/webuploader.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/uploader.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/js/jquery.min.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/easyui/jquery.easyui.min.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/easyui/locale/easyui-lang-zh_CN.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/easyui/extend.easyui.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/jquery.flex-images.min.js"></script> 
+ 
+</head>
+<body >
+ <div id="addressbut" style="position: relative;right:100" >
+	<label>请填写详细地址名称: </label><input class="easyui-textbox" id="addressName" type="text" style="width:200px; margin-right:20px;"  />		
+		<a  class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="findAddressDeatai()">查询</a>
+		<a  class="easyui-linkbutton" data-options="iconCls:'icon-mini-refresh'" onclick="re()">刷新当前页面</a>
+	</div> 
+   <!--点图显示  -->
+	<div id="allmap"></div>
+<div id="dialog" > 
+   <form id="form" method="post" enctype="multipart/form-data"> 
+   <table class="table-edit" width="100%" align="center"> 
+    <tbody> 
+     <tr>
+       <td style="width: 100px;">医疗机构名称</td> 
+       <td><input class="easyui-combobox" name="hospName" id="hospName" style="width: 200px" data-options="required:true,validType:'length[0,128]',missingMessage:'医疗机构名称不能为空'"/>
+       </td>
+        <td style="width: 100px;">机构主页</td> 
+       <td><input class="easyui-textbox" name="website"  id="website" style="width: 200px" data-options="validType:'checkUrl'"/>
+       </td> 
+     </tr>
+     <tr>
+      <td style="width: 100px;">医院机构代码</td> 
+       <td><input class="easyui-textbox" name="code_value" id="code_value" style="width: 200px" data-options="required:true,validType:'length[0,32]'"/>
+       </td>
+        <td style="width: 100px;">详细地址</td> 
+       <td>
+        <input class="easyui-textbox"  name="address" id="address" style="width:200px;" data-options="validType:'length[0,128]'"/> 
+       </td>
+     </tr>
+     <tr>
+      <td style="width: 100px;">联系电话</td> 
+       <td><input class="easyui-textbox" name="telephone" id="telephone" style="width: 200px" data-options="validType:'phoneRex'"/>    
+       </td> 
+      
+       <td style="width: 100px;">医疗机构类型</td> 
+       <td>  <select class="easyui-combobox" name="type" id="type" style="width:200px;" data-options="editable:false">   
+		     <option value="1">医院</option>  
+		     <option value="2">卫生服务中心</option>   
+		     <option value="3">药店</option>   
+		</select> 
+       </td> 
+     </tr>
+     <tr>
+       <td style="width: 100px;">经度</td> 
+       <td><input class="easyui-textbox" name="longitude" id="longitude" style="width: 200px" />
+       </td> 
+        <td style="width: 100px;">状态</td> 
+       <td><select class="easyui-combobox" name="state" id="state" style="width:200px;" data-options="required:true,editable:false,panelHeight:'auto'">   
+		     <option value="0">启用</option> 
+		      <option value="1">停用</option>   
+		</select> 
+       </td>  
+     </tr>
+     <tr>       
+    <td style="width: 100px;">纬度</td> 
+       <td><input class="easyui-textbox" name="latitude"  id="latitude" style="width: 200px" />
+       </td> 
+     </tr>
+     <tr id="weiSheng">
+      <td style="width: 120px;" >签约协议编号前缀</td>
+      <td><input class="easyui-textbox" name="contractNumPrefix" id="contractNumPrefix" style="width: 200px" prompt="例如： WH-HPL：武候-红牌楼" /></td>
+       <td  style="width: 120px;" >签约协议文档模板</td>
+       <td><input  class="easyui-combobox" name="contractDocId" id="contractDocId" style="width: 200px"
+        data-options=" url:'/yxt-admin/admin/docTmplates', 
+                      editable:false,
+			         method:'get',
+			        valueField:'id',    
+			       textField:'docTitle',
+		    	  loadFilter:function(data){
+					 return data.data.rows;
+					}"/>
+       </td>
+     </tr>
+     <tr>
+    <td colspan="4">
+    <div id="address_box1">
+              省:  <input class="easyui-combobox" name="codeName" id="codeName" style="width:120px;" data-options="editable:false" /> 
+	市  :<input class="easyui-combobox" name="code_nameShi" id="code_nameShi" style="width:120px;" data-options="editable:false"/>
+	区/县:  <input class="easyui-combobox" name="code_nameQu" id="code_nameQu" style="width:120px;" data-options="editable:false"/> 
+	街道: <input class="easyui-combobox" name="code_namebut" id="code_namebut" style="width:150px;" data-options="editable:false"/>	
+	 社区: <input class="easyui-combobox" name="code_nameSheQu" id="code_nameSheQu" style="width:150px;"data-options="editable:false"/>
+	 <input name="addressId" id="addressId" style="display:none" ></div>
+    </td>
+     </tr>
+     <tr>
+       <td colspan="3" align="left"> 医疗机构缩略图  
+        <div id="picture" name="picture"></div>
+        <span style="color:red"> (提示:推荐上传：640px*250px倍数的图片 ,支持图片格式 gif,jpg,jpeg,bmp,png)</span>
+        </td> 
+     </tr>
+     <tr>
+        <td colspan="4">
+            描述：
+     <input class="easyui-textbox" name="remark" id="remark" data-options="multiline:true" style="height:60px;width:780px;"></input>  
+       </td>
+     </tr>
+     </tbody> 
+     </table> 
+   </form> 
+  </div>
+<div id="partDialog">
+   <form id="partform" method="post" enctype="multipart/form-data"> 
+      <table class="table-edit" width="100%" align="center"> 
+      <tbody>
+       <tr>
+         <td>医疗机构名称：</td>
+         <td ><input name="hospName" class="easyui-textbox"  style="width: 200px" disabled="true"/></td>
+       </tr>
+        <tr>
+         <td>医疗机构类型：</td>
+         <td>
+       <select class="easyui-combobox" name="type"  style="width:200px;"disabled="true" >   
+		     <option value="1">医院</option>  
+		     <option value="2">卫生服务中心</option>   
+		     <option value="3">药店</option> 
+		</select> 
+       </td>
+       </tr>
+        <tr>
+         <td>详细地址：</td>
+         <td><input name="address" class="easyui-textbox"  style="width: 200px" disabled="true"/></td>
+       </tr>
+        <tr>
+         <td>电话号码：</td>
+         <td><input name="telephone" class="easyui-textbox"  style="width: 200px" disabled="true"/></td>
+       </tr>
+        <tr id="hideId">
+          <td colspan="2"> <input class="easyui-textbox"  style="width:200px;display:none" name="id"  id="id"/>
+          </td> 
+       </tr> 
+       <tr>
+       <td colspan="2" align="right">
+        <a id="btnlook" class="easyui-linkbutton" >查看/修改</a>
+        <a id="btn"  class="easyui-linkbutton">删除</a></td>
+       </tr>
+      </tbody>
+   </table>
+   </form>
+</div>	
+</body>
+</html>
+
+<script type="text/javascript">
+               var addressHospId="";
+                var sheQuId="";
+                  //创建Map实例
+		    	 var map = new BMap.Map("allmap");
+		 	     var point=new BMap.Point(104.06,30.67) ;
+		  	     map.centerAndZoom(point,11); //设置地图居中   
+		  	     
+		  	     // 通过IP定位当前的城市
+		  	     function myFun(result){
+		  	    	 var cityName=result.name;
+		  	    	 map.setCenter(cityName);
+		  	    	
+		  	     }
+		  	     var myCity=new BMap.LocalCity();
+		  	     myCity.get(myFun);
+		  	     
+		  	     
+		  	   // 创建  标注
+		  	   function addMarker(point){
+		  		   var marker= new BMap.Marker(point);// // 创建标注
+		  		   map.addOverlay(marker);  // 将标注添加到地图中 
+		  		   return marker;
+		  	   }
+		  	   
+		  	   map.enableDragging(); // 拖拽
+		  	   map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+		  	   
+		  	   
+		  	   // 创建地址解析器实例
+		  	   var myGeo=new BMap.Geocoder();
+		  	 function findAddressDeatai(){
+		  		  var addressName = document.getElementById("addressName").value;
+		  		myGeo.getPoint(document.getElementById("addressName").value,function(point){
+		  			 if(point){
+			  			   map.centerAndZoom(point,16);
+			  			   map.addOverlay(new BMap.Marker(point))
+			  		   }else{
+			  			   alert("您所查询的地址解析没结果");
+			  		   }
+		  		},"成都市");
+		  	  } 
+
+		  	  // 开始 
+			 $(function() {
+				 $('#hideId').hide();
+				 $('#docTitle').combobox('reload');
+				 var delId=$('#id').textbox('getValue');
+				 $.ajax({
+					    method: 'get',
+					    url: '/yxt-admin/admin/hospital?ran=' + Math.random(),
+					    success: function(data) {
+					    	if(data.stateCode=='205'){
+					    		top.location.href=document.getElementsByTagName("base")[0].getAttribute("href")+ "adminLogin.html";
+					    		return;
+					    	}
+					    	var rows = data.data.rows,rowslen = rows.length;
+					    	 for(var i=0;i<rowslen;i++){
+					    		 var point=new BMap.Point(rows[i].longitude,rows[i].latitude);
+					    		 var id=rows[i].id;
+					             var marker= addMarker(point);   
+
+					            // 鼠标移入时 显示部分信息  	 //   js闭包   单击显示详细信息   一进入页面就会执行function里的，实际上我们需要控制实现的函数是在return function里的。
+					             marker.addEventListener("mouseover",(function(arg){
+					            	  return function(){
+					            		  $('#partDialog').show();
+					            		  $('#partform').form('reset');
+					            		$.get('/yxt-admin/admin/hospital/' + arg + '/detail',
+					            				function(res){
+					            			  $('#partform').form('load',res.data);
+					            			   addressHospId=res.data.addressId;
+					            			   var parpoint=new BMap.Point(res.data.longitude,res.data.latitude);
+					            			    map.openInfoWindow(partWindow,parpoint);
+					            		}) ;
+					            			    delId=arg;
+					            		}
+					             })(id)); 
+			          	} 
+					    	 //删除医疗机构数据
+		            		 $('#btn').click(function(){
+		            			 console.log(delId);
+		            			  del(delId);
+		            		 }); 
+					    	 //查看详情
+					    	 $('#btnlook').bind('click', function(){    					   					
+					   				 	addressbox.ReSet();
+						   			 	$.ajax({
+						   			 		type:'get',
+						   			 		url:'/yxt-admin/admin/address/' + addressHospId,
+						   			 		success:function(back){
+						   			 		addressbox.SetAddress(back.data.code);
+						   			 		}
+						   			 	})	
+				            	    	  $.get('/yxt-admin/admin/hospital/' + delId + '/detail',
+				            	    			  function(data){
+				            	    		  $('#type').combobox({
+			            							onChange:function(newValue,oldValue){
+			            								if(newValue==1||newValue==3){
+			            									$('#weiSheng').hide();
+			            									$('#contractNumPrefix').textbox('clear');
+			            									$("#contractDocId").combobox('clear');
+			            									$('#contractNumPrefix').textbox({ disabled: true });
+			            									$("#contractDocId").combobox({ disabled: true });
+			            								}else if(newValue==2){
+			            									 $('#weiSheng').show();
+			            									 $('#contractNumPrefix').textbox('clear');
+				            									$("#contractDocId").combobox('clear');
+			            									 $('#contractNumPrefix').textbox({
+			            											required:true 
+			            										});
+			            										$('#contractDocId').combobox({
+			            											required:true 
+			            										});
+			            									$('#contractNumPrefix').textbox({ disabled: false });
+			            									$("#contractDocId").combobox({ disabled: false });
+			            								}
+			            								
+			            							}
+			            						});
+				            	    		     $('#picture').html("");
+				            	    			  $('#form').form('load',data.data);
+				            	    			  
+				            	    			  
+				            	    		  var imgup = new NebFiles.ImageUp({
+										            show: true ,
+										             maxnum:1  
+										         });
+										         imgup.AddTo($('#picture'));
+				            	    			    if(data.data.type==2){
+				            	    				 $('#weiSheng').show();					            	    			    	
+				            	    			 }else{
+				            	    				 if(data.data.type==1||data.data.type==3){
+				            	    					
+				            	    				 $('#weiSheng').hide();					            	    				
+				            	    				 }
+				            	    			 }    
+				            	    	  			var pic=data.data.picture;
+				            	    	  			  if(pic!=null && pic!=''){
+				            	    	  				  imgup.AddImages(data.data.picture.split(","));
+				            	    	  		          imgup.AddTo($('#picture'));
+				            	    	  			  }
+				            	    	         $('#longitude').textbox('readonly');
+				            	    	         $('#latitude').textbox('readonly');
+
+				             	    	         $('#dialog').dialog({
+					            	    			    title: '查看/修改信息 ',
+					            	    			    width:900,
+					            	    			    height: 630,
+					            	    			    closed: false,
+					            	    			    modal: true,
+					            	    			    buttons: [{
+					            	    			      text: '确定修改',
+					            	    			      handler: function() {
+					            	    			    	 var addressvalue=addressbox.GetVal();
+					            	    			        var v = $('#form').form('validate');
+					            	    			      
+					            	    			        if (v) {
+					            	    			        			//AJAX提交
+								            	    			          $.ajax({
+								            	    			            type: 'put',
+								            	    			            url: '/yxt-admin/admin/hospital/' + delId + '/update',
+								            	    			           data:{
+								            	    			        	      name:$('#hospName').combobox('getText'),
+																            	  longitude:$('#longitude').textbox('getValue'),
+																            	  latitude:$('#latitude').textbox('getValue'),
+																            	  state:$('#state').combobox('getValue'),
+																            	  type:$('#type').combobox('getValue'),
+																            	  codeValue:$('#code_value').textbox('getValue'),
+																            	  address:$('#address').combobox('getText'),
+																            	  telephone:$('#telephone').textbox('getValue'),
+																            	  website:$('#website').textbox('getValue'),
+																            	  remark:$('#remark').textbox('getValue'),
+																            	  contractDocId:$('#contractDocId').combobox('getValue'),
+																            	  contractNumPrefix:$('#contractNumPrefix').textbox('getValue'),
+																            	  addressCode:addressvalue,
+																            	  picture:imgup.GetImages().length==0 ? null:imgup.GetImages().toString() 
+								            	    			            },
+								            	    			            success: function(data) {
+								            	    			              if (data.stateCode == 200) {
+								            	    			                $('#dialog').dialog('close');
+								            	    			                $('#form').form('reset');
+								            	    			                $('#main_table').datagrid('reload');
+								            	    			                $.messager.show({
+								            	    			                  title: '提示消息',
+								            	    			                  msg: data.message,
+								            	    			                  timeout: 5000,
+								            	    			                  showType: 'slide'
+								            	    			                });
+								            	    			              } else {
+								            	    			                $.messager.show({
+								            	    			                  title: '提示',
+								            	    			                  msg: data.message
+								            	    			                });
+								            	    			              }
+								            	    			            },
+								            	    			            error: function(XMLHttpRequest, textStatus, errorThrown) {
+								            	    			              $.messager.show({
+								            	    			                title: '提示',
+								            	    			                msg: '请求发生错误请联系开发者'
+								            	    			              });
+								            	    			            }
+								            	    			          });
+								            	    			        }
+					            	    			        		 
+					            	    			      }
+					            	    			    },
+
+                                                          {
+					            	    			    	text:'取消关闭',
+					            	    			    	handler:function(){	
+					            	    			    		 $('#dialog').dialog('close');    	
+					            	    			    	}
+					            	    			    }]
+					            	    			  });
+				            	    			  }); 
+			   				    }); 
+					   	   var sContent=document.getElementById('dialog');	//全部信息框
+					       var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+					   	   var partContent=document.getElementById('partDialog');// 部分信息框
+					       var partWindow = new BMap.InfoWindow(partContent);//  创建信息窗口对象 
+					       
+					    }
+				 });
+			}); 
+		  	  
+			 function re(){
+			   	  history.go(0) 
+			 }
+			 // 双击时添加医疗机构信息
+			  map.addEventListener("dblclick",function(e){
+				  $('#partDialog').hide();
+				 $('#weiSheng').show();
+				 $('#contractNumPrefix').textbox({ disabled: true });
+					$("#contractDocId").combobox({ disabled: true });
+				$('#form').form('reset');
+				 $('#picture').html("");
+				  $('#hospName').combobox({
+		   			  onChange:function(newValue,oldValue){	
+		   				$.ajax({
+		   					type:'get',
+		   					url:'/yxt-admin/admin/sysCodeRecods/'+newValue+'/listNamehospital',
+		   					success: function(data){
+		   					 if(data.stateCode==200){
+		   						 var r = data.data.rows;rowslen = r.length;
+		   						 for(var i = 0; i < rowslen; i++){
+		   							 $("#hospName").append("<option value="+r[i].code_value+">"+r[i].code_name+"</option>");
+		   						 }
+		   					}else if(data.stateCode==203){
+		   						return ;
+		   					}
+		   						  $("#hospName").combobox({}); 
+		   					 },
+		   				})  		  
+		   				var code=  $('#hospName').combobox('getValue');	
+		   				 $('#form').form('load',{
+		   	  					code_value:code
+		   	 			    }); 
+		   				
+		   			  },		  				
+		   	 }); 
+					$('#picture').html("");
+					var imgup = new NebFiles.ImageUp({
+						 show: true,
+						 maxnum:1  
+			             
+			         });
+			         imgup.AddTo($('#picture'));
+			         
+				$('#form').form('reset');  
+				var longitude=e.point.lng;
+			    var latitude=e.point.lat;
+			    //把得到的经纬度放在添加的表格里
+			    $('#form').form('load',{
+			    	longitude:longitude,
+			    	latitude:latitude
+			    }); 
+				
+				 $('#longitude').textbox('readonly');
+				 $('#latitude').textbox('readonly');			    
+				// 地址选择
+				  addressbox.ReSet();
+				  $('#type').combobox({
+						onChange:function(newValue,oldValue){
+							if(newValue==1||newValue==3){
+								/* $('#contractNumPrefix').textbox({ disabled: true });
+								$("#contractDocId").combobox({ disabled: true }); */
+								 $('#weiSheng').hide();	
+							}else{
+								 $('#weiSheng').show();	
+								$('#contractNumPrefix').textbox({
+									required:true 
+								});
+								$('#contractDocId').combobox({
+									required:true 
+								});
+								$('#contractNumPrefix').textbox({ disabled: false });
+								$("#contractDocId").combobox({ disabled: false });
+							}
+							
+						}
+					})
+				  $('#dialog').dialog({
+				    title: '添加医疗机构信息',
+				    width: 900,
+				    height: 630,
+				    closed: false,
+				    modal: true,
+				    buttons: [{
+				      text: '确定添加',
+				      handler: function() {
+				    	  // 验证表单
+				    	  var v = $('#form').form('validate');   
+				    	var adresscode = addressbox.GetVal();
+				    	  if(v){
+				    		 
+							    	       if(window.parent){
+								    					  			if(window.parent.__hospital_adressdata){
+								    					  				window.parent.__hospital_adressdata.splice(0,window.parent.__hospital_adressdata.length);
+								    					  			}else{
+									    					  			window.parent.__hospital_adressdata = [];
+								    					  			}
+									    					 		var selectboxs = ["codeName", "code_nameShi", "code_nameQu", "code_namebut", "code_nameSheQu"],
+									    					 		len=selectboxs.length,i;
+									    							for(i = 0 ; i < len ; ++i){
+									    								window.parent.__hospital_adressdata.push($('#'+ selectboxs[i]).combobox('getValue'));
+									    							}
+							    							}
+											                $.ajax({
+														              type: 'post',
+														              url: '/yxt-admin/admin/hospital/insert',
+														              data:{
+														            	  name:$('#hospName').combobox('getText'),
+														            	  longitude:$('#longitude').textbox('getValue'),
+														            	  latitude:$('#latitude').textbox('getValue'),
+														            	  state:$('#state').combobox('getValue'),
+														            	  type:$('#type').combobox('getValue'),
+														            	  codeValue:$('#code_value').textbox('getValue'),
+														            	  address:$('#address').textbox('getValue'),
+														            	  telephone:$('#telephone').textbox('getValue'),
+														            	  website:$('#website').textbox('getValue'),
+														            	  remark:$('#remark').textbox('getValue'),
+														            	  addressCode:adresscode,
+														            	  contractNumPrefix:$('#contractNumPrefix').textbox('getValue'),
+														            	  contractDocId:$('#contractDocId').combobox('getValue'),
+														            	  picture:imgup.GetImages().length==0 ? null:imgup.GetImages().toString() 
+														            		  },					              
+														              success: function(data) {
+														                if (data.stateCode == 200) {
+														                	 history.go(0);
+														                  $('#dialog').dialog('close');
+														                  $.messager.show({
+														                    title: '提示消息',
+														                    msg: data.message,
+														                    timeout: 5000,
+														                    showType: 'slide'
+														                  });
+														                } else {
+														                  $.messager.show({
+														                    title: '提示',
+														                    msg: data.message
+														                  });
+														                }
+														              },
+														              error: function(XMLHttpRequest, textStatus, errorThrown) {
+														                $.messager.show({
+														                  title: '提示',
+														                  msg: '请求发生错误请联系开发者'
+														                });
+														              }
+														              
+														            });
+				    		 }
+				    	  }
+				    },
+				    {
+				      text: '取消关闭',
+				      handler: function() {
+				        $('#dialog').dialog('close');
+				      }
+				    }]
+				  }); 
+				
+			})
+	  
+	
+//删除
+function del(id) {
+		var hospitalId=id;		 
+			$.ajax({
+				type:'get',
+				url:'/yxt-admin/admin/doctorGroup?hospitalId='+hospitalId,// 判断该医疗机构是否存在某个医疗团队中
+				success:function(data){
+					if(data.stateCode==200){
+						$.messager.alert('提示消息','该医疗机构不能删除！','info');	
+					}else {
+						  $.messager.confirm('确认','您确认删除这条记录?',
+			       				  function(r) {
+			       				    if (r) {
+			       				    	$.ajax({
+			       						 type: 'delete',
+			       					        url: '/yxt-admin/admin/hospital/' + hospitalId + '/delete',
+			       					        success: function(data) {
+			       					          if (data.stateCode == 200) {
+			       					        	  history.go(0);
+			       					            $.messager.show({
+			       					              title: '提示消息',
+			       					              msg: data.message,
+			       					              timeout: 5000,
+			       					              showType: 'slide'
+			       					            });
+			       					          } else {
+			       					            $.messager.show({
+			       					              title: '提示',
+			       					              msg: data.message
+			       					            });
+			       					          }
+			       					        },
+			       					        error: function(XMLHttpRequest, textStatus, errorThrown) {
+			       					          $.messager.show({
+			       					            title: '提示',
+			       					            msg: '请求发生错误请联系开发者'
+			       					          });
+			       					        }
+			       					});
+			       				    }else{
+			       				    	return false;
+			       				    }
+			       				  }); 
+					}		
+				}
+			})	 		 	  
+	}
+
+			 // 地址
+			  var AddressBox = function () {
+				   var self = this;
+				   this.selectboxs = ["codeName", "code_nameShi", "code_nameQu", "code_namebut", "code_nameSheQu"];
+				   var len = this.selectboxs.length, i, obj;
+				   for (i = 0; i < len; ++i) {					  
+				        obj = $("#" + this.selectboxs[i]);				       
+				        if(i<len){
+					        obj.combobox({
+					        	valueField:'code_value',   
+					            textField:'name',
+					            onChange: (function (index) {
+					                return function (newValue, oldValue) {
+					                	if(newValue && newValue.length > 0){
+						                    self.Clear(index + 1);
+						                    self.Load(index + 1, newValue);
+					                    }
+					                	
+					                };
+					            })(i)
+					        });				        	
+				        }
+				    }
+				};
+				
+				AddressBox.prototype = {
+				    Clear: function (index) {
+				        var i, ob;
+				        index = index || 0;
+				        for (i = index; i < this.selectboxs.length; ++i) {
+				            ob = $("#" + this.selectboxs[i]);
+		                    ob.combobox("clear");	
+	                        ob.combobox("loadData", []);
+				        }
+				    },
+				    Load: function (index, pid, initvalue, fun) {//加载数据 (索引 pid 初始化 回调函数)
+				    	index = index || 0 ;
+				    	pid = pid || "156";
+				        if (pid) {
+					        var self = this;
+				            $.ajax({
+				                url: '/yxt-admin/admin/address/' + pid + '/name',
+				                success: function (back) {
+				                	if(back.data) {
+					                	var rows = back.data.rows, ob = $("#" + self.selectboxs[index]);					          
+				                        ob.combobox("loadData", rows);
+					                	if(initvalue !== undefined && initvalue !== null){
+					                		ob.combobox("setValue", parseInt(initvalue));
+					                	}
+					                	if(fun){
+					                		fun(ob.combobox("getValue"));
+					                	}
+			                        }
+				                    self = null;
+				                    pid = null;
+				                    v = null;
+				                }
+				            });
+				        }
+				    },
+				    ReSet:function(){// 返回的结果
+						 this.Clear();
+						 // obj = [];
+						 if(window.parent && window.parent.__hospital_adressdata){
+							 var adressdata = window.parent.__hospital_adressdata ,len = this.selectboxs.length, i;
+							 for (i = 0; i < len; ++i) {
+								this.Load(i, adressdata[i-1], adressdata[i]);                        
+							 }
+						 }else{
+						     this.Load();
+						 }
+				    },
+				    GetVal:function(){// 获取combobox里的值   （实际上是code_value）
+						   var len = this.selectboxs.length, i, val, selectlv = 0, code = "", selectlv = 1, code = 0;
+						   for (i = len - 1; i >= selectlv; --i) {					  
+							   val = $('#' + this.selectboxs[i]).combobox('getValue');
+							   if(val.length>0){
+								   code = val;
+								   break;
+							   }		        
+						    }
+						  return code;
+				    },
+				    SetAddress:function(code){// 修改地址的时候  先加载 set值				    	
+				    	var codes = code.split(";"), len = codes.length, i=0 , pid = null;
+				    	for(; i<len; ++i){
+				    		this.Load(i, pid, codes[i]);
+				    		pid = codes[i];
+				    	}
+				    	this.Load(i, pid);
+				    	return this;
+				    }
+				};
+
+				var addressbox = new AddressBox();
+		  	 
+</script>

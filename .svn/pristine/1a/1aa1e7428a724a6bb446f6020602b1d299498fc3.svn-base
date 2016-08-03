@@ -1,0 +1,103 @@
+package org.system.entity.service;
+
+import java.math.BigDecimal;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+public class ProductService extends BaseEntity {
+    private Integer id;
+
+    private String name;
+
+    private BigDecimal price;
+
+    private Integer serviceTypeId;
+
+    private String desc;
+    
+    private Integer doctorTypeId;
+    
+    private Integer doctorLevelId;
+    
+    private Integer commonField;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+   
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getServiceTypeId() {
+        return serviceTypeId;
+    }
+
+    public void setServiceTypeId(Integer serviceTypeId) {
+        this.serviceTypeId = serviceTypeId;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+	public Integer getDoctorTypeId() {
+		return doctorTypeId;
+	}
+
+	public void setDoctorTypeId(Integer doctorTypeId) {
+		this.doctorTypeId = doctorTypeId;
+	}
+
+	public Integer getDoctorLevelId() {
+		return doctorLevelId;
+	}
+
+	public void setDoctorLevelId(Integer doctorLevelId) {
+		this.doctorLevelId = doctorLevelId;
+	}
+
+	public Integer getCommonField() {
+		return commonField;
+	}
+
+	public void setCommonField(Integer commonField) {
+		this.commonField = commonField;
+	}
+    
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+    
+}

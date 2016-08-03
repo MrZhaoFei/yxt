@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.contract.ContractMapper" >
+	<!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.contract.Contract" useGeneratedKeys="true" keyProperty="id">
+		insert into contract (user_id, creator_id, doctor_group_id, state, create_date,source_id,contract_number,contract_source) 
+		values (#{userId},#{creatorId},#{doctorGroupId},#{state},#{createDate},#{sourceId},#{contractNumber},#{contractSource})
+	</insert>
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.contract.Contract">
+		update contract
+		<set>
+			<if test="state!=null">
+				state=#{state},
+			</if>
+			<if test="userServicePackId !=null">
+				user_service_pack_id=#{userServicePackId},
+			</if>
+			<if test="creatorId !=null">
+				creator_id=#{creatorId},
+			</if>
+			<if test="doctorGroupId !=null">
+				doctor_group_id=#{doctorGroupId},
+			</if>
+			<if test="updateTime !=null">
+				update_time=#{updateTime},
+			</if>
+		</set>
+		<where>
+			<if test="id !=null">
+				id=#{id}
+			</if>
+			<if test="userId !=null">
+				and user_id=#{userId}
+			</if>
+		</where>
+	</update>
+	<!-- 修改 -->
+	<update id="updateContractByMap" parameterType="map">
+		update contract set creator_id=#{newDoctorId} where creator_id=#{oldDoctorId}
+	</update>
+<!-- 检查唯一性 -->
+<select id="checkExists" parameterType="org.system.entity.contract.Contract" resultType="map">
+	select c.id,c.state,dg.hospital_id hospitalId,h.name hospitalName from contract c
+left join doctor_group dg on dg.id=c.doctor_group_id
+left join hospital h on h.id=dg.hospital_id where c.user_id=#{userId}
+</select>
+<!-- 查询列表 -->
+<select id="queryAll" parameterType="org.system.entity.contract.Contract" resultType="map">
+	select c.id,c.contract_number contractNumber,c.creator_id doctorId,u.id
+	userId,c.state,ud.name,u.name account,ud.sex,(DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(ud.birthday)), '%Y')+0) age,ud.id_card idcard,
+	u.phone,ud.residence_address residenceAddress,c.contract_source contractSource,usp.expire_time&lt;now() isExpire
+	,ud.home_address homeAddress,c.create_date createDate,u.user_type_tag userTypeTag,fn_print_sys_code_result(u.user_type_tag,';','user_type_tag') userTypeTagName
+	from contract c
+	left join user_service_pack usp on usp.id=c.user_service_pack_id
+	left join doctor_group dg on dg.id=c.doctor_group_id
+	left join user u on u.id=c.user_id
+	left join user_detail ud on ud.user_id=u.id
+	<where>
+		<if test="userId!=null">
+			 c.user_id=#{userId}
+		</if>
+		<if test="doctorGroupId!=null">
+			and c.doctor_group_id=#{doctorGroupId}
+		</if>
+		<if test="state!=null">
+			and c.state=#{state}
+		</if>
+		<if test="beforeState !=null">
+			and c.state&lt;#{beforeState}
+		</if>
+		<choose>
+			<when test="startDate!=null and endDate!=null">
+				and c.create_date between #{startDate} and #{endDate}
+			</when>
+			<otherwise>
+				<if test="startDate!=null">
+					and c.create_date &gt; #{startDate}
+				</if>
+				<if test="endDate!=null">
+					and c.create_date &lt; #{endDate}
+				</if>
+			</otherwise>
+		</choose>
+	</where>
+	order by state,createDate desc  
+	
+</select>
+<!-- 我的签约用户 -->
+<select id="getContractListByDoctor" parameterType="org.system.entity.contract.Contract" resultType="map">
+	select c.id,c.user_id userId,ud.`name`,ud.sex,ud.is_member isMember,(DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(ud.birthday)), '%Y')+0) age ,ud.id_card idcard,u.phone,u.user_type_tag userTypeTag,
+	fn_print_sys_code_result(u.user_type_tag,';','user_type_tag') userTypeTagName,ud.home_address homeAddress,c.create_date createDate,c.state,
+	c.contract_source contractSource,rs.`name` sourceName,c.contract_number contractNumber,TIMESTAMPDIFF(DAY,NOW(),usp.expire_time) expireDay, usp.expire_time expireTime,sp.`name` servicePackName from contract c
+	left join user_detail ud ON ud.user_id=c.user_id
+	left join user u on u.id=c.user_id
+	left join register_source rs ON rs.id=c.source_id
+	left join user_service_pack usp on usp.id=c.user_service_pack_id
+	left join service_pack_condition spc on spc.id=usp.service_pack_id
+	left join service_pack sp on sp.id=spc.service_pack_id
+	where c.creator_id=#{creatorId} and c.doctor_group_id=#{doctorGroupId}
+	<if test="userDetail !=null">
+		<if test="userDetail.name !=null and userDetail.name !=''">
+			and ud.name like CONCAT(CONCAT('%', #{userDetail.name}), '%')
+		</if>
+		<if test="userDetail.contact !=null and userDetail.contact !=''">
+			and ud.contact like CONCAT(CONCAT('%', #{userDetail.contact}), '%')
+		</if>
+		<if test="userDetail.idcard !=null and userDetail.idcard !=''">
+			and ud.id_card like CONCAT(CONCAT('%', #{userDetail.idcard}), '%')
+		</if>
+		<if test="userDetail.sex !=null">
+			and ud.sex=#{userDetail.sex}
+		</if>
+		<choose>
+			<when test="userDetail.age !=null and userDetail.endAge !=null">
+				and ud.birthday between DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.endAge} YEAR),'%Y-1-1') and DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.age} YEAR),'%Y-12-31')
+				<!-- and ud.age between #{userDetail.age} and #{userDetail.endAge} -->
+			</when>
+			<otherwise>
+				<if test="userDetail.age !=null">
+					and ud.birthday &lt;= DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.age} YEAR),'%Y-12-31')
+					<!-- and ud.age &gt;= #{userDetail.age} -->
+				</if>
+				<if test="userDetail.endAge !=null">
+					and ud.birthday &gt;= DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.endAge} YEAR),'%Y-1-1')
+					<!-- and ud.age &lt;= #{userDetail.endAge} -->
+				</if>
+			</otherwise>
+		</choose>
+	</if>
+	<if test="user !=null">
+		<if test="user.phone !=null and user.phone !='' ">
+			and u.phone like CONCAT(CONCAT('%', #{user.phone}), '%')
+		</if>
+		<if test="user.userTypeTag !=null and user.userTypeTag !=''">
+			and u.user_type_tag like CONCAT(CONCAT('%', #{user.userTypeTag}), '%')
+		</if>
+	</if>
+	<if test="userService !=null">
+		<if test="userService.productServiceId!=null">
+			and c.user_id in (select user_id from user_service where product_service_id=#{userService.productServiceId})
+		</if>
+	</if>
+		<choose>
+			<when test="startDate!=null and endDate!=null">
+				and c.create_date between #{startDate} and #{endDate}
+			</when>
+			<otherwise>
+				<if test="startDate!=null">
+					and c.create_date &gt; #{startDate}
+				</if>
+				<if test="endDate!=null">
+					and c.create_date &lt; #{endDate}
+				</if>
+			</otherwise>
+		</choose>
+	<if test="beforeState !=null">
+		and c.state&lt;#{beforeState}
+	</if>
+	<if test="state!=null">
+		and c.state=#{state}
+	</if>
+	ORDER BY state,createDate desc 
+</select>
+<!-- 查询详情 -->
+<select id="queryOne" parameterType="org.system.entity.contract.Contract" resultType="map">
+	select c.id,c.contract_number contractNumber,u.id userId,c.state,ud.name,u.name account,ud.nation,ud.degree,ud.occupation,ud.is_member isMember,ud.contact,h.`name` hospitalName,
+	ud.sex,(DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(ud.birthday)), '%Y')+0) age,ud.id_card idcard,c.creator_id doctorId,c.contract_source contractSource,usp.expire_time&lt;now() isExpire,c.doctor_group_id doctorGroupId,
+	c.source_id sourceId,c.first_send_sms_id firstSendSmsId,dg.hospital_id hospitalId,sp.`name` servicePackName,dd.`name` doctorName,
+	u.phone,ud.residence_address residenceAddress,ud.home_address homeAddress,c.create_date createDate,dg.name doctorGroupName,u.wechat_id wechatId from contract c
+	left join doctor_group dg on dg.id=c.doctor_group_id
+	left join hospital h on h.id=dg.hospital_id
+	left join doctor_detail dd on dd.doctor_id=c.creator_id
+    left join user u on u.id=c.user_id
+    left join user_detail ud on ud.user_id=u.id
+    left join user_service_pack usp on usp.id=c.user_service_pack_id
+	left join service_pack_condition spc on spc.id=usp.service_pack_id
+	left join service_pack sp on sp.id=spc.service_pack_id
+    <where>
+    	<if test="id !=null ">
+    	 	c.id=#{id}
+    	</if>
+    	<if test="userId !=null ">
+    	 	and u.id=#{userId}
+    	</if>
+    </where>
+</select> 
+
+<!-- 查询签约协议模板 -->
+<select id="getContractAgreement" parameterType="org.system.entity.contract.Contract" resultType="map">
+	select c.contract_number number,ud.id_card a_idc,ud.`name` a_name,hi.sjhm a_tel,ud.home_address a_address,
+	dg.`name` b_name,dg.group_tel b_tel,DATE_FORMAT(c.create_date,'%Y年%m月%d日') start_time,DATE_FORMAT(DATE_ADD(c.create_date,INTERVAL 1 YEAR),'%Y年%m月%d日') end_time,
+	dt.doc_content content,dt.doc_title title,dt.doc_desc `desc`
+	from contract c
+	left join user_detail ud on ud.user_id=c.user_id
+	left join health_info hi on hi.user_id = c.user_id
+	left join doctor_group dg on dg.id=c.doctor_group_id
+	left join hospital h on h.id=dg.hospital_id
+	left join doc_tmplate dt on dt.id=h.contract_doc_id
+    where c.id=#{id} and c.creator_id=#{creatorId}
+</select> 
+
+	<select id="updateContractAddressById" parameterType="org.system.entity.contract.Contract" statementType="CALLABLE" resultType="map">
+		<![CDATA[
+			{call sp_update_contract_area(#{id})}
+		]]>
+	</select>
+
+
+</mapper>

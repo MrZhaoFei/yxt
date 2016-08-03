@@ -1,0 +1,1068 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head> 
+  <base href="/yxt-admin/" /> 
+  <title>product_service基础服务管理列表</title> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css" /> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/gray/easyui.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/jquery.flex-images.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/icon/font-awesome.min.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/webuploader.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/style.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/web.css" /> 
+  <script type="text/javascript" src="js/jquery.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script> 
+  <script type="text/javascript" src="js/easyui/extend.easyui.js"></script> 
+  <script type="text/javascript" src="js/jquery.flex-images.min.js"></script> 
+  <script type="text/javascript">
+  $(function() {
+	  // 重新加载数据
+	  $('#servicetypeName').combobox('reload');
+	  $('#doctorTypeName').combobox('reload');
+	  $('#doctorLevelName').combobox('reload');
+	  /*初始化控件*/
+	  $('#main_table').datagrid({
+	    method: 'get',
+	    url: '/yxt-admin/admin/productService?ran=' + Math.random(),
+	    toolbar: '#seach',
+	    pagination: true,
+	    pageSize:20,
+	    fit: true,
+	    fitColumns: true,
+	    border: false,
+	    rownumbers: true,
+	    singleSelect: true,
+	    loadFilter: function(data) {
+	    	if(data.stateCode=='205'){
+	    		top.location.href="/yxt-admin/admin/adminLogin.html";
+	    		return;
+	    	}else if(data.stateCode=='203'){
+	    		return {total:0,rows:[]};
+	    	}
+	      return data.data;
+	    }
+	  });
+	});
+	function query(){
+	  $('#main_table').datagrid('load', {
+		  name: $('#productServiceName1').textbox('getValue'),
+		  serviceTypeId :$('#servicetypeName1').combobox('getValue')
+	  });
+	}
+	function clear(){
+	  $('#productServiceName1').textbox('clear');
+	  $('#servicetypeName1').combobox('clear')
+	}
+	function re(){
+	   	  history.go(0) 
+	 }
+	function _opformatter(value, row, index) {
+	  var a = '&nbsp;<a href="javascript:edit(\'' + index + '\',' + row.id + ')" title="编辑和详情"><i class="fa fa-pencil"></i></a>';	
+	  var c = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<a href="javascript:del(\'' + row.id + '\')" title="删除"><i class="fa fa-trash"></i></a>';
+	  return a+c;
+	}
+	function _priceformatter(value, row, index) {
+		  if (value == null || value==0) {
+		    return "￥ 0.00";
+		  }if(value!=null){
+			  var f = value.toFixed(2);	
+			  return  "￥"+f;
+		  }
+	}
+	function add() {	
+		  $(".yuancheng").hide();
+		  $('.sel').hide();
+		  $(".suiFang").hide();
+		  var serviceName="";
+		  var levelName="";
+		  var doctorType="";
+		  var yc="";
+		  var sel="";
+		  var suifang="";
+	   $('#form').form('reset');
+	   $('#servicetypeName').combobox({
+		  onChange:function(newValue,oldValue){
+			 if(newValue==6||newValue==7||newValue==8){
+				 $('#doctorLevelName').combobox({ disabled: false });
+				 $("#doctorTypeName").combobox({ disabled: false });
+				 if(newValue==6){
+					 $(".yuancheng").show();
+					 $(".sel").hide();
+					 $(".suiFang").hide();
+				 }else if(newValue==7){
+					 $(".sel").show();
+					 $(".yuancheng").hide();
+					 $(".suiFang").hide();
+					
+				 }
+			 }
+			 else{
+				 if(newValue==2){
+					 $(".suiFang").show();
+					 $(".sel").hide();
+					 $(".yuancheng").hide();
+				 }
+				  $('#doctorLevelName').combobox('clear');
+				 $("#doctorTypeName").combobox('clear');
+				 $('#doctorLevelName').combobox({ disabled: true });
+				 $("#doctorTypeName").combobox({ disabled: true }); 
+			 }
+			  serviceName=$('#servicetypeName').combobox('getText');
+			 $('#productServiceName').textbox('setValue',serviceName);
+		  } 
+		  
+	  });
+	   
+	  $('#doctorLevelName').combobox({
+		  onChange:function(newValue,oldValue){
+			 levelName=$('#doctorLevelName').combobox('getText');
+			  $('#productServiceName').textbox('setValue',serviceName+'_'+yc+'_'+sel+'_'+suifang+'_'+doctorType+'_'+levelName);
+		  } 
+	  });
+	 $('#doctorTypeName').combobox({
+		  onChange:function(newValue,oldValue){
+			  doctorType=$('#doctorTypeName').combobox('getText');
+			  $('#productServiceName').textbox('setValue',serviceName+'_'+yc+'_'+sel+'_'+suifang+'_'+doctorType+'_'+levelName);
+		  } 
+	  });
+	 $('#commonFieldyc').combobox({
+		   onChange:function(newValue,oldValue){
+				 yc=$('#commonFieldyc').combobox('getText');
+				  $('#productServiceName').textbox('setValue',serviceName+'_'+yc+'_'+sel+'_'+suifang+'_'+doctorType+'_'+levelName);
+		   }
+	   });
+	   $('#commonFieldsel').combobox({
+		   onChange:function(newValue,oldValue){
+			   if(newValue==0){
+				     $('#doctorLevelName').combobox({ disabled: true });
+					 $("#doctorTypeName").combobox({ disabled: true });   
+			   }else  if(newValue==1){
+				  
+				     $('#doctorLevelName').combobox({ disabled: false });
+					 $("#doctorTypeName").combobox({ disabled: false });
+					 $('#doctorTypeName').combobox('setText','东软远程会诊专家');
+					 $('#doctorTypeName').combobox('setValue','4');
+			   }
+				 sel=$('#commonFieldsel').combobox('getText');
+				  $('#productServiceName').textbox('setValue',serviceName+'_'+yc+'_'+sel+'_'+suifang+'_'+doctorType+'_'+levelName);
+		   }
+	   });
+	   $('#commonFieldSuiFang').combobox({
+		   onChange:function(newValue,oldValue){
+				 suifang=$('#commonFieldSuiFang').combobox('getText');
+				  $('#productServiceName').textbox('setValue',serviceName+'_'+yc+'_'+sel+'_'+suifang+'_'+doctorType+'_'+levelName);
+		   }
+	   }); 
+	  $('#dialog').dialog({
+		    title: '添加信息',
+		    width: 400,
+		    height: 420,
+		    closed: false,
+		    modal: true,
+		    buttons: [{
+		      text: '确定添加',
+		      handler: function() {		    	
+		        var v = $('#form').form('validate');
+		        var comm=$('#commonFieldyc').combobox('getValue');
+		        var sui=$('#commonFieldSuiFang').combobox('getValue');
+		        var yis=$('#commonFieldsel').combobox('getValue');
+
+		         var  comoo = comm=="" ? ((sui=="")? yis:sui) : (comm) ;
+		      
+		       if (v) {      	
+		        	 $.ajax({
+		                  type: 'POST',
+		                  url:'/yxt-admin/admin/productService/insert',
+		                 data:{
+		                	name:$('#productServiceName').textbox('getValue'),
+		                	price:$('#price').numberbox('getValue'),
+		                	desc:$('#de').textbox('getValue'),
+		                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+		                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+		                	doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+		                	commonField:comoo==""? 0:comoo 
+		                 },
+		                  success: function(data) {  
+		                    if (data.stateCode == 200) {
+		                    	 $('#dialog').dialog('close');
+		                      $('#main_table').datagrid('reload');
+		                      $.messager.show({
+		                        title: '提示消息',
+		                        msg: data.message,
+		                        timeout: 5000,
+		                        showType: 'slide'
+		                      });
+		                    } else {
+		                      $.messager.show({
+		                        title: '提示',
+		                        msg: data.message
+		                      });
+		                    }
+		                  },
+		                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                    $.messager.show({
+		                      title: '提示',
+		                      msg: '请求发生错误请联系开发者'
+		                    });
+		                  }
+		                });
+		               
+		          } 
+		        }
+		      },
+		    {
+		      text: '取消关闭',
+		      handler: function() {
+		        $('#dialog').dialog('close');
+		      }
+		    }]
+		  });
+	}
+	
+	
+	
+	
+	function edit(index, id){ 
+		 $('#doctorLevelName').combobox({ disabled: false });
+		 $("#doctorTypeName").combobox({ disabled: false });
+		$.ajax({
+			 type:'get',
+			 url:'/yxt-admin/admin//productService/'+id+'/notupdate',
+			 success:function(data){
+				 if(data!=0){
+				  	        $('#productServiceName').textbox('readonly'),
+							$('#price').numberbox('readonly'),
+							$('#servicetypeName').combobox('readonly'),
+							$('#doctorTypeName').combobox('readonly'),
+							$('#doctorLevelName').combobox('readonly'),
+							$('#commonFieldyc').combobox('readonly'),
+							$('#commonFieldSuiFang').combobox('readonly'),
+							$('#commonFieldsel').combobox('readonly'),
+					  $.get('/yxt-admin/admin/productService/' + id + '/detail',
+								 function(data){
+								 $('#form').form('load', data.data);
+								 if(data.data.serviceTypeId!=6 && data.data.serviceTypeId!=7 && data.data.serviceTypeId!=8){
+									 $('#doctorLevelName').combobox('clear');
+									 $("#doctorTypeName").combobox('clear');
+									 $('#doctorLevelName').combobox({ disabled: true });
+									 $("#doctorTypeName").combobox({ disabled: true }); 
+								 }
+								$('#productServiceName').textbox('setValue',data.data.productServiceName);
+								      if(data.data.serviceTypeId == 7){	
+								    	  $('#commonFieldsel').combobox({
+											   onChange:function(newValue,oldValue){
+												   if(newValue==1){
+													     $('#doctorLevelName').combobox({ disabled: false });
+														 $("#doctorTypeName").combobox({ disabled: false });   
+												   } else if(newValue==0){
+													     $('#doctorLevelName').combobox('clear');
+														 $("#doctorTypeName").combobox('clear');
+													     $('#doctorLevelName').combobox({ disabled: true });
+														 $("#doctorTypeName").combobox({ disabled: true });   
+												   }
+													 
+											   }
+										  });  
+								    	  if(data.data.commonField==0){
+											  $('#commonFieldsel').combobox("setValue","不可选择");
+											     $('#doctorLevelName').combobox('clear');
+												 $("#doctorTypeName").combobox('clear');
+											     $('#doctorLevelName').combobox({ disabled: true });
+												 $("#doctorTypeName").combobox({ disabled: true });   
+											  
+										  }else  if(data.data.commonField==1){
+											  $('#commonFieldsel').combobox("setValue","可选择");
+										  }
+								             $(".suiFang").hide();
+								             $(".yuancheng").hide();
+								             $(".sel").show();
+								             $('#dialog').dialog({
+								         	    title: '编辑/查看信息',
+								         	    width: 400,
+								         	    height: 420,
+								         	    closed: false,
+								         	    modal: true,
+								         	    buttons: [{
+								         	      text: '确定修改',
+								         	      handler: function() {
+								         	        var v = $('#form').form('validate');
+								         	     
+								         	        if (v) {
+						                                   //AJAX提交
+								         	          $.ajax({
+								         	            type: 'put',
+								         	            url: '/yxt-admin/admin/productService/' + id + '/update',
+								         	            data:{      
+								         	            	name:$('#productServiceName').textbox('getValue'),
+										                	price:$('#price').numberbox('getValue'),
+										                	desc:$('#de').textbox('getValue'),
+										                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+										                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+										                	doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+										                	commonField:$('#commonFieldsel').combobox('getText')=="不可选择" ? 0:1 
+								         		                 },  
+								         	              success: function(data) {
+								         	              if (data.stateCode == 200) {
+								         	            	  $('#dialog').dialog('close');
+									         	                $('#form').form('reset');
+									         	                $('#main_table').datagrid('reload');
+								         	                $.messager.show({
+								         	                  title: '提示消息',
+								         	                  msg: data.message,
+								         	                  timeout: 5000,
+								         	                  showType: 'slide'
+								         	                });
+								         	              } else {
+								         	                $.messager.show({
+								         	                  title: '提示',
+								         	                  msg: data.message
+								         	                });
+								         	              }
+								         	            },
+								         	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+								         	              $.messager.show({
+								         	                title: '提示',
+								         	                msg: '请求发生错误请联系开发者'
+								         	              });
+								         	            }
+								         	          });
+								         	         
+								         	        }
+								         	      }
+								         	    },
+								         	    {
+								         	      text: '取消关闭',
+								         	      handler: function() {
+								         	        $('#dialog').dialog('close');
+								         	      }
+								         	    }]
+								         	  });     
+								             
+								             
+								             
+								  } else if(data.data.serviceTypeId == 6){
+									  if(data.data.commonField==0){
+										  $('#commonFieldyc').combobox("setValue","电话咨询");
+									  }else  if(data.data.commonField==1){
+										  $('#commonFieldyc').combobox("setValue","视频咨询");
+									  }
+									  $(".sel").hide();
+									  $(".suiFang").hide();
+									  $(".yuancheng").show();
+									  $('#dialog').dialog({
+							         	    title: '编辑/查看信息',
+							         	    width: 400,
+							         	    height: 420,
+							         	    closed: false,
+							         	    modal: true,
+							         	    buttons: [{
+							         	      text: '确定修改',
+							         	      handler: function() {
+							         	        var v = $('#form').form('validate');
+							         	        if (v) {
+							         	          //AJAX提交
+							         	          $.ajax({
+							         	            type: 'put',
+							         	            url: '/yxt-admin/admin/productService/' + id + '/update',
+							         	             data:{
+							         	            	name:$('#productServiceName').textbox('getValue'),
+									                	price:$('#price').numberbox('getValue'),
+									                	desc:$('#de').textbox('getValue'),
+									                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+									                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+									                	doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+							         		            commonField:$('#commonFieldyc').combobox('getText')=="电话咨询" ? 0:1
+							         		                 }, 
+							         	            success: function(data) {
+							         	              if (data.stateCode == 200) {
+							         	                $('#dialog').dialog('close');
+							         	                $('#form').form('reset');
+							         	                $('#main_table').datagrid('reload');
+							         	                $.messager.show({
+							         	                  title: '提示消息',
+							         	                  msg: data.message,
+							         	                  timeout: 5000,
+							         	                  showType: 'slide'
+							         	                });
+							         	              } else {
+							         	                $.messager.show({
+							         	                  title: '提示',
+							         	                  msg: data.message
+							         	                });
+							         	              }
+							         	            },
+							         	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+							         	              $.messager.show({
+							         	                title: '提示',
+							         	                msg: '请求发生错误请联系开发者'
+							         	              });
+							         	            }
+							         	          });
+							         	        }
+							         	      }
+							         	    },
+							         	    {
+							         	      text: '取消关闭',
+							         	      handler: function() {
+							         	        $('#dialog').dialog('close');
+							         	      }
+							         	    }]
+							         	  });    
+								  }else if(data.data.serviceTypeId == 2){
+									  
+									  if(data.data.commonField==0){
+										  $('#commonFieldSuiFang').combobox("setValue","高血压");
+									  }else  if(data.data.commonField==1){
+										  $('#commonFieldSuiFang').combobox("setValue","糖尿病");
+									  }
+									  $(".sel").hide();
+									  $(".yuancheng").hide();
+									  $(".suiFang").show();
+									  $('#dialog').dialog({
+							         	    title: '编辑/查看信息',
+							         	    width: 400,
+							         	    height: 420,
+							         	    closed: false,
+							         	    modal: true,
+							         	    buttons: [{
+							         	      text: '确定修改',
+							         	      handler: function() {
+							         	        var v = $('#form').form('validate');
+							         	        if (v) {
+							         	          //AJAX提交
+							         	          $.ajax({
+							         	            type: 'put',
+							         	            url: '/yxt-admin/admin/productService/' + id + '/update',
+							         	             data:{
+							         	            	name:$('#productServiceName').textbox('getValue'),
+									                	price:$('#price').numberbox('getValue'),
+									                	desc:$('#de').textbox('getValue'),
+									                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+									                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+									                	doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+							         		            commonField:$('#commonFieldSuiFang').combobox('getText')=="高血压" ? 0:1
+							         		                 }, 
+							         	            success: function(data) {
+							         	              if (data.stateCode == 200) {
+							         	                $('#dialog').dialog('close');
+							         	                $('#form').form('reset');
+							         	                $('#main_table').datagrid('reload');
+							         	                $.messager.show({
+							         	                  title: '提示消息',
+							         	                  msg: data.message,
+							         	                  timeout: 5000,
+							         	                  showType: 'slide'
+							         	                });
+							         	              } else {
+							         	                $.messager.show({
+							         	                  title: '提示',
+							         	                  msg: data.message
+							         	                });
+							         	              }
+							         	            },
+							         	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+							         	              $.messager.show({
+							         	                title: '提示',
+							         	                msg: '请求发生错误请联系开发者'
+							         	              });
+							         	            }
+							         	          });
+							         	        }
+							         	      }
+							         	    },
+							         	    {
+							         	      text: '取消关闭',
+							         	      handler: function() {
+							         	        $('#dialog').dialog('close');
+							         	      }
+							         	    }]
+							         	  });
+								  }
+								  
+								  
+								  
+								  else {
+									  $(".yuancheng").hide();
+									  $('.sel').hide();
+									  $(".suiFang").hide();
+									  $('#dialog').dialog({
+										    title: '编辑/查看信息',
+										    width: 400,
+										    height: 420,
+										    closed: false,
+										    modal: true,
+										    buttons: [{
+										      text: '确定修改',
+										      handler: function() {
+										        var v = $('#form').form('validate');
+										        if (v) {
+										          //AJAX提交
+										          $.ajax({
+										            type: 'put',
+										            url: '/yxt-admin/admin/productService/' + id + '/update',
+										           data:{
+										            	name:$('#productServiceName').textbox('getValue'),
+									                	price:$('#price').numberbox('getValue'),
+									                	desc:$('#de').textbox('getValue'),
+									                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+									                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+									                	doctorLevelId:$('#doctorLevelName').combobox('getValue')
+											                 },  
+										             success: function(data) {
+										              if (data.stateCode == 200) {
+										                $('#dialog').dialog('close');
+										                $('#form').form('reset');
+										                $('#main_table').datagrid('reload');
+										                $.messager.show({
+										                  title: '提示消息',
+										                  msg: data.message,
+										                  timeout: 5000,
+										                  showType: 'slide'
+										                });
+										              } else {
+										                $.messager.show({
+										                  title: '提示',
+										                  msg: data.message
+										                });
+										              }
+										            },
+										            error: function(XMLHttpRequest, textStatus, errorThrown) {
+										              $.messager.show({
+										                title: '提示',
+										                msg: '请求发生错误请联系开发者'
+										              });
+										            }
+										          });
+										        }
+										      }
+										    },
+										    {
+										      text: '取消关闭',
+										      handler: function() {
+										        $('#dialog').dialog('close');
+										      }
+										    }]
+										  });  
+								  }		 
+							
+							  }); 
+					 
+					 
+					 
+				 }else {
+					 $('#productServiceName').textbox('readonly',false),
+	                	$('#price').numberbox('readonly',false),
+	                	$('#servicetypeName').combobox('readonly',false),
+	                	$('#doctorTypeName').combobox('readonly',false),
+	                	$('#doctorLevelName').combobox('readonly',false),
+	                	$('#commonFieldyc').combobox('readonly',false),
+	                	$('#commonFieldSuiFang').combobox('readonly',false),
+	                	$('#commonFieldsel').combobox('readonly',false),
+					 $.get('/yxt-admin/admin/productService/' + id + '/detail',
+							 function(data){
+							 $('#form').form('load', data.data);
+							 if(data.data.serviceTypeId!=6 && data.data.serviceTypeId!=7 && data.data.serviceTypeId!=8){
+								 $('#doctorLevelName').combobox('clear');
+								 $("#doctorTypeName").combobox('clear');
+								 $('#doctorLevelName').combobox({ disabled: true });
+								 $("#doctorTypeName").combobox({ disabled: true }); 
+							 }
+							$('#productServiceName').textbox('setValue',data.data.productServiceName);
+							      if(data.data.serviceTypeId == 7){	
+							    	  $('#commonFieldsel').combobox({
+										   onChange:function(newValue,oldValue){
+											   if(newValue==1){
+												     $('#doctorLevelName').combobox({ disabled: false });
+													 $("#doctorTypeName").combobox({ disabled: false });   
+											   } else if(newValue==0){
+												     $('#doctorLevelName').combobox('clear');
+													 $("#doctorTypeName").combobox('clear');
+												     $('#doctorLevelName').combobox({ disabled: true });
+													 $("#doctorTypeName").combobox({ disabled: true });   
+											   }
+												 
+										   }
+									  });  
+							    	  if(data.data.commonField==0){
+										  $('#commonFieldsel').combobox("setValue","不可选择");
+										     $('#doctorLevelName').combobox('clear');
+											 $("#doctorTypeName").combobox('clear');
+										     $('#doctorLevelName').combobox({ disabled: true });
+											 $("#doctorTypeName").combobox({ disabled: true });   
+										  
+									  }else  if(data.data.commonField==1){
+										  $('#commonFieldsel').combobox("setValue","可选择");
+									  }
+							             $(".suiFang").hide();
+							             $(".yuancheng").hide();
+							             $(".sel").show();
+							             $('#dialog').dialog({
+							         	    title: '编辑/查看信息',
+							         	    width: 400,
+							         	    height: 420,
+							         	    closed: false,
+							         	    modal: true,
+							         	    buttons: [{
+							         	      text: '确定修改',
+							         	      handler: function() {
+							         	        var v = $('#form').form('validate');
+							         	     
+							         	        if (v) {
+					                                   //AJAX提交
+							         	          $.ajax({
+							         	            type: 'put',
+							         	            url: '/yxt-admin/admin/productService/' + id + '/update',
+							         	            data:{      
+							         	            	name:$('#productServiceName').textbox('getValue'),
+									                	price:$('#price').numberbox('getValue'),
+									                	desc:$('#de').textbox('getValue'),
+									                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+									                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+									                	doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+									                	commonField:$('#commonFieldsel').combobox('getText')=="不可选择" ? 0:1 
+							         		                 },  
+							         	              success: function(data) {
+							         	              if (data.stateCode == 200) {
+							         	            	  $('#dialog').dialog('close');
+								         	                $('#form').form('reset');
+								         	                $('#main_table').datagrid('reload');
+							         	                $.messager.show({
+							         	                  title: '提示消息',
+							         	                  msg: data.message,
+							         	                  timeout: 5000,
+							         	                  showType: 'slide'
+							         	                });
+							         	              } else {
+							         	                $.messager.show({
+							         	                  title: '提示',
+							         	                  msg: data.message
+							         	                });
+							         	              }
+							         	            },
+							         	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+							         	              $.messager.show({
+							         	                title: '提示',
+							         	                msg: '请求发生错误请联系开发者'
+							         	              });
+							         	            }
+							         	          });
+							         	         
+							         	        }
+							         	      }
+							         	    },
+							         	    {
+							         	      text: '取消关闭',
+							         	      handler: function() {
+							         	        $('#dialog').dialog('close');
+							         	      }
+							         	    }]
+							         	  });     
+							             
+							             
+							             
+							  } else if(data.data.serviceTypeId == 6){
+								  if(data.data.commonField==0){
+									  $('#commonFieldyc').combobox("setValue","电话咨询");
+								  }else  if(data.data.commonField==1){
+									  $('#commonFieldyc').combobox("setValue","视频咨询");
+								  }
+								  $(".sel").hide();
+								  $(".suiFang").hide();
+								  $(".yuancheng").show();
+								  $('#dialog').dialog({
+						         	    title: '编辑/查看信息',
+						         	    width: 400,
+						         	    height: 420,
+						         	    closed: false,
+						         	    modal: true,
+						         	    buttons: [{
+						         	      text: '确定修改',
+						         	      handler: function() {
+						         	        var v = $('#form').form('validate');
+						         	        if (v) {
+						         	          //AJAX提交
+						         	          $.ajax({
+						         	            type: 'put',
+						         	            url: '/yxt-admin/admin/productService/' + id + '/update',
+						         	             data:{
+						         	            	name:$('#productServiceName').textbox('getValue'),
+								                	price:$('#price').numberbox('getValue'),
+								                	desc:$('#de').textbox('getValue'),
+								                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+								                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+								                	doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+						         		            commonField:$('#commonFieldyc').combobox('getText')=="电话咨询" ? 0:1
+						         		                 }, 
+						         	            success: function(data) {
+						         	              if (data.stateCode == 200) {
+						         	                $('#dialog').dialog('close');
+						         	                $('#form').form('reset');
+						         	                $('#main_table').datagrid('reload');
+						         	                $.messager.show({
+						         	                  title: '提示消息',
+						         	                  msg: data.message,
+						         	                  timeout: 5000,
+						         	                  showType: 'slide'
+						         	                });
+						         	              } else {
+						         	                $.messager.show({
+						         	                  title: '提示',
+						         	                  msg: data.message
+						         	                });
+						         	              }
+						         	            },
+						         	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+						         	              $.messager.show({
+						         	                title: '提示',
+						         	                msg: '请求发生错误请联系开发者'
+						         	              });
+						         	            }
+						         	          });
+						         	        }
+						         	      }
+						         	    },
+						         	    {
+						         	      text: '取消关闭',
+						         	      handler: function() {
+						         	        $('#dialog').dialog('close');
+						         	      }
+						         	    }]
+						         	  });    
+							  }else if(data.data.serviceTypeId == 2){
+								  
+								  if(data.data.commonField==0){
+									  $('#commonFieldSuiFang').combobox("setValue","高血压");
+								  }else  if(data.data.commonField==1){
+									  $('#commonFieldSuiFang').combobox("setValue","糖尿病");
+								  }
+								  $(".sel").hide();
+								  $(".yuancheng").hide();
+								  $(".suiFang").show();
+								  $('#dialog').dialog({
+						         	    title: '编辑/查看信息',
+						         	    width: 400,
+						         	    height: 420,
+						         	    closed: false,
+						         	    modal: true,
+						         	    buttons: [{
+						         	      text: '确定修改',
+						         	      handler: function() {
+						         	        var v = $('#form').form('validate');
+						         	        if (v) {
+						         	          //AJAX提交
+						         	          $.ajax({
+						         	            type: 'put',
+						         	            url: '/yxt-admin/admin/productService/' + id + '/update',
+						         	             data:{
+						         	            	name:$('#productServiceName').textbox('getValue'),
+								                	price:$('#price').numberbox('getValue'),
+								                	desc:$('#de').textbox('getValue'),
+								                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+								                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+								                	doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+						         		            commonField:$('#commonFieldSuiFang').combobox('getText')=="高血压" ? 0:1
+						         		                 }, 
+						         	            success: function(data) {
+						         	              if (data.stateCode == 200) {
+						         	                $('#dialog').dialog('close');
+						         	                $('#form').form('reset');
+						         	                $('#main_table').datagrid('reload');
+						         	                $.messager.show({
+						         	                  title: '提示消息',
+						         	                  msg: data.message,
+						         	                  timeout: 5000,
+						         	                  showType: 'slide'
+						         	                });
+						         	              } else {
+						         	                $.messager.show({
+						         	                  title: '提示',
+						         	                  msg: data.message
+						         	                });
+						         	              }
+						         	            },
+						         	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+						         	              $.messager.show({
+						         	                title: '提示',
+						         	                msg: '请求发生错误请联系开发者'
+						         	              });
+						         	            }
+						         	          });
+						         	        }
+						         	      }
+						         	    },
+						         	    {
+						         	      text: '取消关闭',
+						         	      handler: function() {
+						         	        $('#dialog').dialog('close');
+						         	      }
+						         	    }]
+						         	  });
+							  }
+							  
+							  
+							  
+							  else {
+								  $(".yuancheng").hide();
+								  $('.sel').hide();
+								  $(".suiFang").hide();
+								  $('#dialog').dialog({
+									    title: '编辑/查看信息',
+									    width: 400,
+									    height: 420,
+									    closed: false,
+									    modal: true,
+									    buttons: [{
+									      text: '确定修改',
+									      handler: function() {
+									        var v = $('#form').form('validate');
+									        if (v) {
+									          //AJAX提交
+									          $.ajax({
+									            type: 'put',
+									            url: '/yxt-admin/admin/productService/' + id + '/update',
+									           data:{
+									            	name:$('#productServiceName').textbox('getValue'),
+								                	price:$('#price').numberbox('getValue'),
+								                	desc:$('#de').textbox('getValue'),
+								                	serviceTypeId:$('#servicetypeName').combobox('getValue'),
+								                	doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+								                	doctorLevelId:$('#doctorLevelName').combobox('getValue')
+										                 },  
+									             success: function(data) {
+									              if (data.stateCode == 200) {
+									                $('#dialog').dialog('close');
+									                $('#form').form('reset');
+									                $('#main_table').datagrid('reload');
+									                $.messager.show({
+									                  title: '提示消息',
+									                  msg: data.message,
+									                  timeout: 5000,
+									                  showType: 'slide'
+									                });
+									              } else {
+									                $.messager.show({
+									                  title: '提示',
+									                  msg: data.message
+									                });
+									              }
+									            },
+									            error: function(XMLHttpRequest, textStatus, errorThrown) {
+									              $.messager.show({
+									                title: '提示',
+									                msg: '请求发生错误请联系开发者'
+									              });
+									            }
+									          });
+									        }
+									      }
+									    },
+									    {
+									      text: '取消关闭',
+									      handler: function() {
+									        $('#dialog').dialog('close');
+									      }
+									    }]
+									  });  
+							  }		 
+						
+						  });
+				 }
+			 }
+			
+		})
+		
+		
+		
+		
+		
+/* 	   */
+
+	}
+	
+	
+	
+	function del(id) {
+	  $.messager.confirm('确认', '您确认想要删除记录吗？',
+	  function(r) {
+	    if (r) {
+	      $.ajax({
+	        type: 'delete',
+	        url: '/yxt-admin/admin/productService/' + id + '/delete',
+	        success: function(data) {
+	          if (data.stateCode == 200) {
+	            $('#main_table').datagrid('reload');
+	            $.messager.show({
+	              title: '提示消息',
+	              msg: data.message,
+	              timeout: 5000,
+	              showType: 'slide'
+	            });
+	          } else {
+	            $.messager.show({
+	              title: '提示',
+	              msg: data.message
+	            });
+	          }
+	        },
+	        error: function(XMLHttpRequest, textStatus, errorThrown) {
+	          $.messager.show({
+	            title: '提示',
+	            msg: '请求发生错误请联系开发者'
+	          });
+	        }
+	      });
+	    }
+	  });
+	}
+	
+	
+
+</script> 
+ </head> 
+ <body> 
+  <!-- 全局日历控件 --> 
+  <!-- <div id="sc" class="easyui-calendar" data-options="validator: function(date){return date<=new Date();}"></div> --> 
+  <!-- 搜索栏 --> 
+  <div id="seach"> 
+   <label>服务项目名称</label> 
+   <input id="productServiceName1" class="easyui-textbox" style="width: 120px;" />
+   <lable>服务项类型</lable>
+   <input class="easyui-combobox"   id="servicetypeName1" style="width:200px;" 
+       data-options=" url:'/yxt-admin/admin/serviceType',
+                 editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}" />     
+   <a href="javascript:query()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+  <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-ban"></i> 清除搜索条件</a>
+   <a href="javascript:add()" class="easyui-linkbutton"><i class="fa fa-plus"></i> 新增</a>
+    <a href="javascript:re()" class="easyui-linkbutton"><i class="fa  fa-refresh"></i> 刷新当前页面</a>  
+  </div> 
+  <!-- 内容表格 --> 
+  <table id="main_table"> 
+   <thead> 
+    <tr>
+      <th data-options="field:'id',width:10">id</th>       
+      <th data-options="field:'productServiceName',width:90">服务项目名称</th> 
+      <th data-options="field:'price',width:90,align:'right',formatter:_priceformatter">服务项价格(元)</th> 
+      <th data-options="field:'servicetypeName',width:90">服务项类型</th>
+      <th data-options="field:'doctorTypeName',width:90">医生类型</th>
+      <th data-options="field:'doctorLevelName',width:90">医生级别</th> 
+      <th data-options="field:'de',width:90">服务项描述</th> 
+     <th data-options="field:'img',align:'center',width:30,formatter:_opformatter">操作</th> 
+    </tr> 
+   </thead> 
+  </table> 
+ 
+  <!-- 添加 --> 
+  <div id="dialog">  
+   <form id="form" method="post"> 
+    <table class="table-edit" width="100%" align="center"> 
+     <tbody> 
+      <tr> 
+       <td style="width: 110px;">服务项类型</td> 
+       <td> <input class="easyui-combobox"  name="servicetypeName" id="servicetypeName" style="width:200px;" 
+       data-options=" url:'/yxt-admin/admin/serviceType',
+                 editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}" />       
+             
+       </td> 
+       </tr>
+       <tr> 
+       <td style="width: 110px;">服务项目价格</td> 
+       <td><input class="easyui-numberbox" name="price" id="price" style="width: 200px" data-options="precision:2,align:'right',value:0.00"/>
+       </td> 
+       </tr>
+        <tr class="yuancheng" style="display:none"> 
+       <td style="width: 110px;">远程服务类型</td> 
+       <td> <select class="easyui-combobox"  name="commonField" id="commonFieldyc" style="width:200px;" data-options="editable:false"> 
+            <option value=""></option>
+            <option value="1">视频咨询</option>      
+            <option value="0">电话咨询</option> 
+             </select> 
+      
+       </td> 
+       </tr>
+        
+        <tr class="sel" style="display:none"> 
+       <td style="width: 110px;">选医生</td> 
+       <td> <select class="easyui-combobox"  name="commonField" id="commonFieldsel" style="width:200px;" data-options="editable:false" > 
+            <option value=""></option>
+            <option value="1">可选择</option>      
+            <option value="0">不可选择</option> 
+             </select> 
+      
+       </td> 
+       </tr>
+       
+         <tr class="suiFang" style="display:none"> 
+       <td style="width: 110px;">界面处理</td> 
+       <td> <select class="easyui-combobox"  name="commonField" id="commonFieldSuiFang" style="width:200px;" data-options="editable:false" > 
+             <option value=""></option>
+            <option value="1">糖尿病</option>      
+            <option value="0">高血压</option> 
+             </select> 
+      
+       </td> 
+       </tr>
+       
+       
+       
+       
+       
+        <tr> 
+       <td style="width: 110px;">医生类型</td> 
+       <td> <input class="easyui-combobox"  name="doctorTypeName" id="doctorTypeName" style="width:200px;"
+        data-options=" url:'/yxt-admin/admin/doctorType',
+         editable:false, 
+	    method:'get',
+	    valueField:'id',    
+	    textField:'name' ,
+ 	     loadFilter:function(data){
+			 return data.data.rows;
+			}"/>       
+           
+       </td> 
+       </tr> 
+        <tr> 
+       <td style="width: 110px;">医生级别</td> 
+       <td> <input class="easyui-combobox"  name="doctorLevelName" id="doctorLevelName" style="width:200px;"  
+     data-options=" url:'/yxt-admin/admin/doctorLevel', 
+      editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'doctorLevelName',
+		    	loadFilter:function(data){
+					 return data.data.rows;
+					}," />       
+           
+      
+       </td> 
+     </tr>
+         <tr> 
+       <td style="width: 110px;">服务项目名称</td> 
+       <td><input class="easyui-textbox" name="productServiceName"  id="productServiceName" style="width: 200px" data-options="required:true,validType:'length[0,32]',missingMessage:'服务类型名称不能为空'"/>
+       </td> 
+       </tr>
+      <tr> 
+       <td style="width: 110px;">服务项目描述</td> 
+       <td><input class="easyui-textbox" name="de" id="de" style="width: 200px;height:50px"  data-options="multiline:true,validType:'length[0,512]'"/>
+       </td> 
+       </tr>              
+     </tbody> 
+    </table> 
+   </form> 
+  </div>  
+ </body>
+</html>
+

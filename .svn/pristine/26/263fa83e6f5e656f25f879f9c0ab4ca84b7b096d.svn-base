@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.doctor.DoctorGroupRelyMapper" >
+
+
+	<!-- 删除 -->
+  <delete id="delete" parameterType="org.system.entity.doctor.DoctorGroupRely" >
+    delete from doctor_group_rely
+    where id = #{id}
+  </delete>
+	<!-- 新增 -->
+  <insert id="insert" parameterType="org.system.entity.doctor.DoctorGroupRely" >
+    insert into doctor_group_rely (doctor_group_id, zc_doctor_group_id)
+    values (#{doctorGroupId}, #{zcDoctorGroupId})
+  </insert>
+	<!-- 修改 -->
+  <update id="update" parameterType="org.system.entity.doctor.DoctorGroupRely" >
+    update doctor_group_rely set id=#{id}
+    <if test="doctorGroupId !=null ">
+    	,doctor_group_id=#{doctorGroupId}
+    </if>
+    <if test="zcDoctorGroupId !=null ">
+    	,zc_doctor_group_id=#{zcDoctorGroupId}
+    </if>
+    where id = #{id}
+  </update>
+	<!-- 详情 -->
+  <select id="queryOne" resultType="map" parameterType="org.system.entity.doctor.DoctorGroupRely" >
+    select id, doctor_group_id doctorGroupId, zc_doctor_group_id zcDoctorGroupId
+    from doctor_group_rely
+    where id = #{id}
+  </select>
+	<!-- 所有 -->
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.doctor.DoctorGroupRely">
+    select dgr.id, dgr.doctor_group_id doctorGroupId, dgr.zc_doctor_group_id zcDoctorGroupId,dg.name doctorGroupName,dg.create_date createDate,dg.group_tel groupTel,
+	h.address hospitalAddress,h.`name` hospitalName,a.`name` addressName
+	from doctor_group_rely dgr
+	left join doctor_group dg on dg.id=dgr.zc_doctor_group_id
+	left join hospital h on h.id=dg.hospital_id
+	left join address a on a.id=h.address_id
+	where dgr.doctor_group_id=#{doctorGroupId}
+  </select>
+  
+  	<!-- 检查唯一性 -->
+    <select id="checkExists" parameterType="org.system.entity.doctor.DoctorGroupRely" resultType="map">
+	select id, doctor_group_id doctorGroupId, zc_doctor_group_id zcDoctorGroupId
+    from doctor_group_rely
+    where doctor_group_id=#{doctorGroupId} and zc_doctor_group_id=#{zcDoctorGroupId}
+     </select>
+</mapper>

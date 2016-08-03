@@ -1,0 +1,13 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.Role;
+
+public interface IRoleService {
+	public List<Map<String, Object>> getRoleList(Role role);
+	
+	
+	Map<String, Object> getRoleDetail(Role role);
+}

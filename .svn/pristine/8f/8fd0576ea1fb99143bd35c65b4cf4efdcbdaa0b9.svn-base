@@ -1,0 +1,51 @@
+package org.system.controller.iface;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.SysCodeRecods;
+import org.utils.spring.Groups;
+
+@RequestMapping("/admin")
+public interface ISysCodeRecodsController {
+	
+
+	@RequestMapping(value = { "/sysCodeRecods/{pid}/list" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("sysCodeRecods:list")
+	public Map<String, Object> getAddressByCode(@PathVariable("pid") String pid,
+			@Validated({ Groups.Select.class }) SysCodeRecods sysCodeRecods, BindingResult result);
+	
+	
+	
+	
+	/**
+	 * 根据名字模糊查询
+	 * @param codeName
+	 * @param sysCodeRecods
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/sysCodeRecods/{codeName}/listName" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("sysCodeRecods:list")
+	public Map<String, Object> getAddressByCodeName(@PathVariable("codeName") String codeName,
+			@Validated({ Groups.Select.class }) SysCodeRecods sysCodeRecods, BindingResult result);
+	
+	
+	
+	
+	@RequestMapping(value = { "/sysCodeRecods/{codeName}/listNamehospital" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("sysCodeRecods:list")
+	public Map<String, Object> getHospitalByCodeName(@PathVariable("codeName") String codeName,
+			@Validated({ Groups.Select.class }) SysCodeRecods sysCodeRecods, BindingResult result);
+	
+
+}

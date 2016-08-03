@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.resp.ServiceRespTaskMapper" >
+	<!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.service.resp.ServiceRespTask" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `service_resp_task` (`task_number`, `task_type_id`, `task_status`, `user_id`, `doctor_id`, `applied_date`, `service_msg_content`, `estimation_date`, `estimation_msg_content`, `estimation_star_level`, `last_remind_time`, `is_share_friends`, `accept_date`, `doctor_remind`,`promoter_doctor_id`,`promoter_user_id`)
+		VALUES (#{taskNumber}, #{taskTypeId}, #{taskStatus}, #{userId}, #{doctorId}, #{appliedDate}, #{serviceMsgContent}, #{estimationDate}, #{estimationMsgContent}, #{estimationStarLevel}, #{lastRemindTime}, #{isShareFriends}, #{acceptDate}, #{doctorRemind},#{promoterDoctorId},#{promoterUserId})
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.service.resp.ServiceRespTask">
+		DELETE FROM `service_resp_task` WHERE `id`=#{id}
+		<if test="userId !=null">
+			and user_id=#{userId}
+		</if>
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.service.resp.ServiceRespTask">
+		UPDATE `service_resp_task` SET id=#{id}
+		<if test="taskStatus !=null">
+			,task_status=#{taskStatus}
+		</if>
+		<if test="estimationDate !=null">
+			,estimation_date=#{estimationDate}
+		</if>
+		<if test="lastRemindTime !=null">
+			,last_remind_time=#{lastRemindTime}
+		</if>
+		<if test="acceptDate !=null">
+			,accept_date=#{acceptDate}
+		</if>
+		<if test="doctorId !=null">
+			,doctor_id=#{doctorId}
+		</if>
+		<if test="estimationMsgContent !=null and estimationMsgContent!=''">
+			,estimation_msg_content=#{estimationMsgContent}
+		</if>
+		<if test="doctorRemind !=null and doctorRemind!=''">
+			,doctor_remind=#{doctorRemind}
+		</if>
+		<if test="estimationStarLevel !=null ">
+			,estimation_star_level=#{estimationStarLevel}
+		</if>
+		<if test="isShareFriends !=null ">
+			,is_share_friends=#{isShareFriends}
+		</if>
+		<if test="transRecordsInfoId !=null ">
+			,trans_records_info_id=#{transRecordsInfoId}
+		</if>
+		where id=#{id}
+		<!-- 
+		<if test="doctorId !=null">
+			and doctor_id=#{doctorId}
+		</if>
+		<if test="userId !=null">
+			and user_id=#{userId}
+		</if> -->
+	</update>
+	
+	<!-- 查询列表 -->
+	<select id="queryAll" parameterType="org.system.entity.service.resp.ServiceRespTask" resultType="map">
+		select srt.id,srt.task_status taskStatus,srt.task_number taskNumber,tt.id typeId,tt.task_name taskName,tri.trans_date transDate,tri.trans_desc transDesc,
+		srt.doctor_id doctorId,dd.`name` doctorName,srt.service_msg_content content,ud.user_id userId,ud.`name` userName,
+		srt.applied_date appliedDate,srt.last_remind_time lastRemindTime,u.phone,ud.contact  from service_resp_task srt
+		left join task_type tt on tt.id=srt.task_type_id
+		left join user_detail ud on ud.user_id=srt.user_id
+		left join user u on u.id=ud.user_id
+		left join doctor_detail dd on dd.doctor_id=srt.doctor_id
+		left join trans_records_info tri on tri.id=srt.trans_records_info_id
+		<where>
+			<if test="id !=null">
+				srt.id=#{id}
+			</if>
+			<if test="doctorId !=null">
+				and srt.doctor_id=#{doctorId}
+			</if>
+			<if test="userId !=null">
+				and srt.user_id=#{userId}
+			</if>
+			<if test="beforeState !=null ">
+				and srt.task_status&lt;#{beforeState}
+			</if>
+			<if test="taskStatus !=null">
+				and srt.task_status=#{taskStatus}
+			</if>
+			<if test="taskTypeId!=null">
+				and srt.task_type_id=#{taskTypeId}
+			</if>
+			<if test="taskNumber !=null and taskNumber !=''">
+				and srt.task_number like CONCAT(CONCAT('%', #{taskNumber}), '%')
+			</if>
+			<if test="user !=null">
+				<if test="user.phone !=null and user.phone !=''">
+					and u.phone like CONCAT(CONCAT('%', #{user.phone}), '%')
+				</if>
+			</if>
+			<if test="userDetail !=null">
+				<if test="userDetail.contact !=null and userDetail.contact !=''">
+					and ud.contact like CONCAT(CONCAT('%', #{userDetail.contact}), '%')
+				</if>
+				<if test="userDetail.name !=null and userDetail.name !=''">
+					and ud.name like CONCAT(CONCAT('%', #{userDetail.name}), '%')
+				</if>
+			</if>
+			<choose>
+				<when test="startDate !=null and endDate !=null">
+					and srt.applied_date BETWEEN #{startDate} and #{endDate}
+				</when>
+				<otherwise>
+					<if test="startDate !=null">
+						and srt.applied_date &gt; #{startDate}
+					</if>
+					<if test="endDate !=null">
+						and srt.applied_date &lt; #{endDate}
+					</if>
+				</otherwise>
+			</choose>
+		</where>
+		order by 	taskStatus,appliedDate desc
+	</select>
+	
+	<resultMap type="map" id="userTaskMap">
+		<result column="id" property="id"/>
+		<collection property="taskProcessInfo" column="id" javaType="list" select="getTaskProcessInfo"/>
+	</resultMap>
+	<!-- 查询列表 -->
+	<select id="getServiceRespTaskListByuser" parameterType="org.system.entity.service.resp.ServiceRespTask" resultMap="userTaskMap">
+		select srt.id,srt.task_status taskStatus,srt.task_number taskNumber,tt.id typeId,tt.task_name taskName,srt.service_msg_content content,srt.user_id userId,
+		ud.`name` userName,srt.applied_date appliedDate,srt.last_remind_time lastRemindTime,srt.accept_date acceptDate,srt.doctor_remind doctorRemind,
+		srt.estimation_star_level starLevel,srt.doctor_id doctorId,tri.trans_date transDate,tri.trans_desc transDesc from service_resp_task srt
+		left join task_type tt on tt.id=srt.task_type_id
+		left join user_detail ud on ud.user_id=srt.user_id
+		left join trans_records_info tri on tri.id=srt.trans_records_info_id
+		<where>
+			<if test="doctorId !=null">
+				srt.doctor_id=#{doctorId}
+			</if>
+			<if test="userId !=null">
+				and srt.user_id=#{userId}
+			</if>
+			<if test="taskStatus !=null">
+				and srt.task_status=#{taskStatus}
+			</if>
+			<if test="taskTypeId!=null">
+				and srt.task_type_id=#{taskTypeId}
+			</if>
+			<if test="taskNumber !=null and taskNumber !=''">
+				and srt.task_number like CONCAT(CONCAT('%', #{taskNumber}), '%')
+			</if>
+			<if test="beforeState !=null ">
+				and srt.task_status&lt;#{beforeState}
+			</if>
+			<choose>
+				<when test="startDate!=null and endDate!=null">
+					and srt.applied_date BETWEEN #{startDate} and #{endDate}
+				</when>
+				<otherwise>
+					<if test="startDate!=null">
+						and srt.applied_date &gt; #{startDate}
+					</if>
+					<if test="endDate!=null">
+						and srt.applied_date &lt; #{endDate}
+					</if>
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	<select id="getTaskProcessInfo" parameterType="int" resultType="map">
+		select ps.`name` serviceName,vus.create_time createTime from v_user_service_used_records  vus
+		left join user_service us on us.id=vus.user_service_id
+		left join product_service ps on ps.id=us.product_service_id
+		where vus.service_resp_task_id=#{id}
+		order by createTime desc
+	</select>
+	
+	<resultMap type="map" id="respDetailMap">
+		<result column="id" property="id"/>
+		<collection property="transTreatDetailyList" column="id" javaType="list" select="getTransList"/>
+		<collection property="imageConsultationDetailyList" column="id" javaType="list" select="getImageList"/>
+		<collection property="formNotExistDetailyList" column="id" javaType="list" select="getNotExistList"/>
+	</resultMap>
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.service.resp.ServiceRespTask" resultMap="respDetailMap">
+		select srt.id,srt.task_status taskStatus,srt.task_number taskNumber,tt.id typeId,tt.task_name taskName,srt.service_msg_content content,srt.user_id userId,
+		ud.`name` userName,srt.applied_date appliedDate,srt.last_remind_time lastRemindTime,srt.accept_date acceptDate,srt.doctor_remind doctorRemind,u.wechat_id wechatId,
+		srt.estimation_star_level starLevel,srt.doctor_id doctorId,tri.trans_date transDate,tri.trans_desc transDesc from service_resp_task srt
+		left join task_type tt on tt.id=srt.task_type_id
+		left join user_detail ud on ud.user_id=srt.user_id
+		left join user u on u.id=srt.user_id
+		left join trans_records_info tri on tri.id=srt.trans_records_info_id
+		where srt.id=#{id} 
+	</select>
+	
+<select id="getTransList" parameterType="int" resultType="map">
+	select ttd.id,ttd.user_service_id userServiceId,ttd.service_resp_task_id taskId,ttd.doctor_id doctorId,srt.user_id userId,
+	srt.task_number taskNumber,ttd.trans_treat_number transTreatNumber,ud.`name` userName,ud.contact,dd.`name` doctorName,srt.applied_date appliedDate,
+	ttd.trans_date transDate,ps.`name` serviceName,st.`name` serviceTypeName,yci.yuyue_date yuyueDate,u.phone,
+	ttd.`status`,fdd.`name` fromDoctorName,d.doctor_level_id doctorLevelId,dl.doctor_level_name doctorLevelName
+	from trans_treat_detaily ttd
+	left join yuyue_count_info yci on yci.id=ttd.yuyue_count_info_id
+	left join user_service us on us.id=ttd.user_service_id
+	left join product_service ps on ps.id=us.product_service_id
+	left join service_type st on st.id=ps.service_type_id
+	left join service_resp_task srt on srt.id=ttd.service_resp_task_id
+	left join user_detail ud on ud.user_id=srt.user_id
+	left join user u on u.id=ud.user_id
+	left join doctor d on d.id=ttd.doctor_id
+	left join doctor fd on fd.id=ttd.from_doctor_id
+	left join doctor_level dl on d.doctor_level_id=dl.id
+	left join doctor_detail dd on dd.doctor_id=ttd.doctor_id
+  left join doctor_detail fdd on fdd.doctor_id=ttd.from_doctor_id
+	where ttd.service_resp_task_id=#{id} order by status
+	</select>
+<select id="getImageList" parameterType="int" resultType="map">
+	select icd.id,icd.user_service_id userServiceId,icd.service_resp_task_id taskId,icd.doctor_id doctorId,srt.user_id userId,
+	srt.task_number taskNumber,icd.trans_treat_number transTreatNumber,ud.`name` userName,ud.contact,dd.`name` doctorName,srt.applied_date appliedDate,
+	icd.trans_date transDate,ps.`name` serviceName,st.`name` serviceTypeName,u.phone,
+	icd.`status`,fdd.`name` fromDoctorName,d.doctor_level_id doctorLevelId,dl.doctor_level_name doctorLevelName
+	from image_consultation_detaily icd
+	left join user_service us on us.id=icd.user_service_id
+	left join product_service ps on ps.id=us.product_service_id
+	left join service_type st on st.id=ps.service_type_id
+	left join service_resp_task srt on srt.id=icd.service_resp_task_id
+	left join user_detail ud on ud.user_id=srt.user_id
+	left join user u on u.id=ud.user_id
+	left join doctor d on d.id=icd.doctor_id
+	left join doctor fd on fd.id=icd.from_doctor_id
+	left join doctor_level dl on d.doctor_level_id=dl.id
+	left join doctor_detail dd on dd.doctor_id=icd.doctor_id
+  left join doctor_detail fdd on fdd.doctor_id=icd.from_doctor_id
+	where icd.service_resp_task_id=#{id} order by status
+	</select>
+<select id="getNotExistList" parameterType="int" resultType="map">
+	select fned.id,fned.user_service_id userServiceId,fned.service_resp_task_id taskId,srt.user_id userId,
+	srt.task_number taskNumber,ud.`name` userName,dd.`name` doctorName,srt.applied_date appliedDate,
+	fned.create_time createTime,ps.`name` serviceName,st.`name` serviceTypeName,
+	fned.`state`
+	from form_not_exist_detaily fned
+	left join service_resp_task srt on srt.id=fned.service_resp_task_id
+	left join user_service us on us.id=fned.user_service_id
+	left join doctor_detail dd on dd.doctor_id=fned.from_doctor_id
+	left join user_detail ud on ud.user_id=srt.user_id
+	left join product_service ps on ps.id=us.product_service_id
+	left join service_type st on st.id=ps.service_type_id
+	where fned.service_resp_task_id=#{id} order by state
+	</select>
+	
+	<!-- 提醒评价: 修改提醒时间 -->
+	<update id="updateServiceRespTaskRemind" parameterType="org.system.entity.service.resp.ServiceRespTask">
+		UPDATE `service_resp_task` SET id=#{id}
+		<if test="lastRemindTime !=null">
+			,last_remind_time=#{lastRemindTime}
+		</if>
+		where id=#{id}
+	</update>
+	<!-- 用户新增服务响应：查询是否已评价完 -->
+	<select id="getTaskStatusByUnfinished" parameterType="org.system.entity.service.resp.ServiceRespTask" resultType="map">
+		select task_number taskNumber,task_status taskStatus from service_resp_task where user_id=#{userId} and task_status&lt;3
+	</select>
+	
+	<!-- 查询服务响应下的转诊服务是否存在未完成 -->
+	<select id="getUnfinishedTransTreatDetailyList" parameterType="org.system.entity.service.resp.ServiceRespTask" resultType="map">
+		select id from trans_treat_detaily where service_resp_task_id=#{id} and `status` not in(2,4,7) 
+	</select>
+	<!-- 查询服务响应下的影像会诊是否存在未完成 -->
+	<select id="getUnfinishedImageConsultationDetaily" parameterType="org.system.entity.service.resp.ServiceRespTask" resultType="map">
+		select id from image_consultation_detaily where service_resp_task_id=#{id} and `status`  in(1,3) 
+	</select>
+</mapper>

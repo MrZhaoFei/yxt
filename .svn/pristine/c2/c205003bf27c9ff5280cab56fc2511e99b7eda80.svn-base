@@ -1,0 +1,39 @@
+package org.system.service.impl.service.visits;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.visits.TnbFollowupRecords;
+import org.system.mapper.service.visits.TnbFollowupRecordsMapper;
+import org.system.service.iface.service.visits.ITnbFollowupRecordsService;
+
+@Service
+public class TnbFollowupRecordsService implements ITnbFollowupRecordsService{
+
+	@Resource
+	private TnbFollowupRecordsMapper mapper;
+	
+	@Override
+	public int insertTnbFollowupRecords(TnbFollowupRecords tnbFollowupRecords) {
+		return mapper.insert(tnbFollowupRecords);
+	}
+
+	@Override
+	public int updateTnbFollowupRecords(TnbFollowupRecords tnbFollowupRecords) {
+		return mapper.update(tnbFollowupRecords);
+	}
+
+	@Override
+	public List<Map<String, Object>> getTnbFollowupRecords(TnbFollowupRecords tnbFollowupRecords) {
+		return mapper.queryAll(tnbFollowupRecords);
+	}
+
+	@Override
+	public Map<String, Object> getTnbFollowupRecordsDetail(TnbFollowupRecords tnbFollowupRecords) {
+		return mapper.queryOne(tnbFollowupRecords);
+	}
+
+}

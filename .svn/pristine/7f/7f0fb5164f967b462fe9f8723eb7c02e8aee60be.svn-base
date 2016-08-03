@@ -1,0 +1,98 @@
+package org.system.entity.service.transfer;
+
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.utils.spring.Groups;
+
+public class ImageConsultationRecordsInfo extends BaseEntity {
+	private Integer id;
+
+	private Integer srcDoctorId;
+
+	private Integer descDoctorId;
+
+	private Integer status;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date transTreatDate;
+
+	private Integer imageConsultationDetailyId;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date endDate;
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getSrcDoctorId() {
+		return srcDoctorId;
+	}
+
+	public void setSrcDoctorId(Integer srcDoctorId) {
+		this.srcDoctorId = srcDoctorId;
+	}
+
+	public Integer getDescDoctorId() {
+		return descDoctorId;
+	}
+
+	public void setDescDoctorId(Integer descDoctorId) {
+		this.descDoctorId = descDoctorId;
+	}
+
+	public Date getTransTreatDate() {
+		return transTreatDate;
+	}
+
+	public void setTransTreatDate(Date transTreatDate) {
+		this.transTreatDate = transTreatDate;
+	}
+
+	public Integer getImageConsultationDetailyId() {
+		return imageConsultationDetailyId;
+	}
+
+	public void setImageConsultationDetailyId(Integer imageConsultationDetailyId) {
+		this.imageConsultationDetailyId = imageConsultationDetailyId;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class,
+			TransTreatDetaily.getTransTreatDetailyByUserList.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class,
+			TransTreatDetaily.getTransTreatDetailyByUserList.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+}

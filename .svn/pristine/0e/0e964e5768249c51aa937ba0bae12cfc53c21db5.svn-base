@@ -1,0 +1,25 @@
+package org.system.service.iface.self;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.self.SelfTestTitle;
+
+
+public interface ISelfTestTitleService {
+
+    int insertSelfTestTitle(SelfTestTitle selfTestTitle);
+
+    int deleteSelfTestTitle(SelfTestTitle selfTestTitle);
+    
+    int updateSelfTestTitle(SelfTestTitle selfTestTitle);
+    
+    Map<String,Object> getSelfTestTitleDetail(SelfTestTitle selfTestTitle);
+
+    Map<String,Object> getSelfTestTitleByFiled(SelfTestTitle selfTestTitle);
+    
+    List<Map<String,Object>> getSelfTestTitles(SelfTestTitle selfTestTitle);
+    
+    public  List<Map<String, Object>>getAllInformation(SelfTestTitle selfTestTitle);
+    
+}

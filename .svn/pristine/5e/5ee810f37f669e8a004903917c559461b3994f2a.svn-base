@@ -1,0 +1,59 @@
+package org.system.entity.user;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.hibernate.validator.constraints.NotBlank;
+import org.utils.spring.Groups;
+
+public class UserFollow extends BaseEntity {
+
+	
+	public interface deleteFollow{}
+	
+	@NotNull(message = "{user.id.notnull.valid}", groups = { Groups.Insert.class, Groups.Delete.class })
+	private Integer userId;
+
+	@NotBlank(message = "{follow.id.notnull.valid}", groups = { Groups.Insert.class, Groups.Delete.class,Groups.Other.class,deleteFollow.class })
+	private String followId;
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getFollowId() {
+		return followId;
+	}
+
+	public void setFollowId(String followId) {
+		this.followId = followId;
+	}
+
+	public List<Integer> getFollowIds() {
+		String[] str = this.followId.split(",");
+		List<Integer> temp = new ArrayList<>();
+		for (int i = 0; i < str.length; i++) {
+			temp.add(Integer.valueOf(str[i]));
+		}
+		return temp;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

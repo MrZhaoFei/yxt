@@ -1,0 +1,27 @@
+#\u6570\u636E\u5E93\u8FDE\u63A5
+driver=com.mysql.jdbc.Driver
+#\u4E91\u7AEF\u670D\u52A1\u5668\u8FDE\u63A5
+#url=VjG9ty54tsrAalth80JmTEbqmfO/7uU9kB82jlxC55zxquvLNEYAsBBTf3b++nhyUZERvK3jb0VqFpnhJF0Whf1k7QSvjxxY1FaNlCT+Vz5cwk3kNBUfUHZ5EcLPNLOl
+#user=nb3zhUDgeeA=
+#password=x4ytkpujQAuAY/8uUQj4iw==
+
+
+
+# 192.168.1.106
+url=VjG9ty54tsoo3zRPWoHjhE7JX1sYerebTXS5YfD8Hbq90UtCd2zbvHZ/MOwKkv9FBO6K7jDzHF8AOrZxLwU3/gRQHRtUOpMZDchSR0LYarDoSuUUZlXRMf1k7QSvjxxYh/1bwMwOoVg=
+user=nb3zhUDgeeA=
+password=ER+4rzOieO4=
+
+#192.168.1.111
+#url=VjG9ty54tsoo3zRPWoHjhE7JX1sYereb6E/PoqzHEmfDttGqw3ah7zXdbyK/85IYEFhy+Jf4cDj7uw+MFopNM1N3yO3+jpvzYZo1Ci56aY3DgZ3w3rN1TaPjFFvY9MjhbIiZSFYE2Ns=
+#user=nb3zhUDgeeA=
+#password=ER+4rzOieO4=
+
+#\u6587\u4EF6\u670D\u52A1\u5668\u914D\u7F6E  
+store.account=admin
+store.password=123456
+store.publicKey=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDC1FOh0jnud2NK+z2gemMYlVb36LsAOnEMs855NUR4OZd9k5kiWdmaifL8li6DaVyP/pMpnVdK1fymt2UzSejtswCDGEtqGo8tCicr9QEqvzDGy7w0+lmnztd7NbTTlabrPpHYL1CKpuhUaS3ptGfVLqae3bUQZeaT2GCM+x9/TwIDAQAB
+#\u672C\u5730 \u548C\u674E\u743C\u6D4B\u8BD5
+store.url=http://company.99kst.com:10081
+#\u4E91\u7AEF
+#store.url=http://service.99kst.com:10081

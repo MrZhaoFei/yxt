@@ -1,0 +1,7 @@
+package org.system.mapper.sys;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.sys.SysAbout;
+
+public interface SysAboutMapper extends IBaseMapper<SysAbout> {
+}

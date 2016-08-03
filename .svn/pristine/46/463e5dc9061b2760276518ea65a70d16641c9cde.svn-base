@@ -1,0 +1,64 @@
+package org.system.controller.iface.service.visits;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.visits.GxyFollowupDragRecords;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IGxyFollowupDragRecordsController {
+
+	/**
+	 * 新增高血压随访用药记录
+	 * 
+	 * @param gxyFollowupRecords
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/gxyFollowupDragRecords" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertGxyFollowupDragRecords(
+			@Validated({ Groups.Insert.class }) GxyFollowupDragRecords gxyFollowupDragRecords, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	/**
+	 * 修改高血压随访 用药记录
+	 * @param gxyFollowupDragRecordsId
+	 * @param gxyFollowupDragRecords
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/gxyFollowupDragRecords/{recordId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updateGxyFollowupDragRecords(@PathVariable("recordId") Integer gxyFollowupDragRecordsId,
+			@Validated({ Groups.Update.class }) GxyFollowupDragRecords gxyFollowupDragRecords, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+
+	/**
+	 * 删除 高血压随访 用药记录
+	 * @param gxyFollowupDragRecordsId
+	 * @param gxyFollowupDragRecords
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/gxyFollowupDragRecords/{recordId}" }, method = RequestMethod.DELETE)
+	@ResponseBody
+	public Map<String, Object> deleteGxyFollowupDragRecords(@PathVariable("recordId") Integer gxyFollowupDragRecordsId,
+			GxyFollowupDragRecords gxyFollowupDragRecords, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	
+	
+	
+}

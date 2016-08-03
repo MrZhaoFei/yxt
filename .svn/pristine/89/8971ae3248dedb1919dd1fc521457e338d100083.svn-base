@@ -1,0 +1,14 @@
+package org.system.service.iface.sys;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.sys.SysAbout;
+
+public interface ISysAboutService {
+
+	public List<Map<String, Object>> getSysAboutList(SysAbout sysAbout);
+
+	public Map<String, Object> getSysAboutDetail(SysAbout sysAbout);
+
+}

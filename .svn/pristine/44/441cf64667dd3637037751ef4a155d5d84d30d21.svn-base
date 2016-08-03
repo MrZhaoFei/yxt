@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head> 
+  <base href="/yxt-admin/" /> 
+  <title>服务类型列表</title> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+  <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Expires" CONTENT="0">
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/gray/easyui.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="js/trumbowyg/design/css/trumbowyg.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/jquery.flex-images.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/icon/font-awesome.min.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/webuploader.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/style.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/web.css?ver=1001" /> 
+  <script type="text/javascript" src="js/jquery.min.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/easyui/jquery.easyui.min.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/easyui/extend.easyui.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/jquery.flex-images.min.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/trumbowyg/trumbowyg.min.js?ver=1001"></script> 
+  <script type="text/javascript">
+  $(function() {
+	  /*初始化控件*/
+	  $('#main_table').datagrid({
+	    method: 'get',
+	    url: '/yxt-admin/admin/serviceType?ran=' + Math.random(),
+	    toolbar: '#seach',
+	    pagination: true,
+	    fit: true,
+	    pageSize:20,
+	    fitColumns: true,
+	    border: false,
+	    rownumbers: true,
+	    singleSelect: true,
+	    loadFilter: function(data) {
+	    	if(data.stateCode=='205'){
+	    		top.location.href="/yxt-admin/adminLogin.html";
+	    		return;
+	    	}else if(data.stateCode=='203'){
+	    		return {total:0,rows:[]};
+	    	}
+	      return data.data;
+	    }
+	  });
+	});
+  
+  /*查询  */
+	function query() {
+	  $('#main_table').datagrid('load', { 
+		  name: $('#PackageTypeName').textbox('getValue')
+		/*   gdPrefix:$('#gdPrefix').textbox('getValue') */
+	  });
+	}
+	
+	/*清除查询条件  */
+	function clear() {
+	  $('#PackageTypeName').textbox('clear')
+	 /*  $('#gdPrefix').textbox('clear') */
+	}
+	/*刷新当前页面  */
+	 function re(){
+	   	  history.go(0) 
+	     }
+	/* 操作 */
+	function _opformatter(value, row, index) {
+	  var a = '&nbsp;<a href="javascript:edit(\'' + index + '\',' + row.id + ')" title="编辑和详情"><i class="fa fa-pencil"></i></a>';	
+	/* var c = '&nbsp;&nbsp;&nbsp;<a href="javascript:del(\'' + row.id + '\')" title="删除"><i class="fa fa-trash"></i></a>'; */
+	  return a ;
+	}
+	
+	// 是否是第三方服务
+	function _thirdPartyformatter(value, row, index) {
+		  if (value == 1) {
+		    return "是";
+		  }if (value == 0){
+		  return "否";
+			  
+		  }
+		}
+	
+	// 是否使用
+	function _isUseformatter(value, row, index) {
+		  if (value == 1) {
+		    return "使用";
+		  }if (value == 0){
+		  return "停用";
+			  
+		  }
+		}
+	
+	/*新增  */
+	function add() {
+	  $('#form').form('reset');
+	  $('#dialog').dialog({
+		    title: '添加信息',
+		    width: 400,
+		    height: 320,
+		    closed: false,
+		    modal: true,
+		    buttons: [{
+		      text: '确定',
+		      handler: function() {
+		    	//  var options1=$("#packageSourceId option:selected");
+		        var v = $('#form').form('validate');
+		        if (v) {      	
+		        	 $.ajax({
+		                  type: 'POST',
+		                  url:'/yxt-admin/admin/serviceType/insert',
+		                  data:{
+		                	  name:$('#name').textbox('getValue'),
+		  	            	  desc:$('#desc').textbox('getValue'),
+		  	            	/* gdPrefix:$('#gd_prefix').textbox('getValue'), */
+		  	            	  oderBy:$('#oderBy').numberbox('getValue'),
+		  	            	  thirdParty:$("#thirdParty").combobox('getValue'),
+		  	            	 issUse:$("#issUse").combobox('getValue')
+		                  },
+		               
+		                  success: function(data) {
+		                    if (data.stateCode == 200) {
+		                      $('#dialog').dialog('close');
+		                      $('#main_table').datagrid('reload');
+		                      $.messager.show({
+		                        title: '提示消息',
+		                        msg: data.message,
+		                        timeout: 5000,
+		                        showType: 'slide'
+		                      });
+		                    } else {
+		                      $.messager.show({
+		                        title: '提示',
+		                        msg: data.message
+		                      });
+		                    }
+		                  },
+		                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                    $.messager.show({
+		                      title: '提示',
+		                      msg: '请求发生错误请联系开发者'
+		                    });
+		                  }
+		                });
+		               
+		          }
+		        }
+		      },
+		    
+		    
+		    {
+		      text: '取消',
+		      handler: function() {
+		        $('#dialog').dialog('close');
+		      }
+		    }]
+		  
+		  
+		  });
+	}
+	
+	
+	
+	/* 修改/查看信息 */
+	function edit(index, id) {
+	  $('#form').form('load',$('#main_table').datagrid('getData').rows[index]);
+	  $.get('/yxt-admin/admin/serviceType/' + id + '/detail',
+	  function(data) {
+	    $('#form').form('load', data.data);
+	  });
+	  $(".isUse").show();
+	  $('#dialog').dialog({
+	    title: '修改/查看信息',
+	    width: 400,
+	    height: 320,
+	    closed: false,
+	    modal: true,
+	    buttons: [{
+	      text: '确定',
+	      handler: function() {
+	        var v = $('#form').form('validate');
+	        if (v) {
+	          //AJAX提交
+	          $.ajax({
+	            type: 'put',
+	            url: '/yxt-admin/admin/serviceType/' + id + '/update',
+	            data:{
+	            	  name:$('#name').textbox('getValue'), 
+  	            	  desc:$('#desc').textbox('getValue'),
+  	            	/*   gdPrefix:$('#gd_prefix').textbox('getValue'), */
+  	            	  oderBy:$('#oderBy').numberbox('getValue'),
+  	            	  thirdParty:$("#thirdParty").combobox('getValue'),
+  	            	  issUse:$("#issUse").combobox('getValue')
+	            },
+	            success: function(data) {
+	              if (data.stateCode == 200) {
+	                $('#dialog').dialog('close');
+	                $('#form').form('reset');
+	                $('#main_table').datagrid('reload');
+	                $.messager.show({
+	                  title: '提示消息',
+	                  msg: data.message,
+	                  timeout: 5000,
+	                  showType: 'slide'
+	                });
+	              } else {
+	                $.messager.show({
+	                  title: '提示',
+	                  msg: data.message
+	                });
+	              }
+	            },
+	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+	              $.messager.show({
+	                title: '提示',
+	                msg: '请求发生错误请联系开发者'
+	              });
+	            }
+	          });
+	        }
+	      }
+	    },
+	    {
+	      text: '取消关闭',
+	      handler: function() {
+	        $('#dialog').dialog('close');
+	      }
+	    }]
+	  });
+	}
+	/* 删除 */
+	function del(id) {
+	  $.messager.confirm('确认', '您确认想要删除记录吗？',
+	  function(r) {
+	    if (r) {
+	      $.ajax({
+	        type: 'delete',
+	        url: '/yxt-admin/admin/serviceType/' + id + '/delete',
+	        success: function(data) {
+	          if (data.stateCode == 200) {
+	            $('#main_table').datagrid('reload');
+	            $.messager.show({
+	              title: '提示消息',
+	              msg: data.message,
+	              timeout: 5000,
+	              showType: 'slide'
+	            });
+	          } else {
+	            $.messager.show({
+	              title: '提示',
+	              msg: data.message
+	            });
+	          }
+	        },
+	        error: function(XMLHttpRequest, textStatus, errorThrown) {
+	          $.messager.show({
+	            title: '提示',
+	            msg: '请求发生错误请联系开发者'
+	          });
+	        }
+	      });
+	    }
+	  });
+	}
+</script> 
+ </head> 
+ <body> 
+  <!-- 全局日历控件 --> 
+  <!-- <div id="sc" class="easyui-calendar" data-options="validator: function(date){return date<=new Date();}"></div> --> 
+  <!-- 搜索栏 --> 
+  <div id="seach"> 
+   <label>服务名称:</label> 
+   <input id="PackageTypeName" class="easyui-textbox" style="width: 120px;" /> 
+  <!--  <label>服务工单号前缀</label>
+    <input id="gdPrefix" class="easyui-textbox" style="width: 120px;" />  -->
+   <a href="javascript:query()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+   <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-ban"></i> 清除搜索条件</a>
+   <a href="javascript:add()" class="easyui-linkbutton"><i class="fa fa-plus"></i> 新增</a>
+   <a href="javascript:re()" class="easyui-linkbutton"><i class="fa  fa-refresh"></i> 刷新当前页面</a>  
+  </div> 
+  <!-- 内容表格 --> 
+  <table id="main_table"> 
+   <thead> 
+    <tr>
+      <th data-options="field:'id',width:10">id</th>  
+      <th data-options="field:'name',width:90">服务类型名称</th> 
+      <th data-options="field:'thirdParty',width:90 ,formatter:_thirdPartyformatter">是否是第三方服务</th> 
+      <th data-options="field:'issUse',width:90,formatter:_isUseformatter">是否停用</th>
+      <th data-options="field:'de',width:90">服务类型描述</th> 
+      <th data-options="field:'img',align:'center',width:30,formatter:_opformatter">操作</th> 
+    </tr> 
+   </thead> 
+  </table> 
+ 
+  <!-- 添加 --> 
+  <div id="dialog">  
+   <form id="form" method="post"> 
+    <table class="table-edit" width="100%" align="center"> 
+     <tbody> 
+      <tr> 
+       <td style="width: 110px;">服务类型名称</td> 
+       <td><input class="easyui-textbox" name="name" id="name"style="width: 200px" data-options="required:true,validType:'length[0,32]',missingMessage:'服务类型名称不能为空'"/>
+       </td> 
+       </tr>
+     
+      <!--  <tr> 
+       <td style="width: 110px;">服务工单号前缀</td> 
+       <td><input class="easyui-textbox" name="gd_prefix" id="gd_prefix" style="width: 200px" data-options="required:true,validType:'length[0,32]',missingMessage:'服务工单号前缀不能为空'"/>
+       </td> 
+       </tr> -->
+       <tr> 
+       <td style="width: 100px;">是否是第三方服务</td> 
+       <td>
+       <select class="easyui-combobox" name="thirdParty" id="thirdParty" style="width:200px;" data-options="editable:false,panelHeight:'auto'">   
+		    <option value="1">是</option>   
+		    <option value="0">否</option>   
+		</select> 
+       </td> 
+      </tr> 
+     <tr class="isUse" >  
+       <td style="width: 100px;">是否启用</td> 
+       <td>
+       <select class="easyui-combobox" name="issUse" id="issUse" style="width:200px;" data-options="editable:false,panelHeight:'auto'">   
+		    <option value="1">启用</option>   
+		    <option value="0">停用</option>   
+		</select> 
+       </td> 
+      </tr>
+      <tr> 
+       <td style="width: 110px;">排序字段</td> 
+       <td><input class="easyui-numberbox" name="oderBy" id="oderBy" style="width: 200px"  prompt="请填写整数数字" />
+       </td> 
+       </tr>  
+       <tr> 
+       <td style="width: 110px;">服务类型描述</td> 
+       <td><input class="easyui-textbox" name="desc" id="desc" style="width: 200px;height:50px"  data-options="multiline:true,validType:'length[0,512]'"/>
+       </td> 
+       </tr> 
+     </tbody> 
+    </table> 
+   </form> 
+  </div>  
+ </body>
+</html>

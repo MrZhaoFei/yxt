@@ -1,0 +1,84 @@
+package org.system.controller.iface.service.resp;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.resp.ServiceRespProcessInfo;
+import org.utils.spring.Groups;
+
+/**
+ * @ClassName IServiceRespProcessInfoController
+ * @author <font color="red"><b>LiuMrLiu</b></font>
+ * @date 2016年3月21日 上午11:08:04
+ * @version 1.0
+ * @description 服务包类型
+ */
+@RequestMapping(value = { "/common" })
+public interface IServiceRespProcessInfoController {
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param serviceRespProcessInfo
+	 * @param result
+	 * @return
+	 * @date 2016年3月18日 下午5:30:14
+	 * @version 1.0
+	 * @description 新增服务包类型
+	 */
+	@RequestMapping(value = "/serviceRespProcessInfo", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("serviceRespProcessInfo:insert")
+	public Map<String, Object> insertServiceRespProcessInfo(@Validated({ Groups.Insert.class }) ServiceRespProcessInfo serviceRespProcessInfo,
+			BindingResult result);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param serviceRespProcessInfoId
+	 * @param serviceRespProcessInfo
+	 * @param result
+	 * @return
+	 * @date 2016年3月18日 下午5:30:26
+	 * @version 1.0
+	 * @description 修改服务包类型
+	 */
+	@RequestMapping(value = "/serviceRespProcessInfo/{serviceRespProcessInfoId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("serviceRespProcessInfo:update")
+	public Map<String, Object> updateServiceRespProcessInfo(@PathVariable("serviceRespProcessInfoId") Integer serviceRespProcessInfoId,
+			@Validated({ Groups.Update.class }) ServiceRespProcessInfo serviceRespProcessInfo, BindingResult result);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param serviceRespProcessInfo
+	 * @return
+	 * @date 2016年3月18日 下午5:30:38
+	 * @version 1.0
+	 * @description 服务包类型列表
+	 */
+	@RequestMapping(value = "/serviceRespProcessInfos", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("serviceRespProcessInfo:list")
+	public Map<String, Object> getServiceRespProcessInfoList(@Validated({ Groups.Select.class }) ServiceRespProcessInfo serviceRespProcessInfo,
+			BindingResult result);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param serviceRespProcessInfoId
+	 * @param serviceRespProcessInfo
+	 * @return
+	 * @date 2016年3月18日 下午5:30:48
+	 * @version 1.0
+	 * @description 服务包类型详情
+	 */
+	@RequestMapping(value = "/serviceRespProcessInfo/{serviceRespProcessInfoId}", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("serviceRespProcessInfo:detail")
+	public Map<String, Object> getServiceRespProcessInfoDetail(@PathVariable("serviceRespProcessInfoId") Integer serviceRespProcessInfoId,
+			ServiceRespProcessInfo serviceRespProcessInfo);
+}

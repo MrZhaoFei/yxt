@@ -1,0 +1,23 @@
+package org.system.service.iface;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.DoctorType;
+
+
+public interface IDoctorTypeService {
+	
+	public int insertDoctorType(DoctorType doctorType);
+	
+	public int updateDoctorType(DoctorType doctorType);
+	
+	public int deleteDoctorType(DoctorType doctorType);
+	
+	public List<Map<String, Object>> getDoctorTypeList(DoctorType doctorType);
+	
+	public Map<String, Object> getDoctorTypeDetail(DoctorType doctorType);
+	
+	public Map<String, Object> getDoctorTypeByFiled(DoctorType doctorType);
+
+}

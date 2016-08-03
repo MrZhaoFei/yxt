@@ -1,0 +1,74 @@
+package org.system.entity.service;
+
+
+
+import org.core.entity.BaseEntity;
+
+public class ServiceType extends BaseEntity {
+	private Integer id;
+	private String name;
+	private String desc;
+	private String gdPrefix;
+	private Integer thirdParty;
+	private Integer oderBy;
+	private Integer issUse;
+
+	public Integer getThirdParty() {
+		return thirdParty;
+	}
+	public void setThirdParty(Integer thirdParty) {
+		this.thirdParty = thirdParty;
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDesc() {
+		return desc;
+	}
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+	
+	
+	public String getGdPrefix() {
+		return gdPrefix;
+	}
+	public void setGdPrefix(String gdPrefix) {
+		this.gdPrefix = gdPrefix;
+	}
+	
+	
+	public Integer getOderBy() {
+		return oderBy;
+	}
+	public void setOderBy(Integer oderBy) {
+		this.oderBy = oderBy;
+	}
+	
+	public Integer getIssUse() {
+		return issUse;
+	}
+	public void setIssUse(Integer issUse) {
+		this.issUse = issUse;
+	}
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+	
+
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles/default.css?ver=v1.001">
+    <script type="text/javascript" src="scripts/jquery-1.12.1.min.js?ver=v1.001"></script>
+    <script type="text/javascript" src="scripts/webuploader.js?ver=v1.001"></script>
+    <script type="text/javascript" src="scripts/uploader.js?ver=v1.001"></script>
+    <title>Title</title>
+    <script type="text/javascript">
+        /* $(function () {
+         var fileup = new NebFiles.FileUp({
+         // 文件类型（默认是图片，如果上传图片，可不设置）
+         accept: {
+         title: 'Images',
+         extensions: 'jpg,png,bmp,gif',
+         mimeTypes: 'image/!*'
+         },
+         // 界面出现的上传提示，默认就是图片，可不设置
+         filename: "图片",
+         // 限止数量（默认是300）
+         fileNum: 100,
+         // 上传完成后执行（只要有新图片上传都会执行）
+         OnUploadFinish: function () {
+         alert("上传成功！");
+
+         // 这里是图片框示例，上传了图片就会在后面出现图片框
+         // 取已上传文件的ID（返回格式["objectId","objectId"....]，如果未上传任何文件，数组长度为0）
+         var files = fileup.GetFiles();
+         var imgsbox = new NebFiles.ImagesBox();
+         // 将图片框放某标签里面
+         imgsbox.AddTo($(document.body));
+         imgsbox.SetImages(files);
+         }
+         });
+         // 将上传框放某标签里面
+         fileup.AddTo($(document.body));
+         });*/
+
+
+        $(function () {
+            var fileup = new NebFiles.FileUp({
+                show: true,
+                mode: "view", //　模式,view预览模式  up上传模式，默认up
+                OnBegin: function () {
+                    // 每次开始上传图片或文件时执行
+                },
+                OnEnd: function () {
+                    // 每次结束所有图片或文件的上传时执行
+                }
+            });
+            // 直接将数据库中已有的ID加入到控件
+            fileup.AddFiles(["574d4ccf2df1b81b5c13248d", "575517922df1b8136881e92b", "575517902df1b8136881e929"]);
+            // 将上传框放某标签里面
+            fileup.AddTo($(document.body));
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

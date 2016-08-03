@@ -1,0 +1,31 @@
+package org.system.mapper.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.ServicePack;
+
+public interface ServicePackMapper extends IBaseMapper<ServicePack>{
+	/**
+	 * 需要查询产品发布管理是是否存在这个产品包
+	 * @param servicePack
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> queryServicePackCondition(ServicePack servicePack); 
+	/**
+	 * 基础产品包是否被用户购买
+	 * @param servicePack
+	 * @return int
+	 * 
+	 */
+	public int queryIsBuyByUser(ServicePack servicePack);
+	
+	/**
+	 * 当用户购买了这个基础产品服务包之后的修改(可以修改图片，状态，描述)
+	 * @param servicePack
+	 * @return int
+	 */
+	public int updatePic(ServicePack servicePack);
+
+}

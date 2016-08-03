@@ -1,0 +1,58 @@
+package org.system.entity.content;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+public class Content extends BaseEntity {
+
+	
+	private Integer id;
+	
+	private String name;
+	
+	private String remark;
+	//@NotNull(message = "{contentType.id.notnull.valid}", groups = {Groups.Select.class})
+	private Integer contentTypeId;
+	
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public Integer getContentTypeId() {
+		return contentTypeId;
+	}
+	public void setContentTypeId(Integer contentTypeId) {
+		this.contentTypeId = contentTypeId;
+	}
+	
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+	
+	
+}

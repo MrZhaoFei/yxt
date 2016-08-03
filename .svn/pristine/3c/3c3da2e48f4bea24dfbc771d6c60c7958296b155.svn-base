@@ -1,0 +1,76 @@
+package org.system.controller.iface.hospital;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.hospital.Hospital;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IHospitalController {
+	
+	/**
+	 * 新增医疗机构
+	 * 
+	 * @param hospital
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/hospital" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertHospital(
+			@Validated({ Groups.Insert.class }) Hospital hospital, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 查询医疗机构详情
+	 * 
+	 * @param hospiDepartDoctorRelationId
+	 * @param hospital
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/user/hospital/{id}" }, method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getHospitalDetail(@PathVariable("id") Integer hospiDepartDoctorRelationId, Hospital hospital, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 查询医疗机构列表
+	 * 
+	 * @param hospital
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/hospitals", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getHospitalList(@Validated({ Groups.Select.class }) Hospital hospital,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	/**
+	 * 删除医疗机构
+	 * 
+	 * @param hospiDepartDoctorRelationId
+	 * @param hospital
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/hospital/{id}" }, method = RequestMethod.DELETE)
+	@ResponseBody
+	public Map<String, Object> deleteHospital(@PathVariable("id") Integer hospiDepartDoctorRelationId, Hospital hospital, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	
+}

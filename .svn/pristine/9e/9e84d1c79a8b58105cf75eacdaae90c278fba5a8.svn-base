@@ -1,0 +1,49 @@
+package org.system.service.impl.content;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.content.ContentType;
+import org.system.mapper.content.ContentTypeMapper;
+import org.system.service.iface.content.IContentTypeService;
+
+@Service
+public class ContentTypeService  implements IContentTypeService {
+    
+	@Resource
+	private ContentTypeMapper contentTypeMapper;
+	
+	@Override
+	public int insertContentType(ContentType contentType) {
+		return contentTypeMapper.insert(contentType);
+	}
+
+	@Override
+	public int deleteContentType(ContentType contentType) {
+		return contentTypeMapper.delete(contentType);
+	}
+
+	@Override
+	public int updateContentType(ContentType contentType) {
+		return contentTypeMapper.update(contentType);
+	}
+
+	@Override
+	public Map<String, Object> getContentTypeDetail(ContentType contentType) {
+		return contentTypeMapper.queryOne(contentType);
+	}
+
+	@Override
+	public Map<String, Object> getContentTypeByFiled(ContentType contentType) {
+		return contentTypeMapper.checkExists(contentType);
+	}
+
+	@Override
+	public List<Map<String, Object>> getContentTypes(ContentType contentType) {
+		return contentTypeMapper.queryAll(contentType);
+	}
+
+}

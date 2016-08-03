@@ -1,0 +1,44 @@
+package org.system.service.impl.contract;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.contract.ContractHistory;
+import org.system.mapper.contract.ContractHistoryMapper;
+import org.system.service.iface.contract.IContractHistoryService;
+@Service
+public class ContractHistoryService implements IContractHistoryService{
+
+	@Resource
+	private ContractHistoryMapper mapper;
+	
+	
+	@Override
+	public Map<String, Object> getContractHistoryByFild(ContractHistory contractHistory) {
+		return mapper.checkExists(contractHistory);
+	}
+
+	@Override
+	public int insertContractHistory(ContractHistory contractHistory) {
+		return mapper.insert(contractHistory);
+	}
+
+	@Override
+	public int updateContractHistory(ContractHistory contractHistory) {
+		return mapper.update(contractHistory);
+	}
+
+	@Override
+	public List<Map<String, Object>> getContractHistoryList(ContractHistory contractHistory) {
+		return mapper.queryAll(contractHistory);
+	}
+
+	@Override
+	public Map<String, Object> getContractHistoryDetail(ContractHistory contractHistory) {
+		return mapper.queryOne(contractHistory);
+	}
+
+}

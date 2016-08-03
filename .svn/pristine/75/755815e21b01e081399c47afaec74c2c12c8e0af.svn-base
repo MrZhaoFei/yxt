@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.user.healthinfo.JwwsHistoryMapper" >
+  <delete id="delete" parameterType="org.system.entity.user.healthinfo.JwwsHistory" >
+    delete from jwws_history
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="org.system.entity.user.healthinfo.JwwsHistory" >
+    insert into jwws_history (jwsbh, wsmc, wssj, 
+      zfbz, bz, update_time, 
+      health_info_id)
+    values (#{jwsbh,jdbcType=VARCHAR}, #{wsmc,jdbcType=VARCHAR}, #{wssj,jdbcType=TIMESTAMP}, 
+      #{zfbz,jdbcType=VARCHAR}, #{bz,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{healthInfoId,jdbcType=BIGINT})
+  </insert>
+  <update id="update" parameterType="org.system.entity.user.healthinfo.JwwsHistory" >
+    update jwws_history set id=#{id}
+     <if test="jwsbh !=null and jwsbh !=''">
+	    	,jwsbh =#{jwsbh}
+	 </if>
+     <if test="wsmc !=null and wsmc !=''">
+	    	,wsmc =#{wsmc}
+	 </if>
+     <if test="wssj !=null ">
+	    	,wssj =#{wssj}
+	 </if>
+     <if test="zfbz !=null and zfbz !=''">
+	    	,zfbz =#{zfbz}
+	 </if>
+     <if test="bz !=null and bz !=''">
+	    	,bz =#{bz}
+	 </if>
+     <if test="updateTime !=null ">
+	    	,update_time =#{updateTime}
+	 </if>
+     <if test="healthInfoId !=null ">
+	    	,health_info_id =#{healthInfoId}
+	 </if>
+    where id = #{id}
+  </update>
+  <select id="queryOne" resultType="map" parameterType="org.system.entity.user.healthinfo.JwwsHistory" >
+    select id, jwsbh, wsmc, wssj, zfbz, bz, update_time updateTime, health_info_id healthInfoId
+    from jwws_history
+    where id = #{id}
+  </select>
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.user.healthinfo.JwwsHistory" >
+    select id, jwsbh, wsmc, wssj, zfbz, bz, update_time updateTime, health_info_id healthInfoId
+    from jwws_history
+    <where>
+	    <if test="healthInfoId !=null ">
+	    	health_info_id =#{healthInfoId}
+	    </if>
+    </where>
+  </select>
+</mapper>

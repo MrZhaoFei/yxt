@@ -1,0 +1,23 @@
+package org.system.service.iface.self;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.self.SelfTestQuestion;
+
+
+public interface ISelfTestQuestionService {
+
+    int insertSelfTestQuestion(SelfTestQuestion selfTestQuestion);
+
+    int deleteSelfTestQuestion(SelfTestQuestion selfTestQuestion);
+    
+    int updateSelfTestQuestion(SelfTestQuestion selfTestQuestion);
+    
+    Map<String,Object> getSelfTestQuestionDetail(SelfTestQuestion selfTestQuestion);
+    
+    Map<String,Object> getSelfTestQuestionByFiled(SelfTestQuestion selfTestQuestion);
+
+    List<Map<String,Object>> getSelfTestQuestions(SelfTestQuestion selfTestQuestion);
+    
+}

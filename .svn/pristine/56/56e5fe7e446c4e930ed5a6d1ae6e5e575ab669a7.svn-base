@@ -1,0 +1,25 @@
+package org.system.entity.service;
+
+import org.core.entity.BaseEntity;
+
+public class PackageType extends BaseEntity {
+    private Integer id;
+
+    private String name;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}

@@ -1,0 +1,7 @@
+package org.system.mapper.contract;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.contract.ContractFeedback;
+
+public interface ContractFeedbackMapper extends IBaseMapper<ContractFeedback> {
+}

@@ -1,0 +1,42 @@
+package org.utils.service;
+
+public enum ServiceEnum{
+	/*
+	 * 通过括号赋值,而且必须有带参构造器和一属性跟方法，否则编译出错 赋值必须是都赋值或都不赋值，不能一部分赋值一部分不赋值
+	 * 如果不赋值则不能写构造器，赋值编译也出错
+	 */
+	JKYL("健康医疗管理", 1,"JKYL"), 
+	SF("随访", 2,"SF"), 
+	ZX("咨询", 3,"ZX"),
+	ZJXP("专家选配", 4,"ZJXP"), 
+	JT24FW("家庭医生24小时服务", 5,"JT24FW"), 
+	YCFW("远程服务", 6,"YCFW"), 
+	YXHZ("影像会诊", 7,"YXHZ"), 
+	FJZZ("分级转诊",8,"FJZZ"), 
+	QTFW("其他服务", 9,"QTFW"),
+	FWXY("服务响应",10,"FWXY"),
+	JKDA("健康档案",11,"JKDA");
+
+	private final int value;
+	private final String name;
+	private final String prefix;
+
+	public int getValue() {
+		return value;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	// 构造器默认也只能是private, 从而保证构造函数只能在内部使用
+	ServiceEnum(String name, int value,String prefix) {
+		this.name = name;
+		this.value = value;
+		this.prefix=prefix;
+	}
+}

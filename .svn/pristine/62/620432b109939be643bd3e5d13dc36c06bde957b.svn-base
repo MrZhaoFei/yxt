@@ -1,0 +1,6 @@
+package org.system.mapper.user.healthinfo;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.user.healthinfo.FamilyHistory;
+
+public interface FamilyHistoryMapper extends IBaseMapper<FamilyHistory> {}

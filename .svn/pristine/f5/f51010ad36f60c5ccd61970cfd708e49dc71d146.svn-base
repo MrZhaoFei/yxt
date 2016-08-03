@@ -1,0 +1,75 @@
+package org.system.controller.iface.service.visits;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.visits.GxyFollowupRecords;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IGxyFollowupRecordsController {
+
+	/**
+	 * 新增随访记录
+	 * 
+	 * @param gxyFollowupRecords
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/gxyFollowupRecords" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertGxyFollowupRecords(
+			@Validated({ Groups.Insert.class }) GxyFollowupRecords gxyFollowupRecords, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 修改随访记录
+	 * 
+	 * @param gxyFollowupRecords
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/gxyFollowupRecords/{recordId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updateGxyFollowupRecords(@PathVariable("recordId") Integer gxyFollowupRecordsId,
+			@Validated({ Groups.Update.class }) GxyFollowupRecords gxyFollowupRecords, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 查询用户随访记录列表
+	 * 
+	 * @param gxyFollowupRecords
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/gxyFollowupRecordss" }, method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getGxyFollowupRecordsList(
+			@Validated({ Groups.Select.class }) GxyFollowupRecords gxyFollowupRecords, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 查询随访记录详情
+	 * 
+	 * @param gxyFollowupRecordsId
+	 * @param gxyFollowupRecords
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/gxyFollowupRecords/{recordId}" }, method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getGxyFollowupRecordsDetail(@PathVariable("recordId") Integer gxyFollowupRecordsId,
+			GxyFollowupRecords gxyFollowupRecords, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+}

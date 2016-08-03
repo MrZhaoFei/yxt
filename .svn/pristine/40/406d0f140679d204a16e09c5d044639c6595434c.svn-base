@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.doctor.RoleMapper" >
+
+<select id="queryAll"  parameterType="org.system.entity.doctor.Role" resultType="map">
+   select id,pid,name,role_code,remark from role
+</select>
+
+<select id="queryOne"  parameterType="org.system.entity.doctor.Role" resultType="map">
+   select id,pid,name,role_code,remark from role where id=#{id}
+</select>
+
+</mapper>

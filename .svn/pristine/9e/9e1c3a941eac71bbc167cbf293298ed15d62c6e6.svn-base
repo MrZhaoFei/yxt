@@ -1,0 +1,225 @@
+package org.system.entity.service.visits;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.utils.spring.Groups;
+
+public class TnbFollowupDragRecords extends BaseEntity {
+    private Long id;
+
+	@NotNull(message = "{tnbFollowupDragRecords.id.notnull.valid}", groups = { Groups.Insert.class })
+    private Long tnbFollowupRecordsId;
+
+    private String yljgbm;
+
+    private String sfjlbh;
+
+    private String jkdabh;
+
+    private String yybh;
+
+    private String ypbm;
+
+    private String ypmc;
+
+    private String yplb;
+
+    private BigDecimal mcyl;
+
+    private String yldw;
+
+    private BigDecimal zl;
+
+    private String zldw;
+
+    private String yytjdm;
+
+    private String yytjmc;
+
+    private String yypc;
+
+    private String zylbdm;
+
+    private String zylbmc;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date klrq;
+
+    private String zfbz;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getTnbFollowupRecordsId() {
+        return tnbFollowupRecordsId;
+    }
+
+    public void setTnbFollowupRecordsId(Long tnbFollowupRecordsId) {
+        this.tnbFollowupRecordsId = tnbFollowupRecordsId;
+    }
+
+    public String getYljgbm() {
+        return yljgbm;
+    }
+
+    public void setYljgbm(String yljgbm) {
+        this.yljgbm = yljgbm;
+    }
+
+    public String getSfjlbh() {
+        return sfjlbh;
+    }
+
+    public void setSfjlbh(String sfjlbh) {
+        this.sfjlbh = sfjlbh;
+    }
+
+    public String getJkdabh() {
+        return jkdabh;
+    }
+
+    public void setJkdabh(String jkdabh) {
+        this.jkdabh = jkdabh;
+    }
+
+    public String getYybh() {
+        return yybh;
+    }
+
+    public void setYybh(String yybh) {
+        this.yybh = yybh;
+    }
+
+    public String getYpbm() {
+        return ypbm;
+    }
+
+    public void setYpbm(String ypbm) {
+        this.ypbm = ypbm;
+    }
+
+    public String getYpmc() {
+        return ypmc;
+    }
+
+    public void setYpmc(String ypmc) {
+        this.ypmc = ypmc;
+    }
+
+    public String getYplb() {
+        return yplb;
+    }
+
+    public void setYplb(String yplb) {
+        this.yplb = yplb;
+    }
+
+    public BigDecimal getMcyl() {
+        return mcyl;
+    }
+
+    public void setMcyl(BigDecimal mcyl) {
+        this.mcyl = mcyl;
+    }
+
+    public String getYldw() {
+        return yldw;
+    }
+
+    public void setYldw(String yldw) {
+        this.yldw = yldw;
+    }
+
+    public BigDecimal getZl() {
+        return zl;
+    }
+
+    public void setZl(BigDecimal zl) {
+        this.zl = zl;
+    }
+
+    public String getZldw() {
+        return zldw;
+    }
+
+    public void setZldw(String zldw) {
+        this.zldw = zldw;
+    }
+
+    public String getYytjdm() {
+        return yytjdm;
+    }
+
+    public void setYytjdm(String yytjdm) {
+        this.yytjdm = yytjdm;
+    }
+
+    public String getYytjmc() {
+        return yytjmc;
+    }
+
+    public void setYytjmc(String yytjmc) {
+        this.yytjmc = yytjmc;
+    }
+
+    public String getYypc() {
+        return yypc;
+    }
+
+    public void setYypc(String yypc) {
+        this.yypc = yypc;
+    }
+
+    public String getZylbdm() {
+        return zylbdm;
+    }
+
+    public void setZylbdm(String zylbdm) {
+        this.zylbdm = zylbdm;
+    }
+
+    public String getZylbmc() {
+        return zylbmc;
+    }
+
+    public void setZylbmc(String zylbmc) {
+        this.zylbmc = zylbmc;
+    }
+
+    public Date getKlrq() {
+        return klrq;
+    }
+
+    public void setKlrq(Date klrq) {
+        this.klrq = klrq;
+    }
+
+    public String getZfbz() {
+        return zfbz;
+    }
+
+    public void setZfbz(String zfbz) {
+        this.zfbz = zfbz;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+}

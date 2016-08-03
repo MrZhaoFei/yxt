@@ -1,0 +1,25 @@
+package org.system.service.iface.content;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.content.Content;
+
+
+public interface IContentService {
+	
+	public    int insertContent(Content content);
+
+	public    int deleteContent(Content content);
+	
+	public    int deleteContentByContentTypeId(Content content);
+	    
+	public    int updateContent(Content content);
+	    
+	public    Map<String,Object> getContentDetail(Content content);
+	    
+	public    Map<String,Object> getContentByFiled(Content content);
+
+	public   List<Map<String,Object>> getContents(Content content);
+
+}

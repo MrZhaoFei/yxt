@@ -1,0 +1,52 @@
+package org.system.service.impl.service.resp;
+
+
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.resp.FormNotExistDetaily;
+import org.system.entity.service.resp.ServiceRespTask;
+import org.system.mapper.service.resp.FormNotExistDetailyMapper;
+import org.system.service.iface.service.transfer.IFormNotExistDetailyService;
+@Service
+public class FormNotExistDetailyService implements IFormNotExistDetailyService{
+
+	@Resource
+	private FormNotExistDetailyMapper mapper;
+	
+	
+	@Override
+	public Map<String, Object> getFormNotExistDetailyByFild(FormNotExistDetaily formNotExistDetaily) {
+		return mapper.checkExists(formNotExistDetaily);
+	}
+
+	@Override
+	public int insertFormNotExistDetaily(FormNotExistDetaily formNotExistDetaily) {
+		return mapper.insert(formNotExistDetaily);
+	}
+
+	@Override
+	public int updateFormNotExistDetaily(FormNotExistDetaily formNotExistDetaily) {
+		return mapper.update(formNotExistDetaily);
+	}
+
+	@Override
+	public List<Map<String, Object>> getFormNotExistDetailyList(FormNotExistDetaily formNotExistDetaily) {
+		return mapper.queryAll(formNotExistDetaily);
+	}
+
+	@Override
+	public Map<String, Object> getFormNotExistDetailyDetail(FormNotExistDetaily formNotExistDetaily) {
+		return mapper.queryOne(formNotExistDetaily);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUnfinishedFormNotExistDetailyList(ServiceRespTask serviceRespTask) {
+		return mapper.getUnfinishedFormNotExistDetailyList(serviceRespTask);
+	}
+
+}

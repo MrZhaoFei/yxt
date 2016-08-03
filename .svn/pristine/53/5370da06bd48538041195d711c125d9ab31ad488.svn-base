@@ -1,0 +1,159 @@
+package org.system.controller.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.store.file.StoreFactory;
+import org.system.Global;
+import org.system.controller.iface.IAdminUserController;
+import org.system.entity.AdminUser;
+import org.system.message.Message;
+import org.system.service.iface.IAdminUserService;
+import org.system.utils.MD5Util;
+
+import net.sf.ehcache.CacheManager;
+
+@Controller
+public class AdminUserController implements IAdminUserController {
+	
+	Logger log = LoggerFactory.getLogger(AdminUserController.class);
+	@Resource
+	private IAdminUserService adminUserService;
+	
+	@Resource
+	private CacheManager cache;
+	
+	@Override
+	public Map<String, Object> getLoginAdminUser(AdminUser adminUser, BindingResult result,HttpSession session) throws Exception{
+		String usename=adminUser.getUsername();
+		if(usename.equals("admin")){
+			String password=adminUser.getPassword(); 
+			if (password !=null && !("".equals(password))) {
+				String newPassword=MD5Util.getMD5Code(password);// 加密
+				adminUser.setPassword(newPassword);
+			}
+			// 根据用户名，密码查询个人信息
+			Map<String, Object> userMap = adminUserService.getAdminUserByFiled(adminUser);		
+			if (userMap != null && userMap.size() > 0) {
+				session.setAttribute("user", userMap);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, userMap, Message.bundle("user.login.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL,  Message.bundle("user.login.error"));
+		}
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> insertAdminUser(AdminUser adminUser, BindingResult result) {	
+		
+
+	       // 查询账户名是否已注册
+		AdminUser name = new AdminUser();
+		
+	     name.setUsername(adminUser.getUsername());
+			Map<String, Object> adminMapForName = adminUserService.getAdminUserByFiled(name);
+			if (adminMapForName != null && adminMapForName.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("admin.insert.name.exists"));
+			}
+			
+			String instr=adminUser.getPassword();
+			String newPassword=MD5Util.getMD5Code(instr);// 加密
+			adminUser.setPassword(newPassword);
+			if (adminUserService.inserAdminUser(adminUser) > 0) {
+				// 新增成功
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+			}
+			// 新增失败
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+	}
+	@Override
+	public Map<String, Object> updateAdminUser(Integer id, AdminUser adminUser, BindingResult result) {
+            //检查数据是否存在
+            adminUser.setId(id);
+            String instr=adminUser.getPassword();
+     		String newPassword=MD5Util.getMD5Code(instr);// 加密
+     		adminUser.setPassword(newPassword);
+			Map<String, Object> dataMap = adminUserService.getAdminUserByFiled(adminUser);
+			if (dataMap != null && dataMap.size() > 0) {
+				// 数据已存在
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+			}
+			// 设置实例的id属性
+			if (adminUserService.updateAdmin(adminUser)> 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+	}
+
+	@Override
+	public Map<String, Object> getAdminUserList(AdminUser adminUser, BindingResult result,HttpServletRequest req) {
+		 HttpSession session=req.getSession();
+		 if(session.getAttribute("user")!=null){
+			
+			 Map<String, Object> resultMap = new HashMap<>();
+			 List<Map<String, Object>> dataList = adminUserService.getAdminUserList(adminUser);
+			 if (dataList != null && dataList.size() > 0) {			
+				 resultMap.put(Global.DATA_TOTAL, adminUser.getTotal());
+				 resultMap.put(Global.DATA_ROWS, dataList);
+				 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			 }
+			 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		 }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		 }
+	}
+
+	@Override
+	public Map<String, Object> getAdminUserDetail(Integer id, AdminUser adminUser) {
+		// 设置实例的id属性
+		adminUser.setId(id);	 	
+		Map<String, Object> resultList = adminUserService.getAdminUserDetail(adminUser);		
+		if (resultList != null && resultList.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultList, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	
+	@Override
+	public Map<String, Object> deleteAdminUser(Integer id, AdminUser adminUser) {
+		adminUser.setId(id);		
+		Map<String, Object> resultList = adminUserService.getAdminUserDetail(adminUser);
+		// id 为1 的不能删除，用户名为admin
+		if(id==1){
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("adminUser.delete.error"));
+		}
+		if (resultList == null || resultList.size() <= 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("user.empty"));
+		}
+		//执行删除
+		if (adminUserService.deleteAdminUser(adminUser) >0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS,Message.bundle("delete.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+	}
+
+	
+	public Map<String, Object> getStoreToken(String user,HttpServletRequest req) {
+	  HttpSession session=req.getSession();	   
+	 if(session.getAttribute("user")!=null){
+		   Map<String, Object> file = new HashMap<>();
+		   file.put("file", StoreFactory.getInstance().getPermissionToken(Global.STORE_ACQUISITIVE));
+		   return ResultMap.convertMap(ResultCode.CODE_SUCCESS, file, Message.bundle("query.success"));
+		  }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		  }
+
+	}	
+}

@@ -1,0 +1,52 @@
+package org.system.entity.userService;
+
+import org.core.entity.BaseEntity;
+
+public class UserService extends BaseEntity {
+	private Integer id;
+	private Integer userServicePackId;
+	private Integer productServiceId;
+	private Integer times;
+	private Integer lockTimes;
+	private Integer userId;
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public Integer getUserServicePackId() {
+		return userServicePackId;
+	}
+	public void setUserServicePackId(Integer userServicePackId) {
+		this.userServicePackId = userServicePackId;
+	}
+	public Integer getProductServiceId() {
+		return productServiceId;
+	}
+	public void setProductServiceId(Integer productServiceId) {
+		this.productServiceId = productServiceId;
+	}
+	public Integer getTimes() {
+		return times;
+	}
+	public void setTimes(Integer times) {
+		this.times = times;
+	}
+	public Integer getLockTimes() {
+		return lockTimes;
+	}
+	public void setLockTimes(Integer lockTimes) {
+		this.lockTimes = lockTimes;
+	}
+	public Integer getUserId() {
+		return userId;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	
+	
+
+}

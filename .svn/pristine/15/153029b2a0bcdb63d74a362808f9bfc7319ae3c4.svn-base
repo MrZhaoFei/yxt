@@ -1,0 +1,14 @@
+package org.system.mapper.service.resp;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.resp.FormNotExistDetaily;
+import org.system.entity.service.resp.ServiceRespTask;
+
+public interface FormNotExistDetailyMapper extends IBaseMapper<FormNotExistDetaily> {
+
+	List<Map<String, Object>> getUnfinishedFormNotExistDetailyList(ServiceRespTask serviceRespTask);
+	
+}

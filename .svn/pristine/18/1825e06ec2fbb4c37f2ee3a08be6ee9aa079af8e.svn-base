@@ -1,0 +1,82 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.ProductService;
+
+public interface IProductServiceService {
+	/**
+	 * 新增
+	 * 
+	 * @param ProductService
+	 * @return  int
+	 */
+	public int insertProductService(ProductService ProductService);
+
+	/**
+	 * 修改
+	 * 
+	 * @param ProductService
+	 * @return int
+	 */
+	public int updateProductService(ProductService ProductService);
+
+	/**
+	 * 删除
+	 * 
+	 * @param ProductService
+	 * @return int
+	 */
+	public int deleteProductService(ProductService ProductService);
+
+	/**
+	 * 所有数据列表
+	 * 
+	 * @param ProductService
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getProductServiceList(ProductService ProductService);
+
+	/**
+	 * 单个详情
+	 * 
+	 * @param ProductService
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getProductServiceDetail(ProductService productService);
+
+	/**
+	 * 检查唯一性
+	 * 
+	 * @param ProductService
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getProductServiceByFiled(ProductService ProductService);
+
+	/**
+	 * 该基础服务是否存在产品发布包中
+	 * 
+	 * @param productService
+	 * @return  List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getProductCondition(ProductService productService);
+
+	/**
+	 * 查询该基础服务是否被用户购买
+	 * 
+	 * @param productService
+	 *            id
+	 * @return int
+	 */
+	public int getProductByUservice(ProductService productService);
+
+	/**
+	 * 查询基础服务不在优惠包中其他的基础服务
+	 * 
+	 * @param productService
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getProductNotIn(ProductService productService);
+
+}

@@ -1,0 +1,84 @@
+package org.system.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.Hospital;
+import org.system.mapper.hospital.HospitalMapper;
+import org.system.mapper.service.AddressMapper;
+import org.system.service.iface.IHospitalService;
+@Service
+public class HospitalService implements IHospitalService {
+
+	
+	@Resource
+	private HospitalMapper hospitalMapper;
+	
+	@Resource 
+	private AddressMapper addressMapper;
+	
+	@Override
+	public int insertHospital(Hospital hospital) {
+		return hospitalMapper.insert(hospital);
+	}
+
+	@Override
+	public int updateHospital(Hospital hospital) {
+		return hospitalMapper.update(hospital);
+	}
+
+	@Override
+	public int deleteHospital(Hospital hospital) {
+		return hospitalMapper.delete(hospital);
+	}
+
+	@Override
+	public List<Map<String, Object>> getHospitalList(Hospital hospital) {
+		return hospitalMapper.queryAll(hospital);
+	}
+
+	@Override
+	public Map<String, Object> getHospitalDetail(Hospital hospital) {
+		return hospitalMapper.queryOne(hospital);
+	}
+
+	@Override
+	public Map<String, Object> getHospitalByFiled(Hospital hospital) {
+		return hospitalMapper.checkExists(hospital);
+	}
+
+	@Override
+	public int queryCodeId(Hospital hospital) {
+		return hospitalMapper.queryCodeId(hospital);
+	}
+
+	@Override
+	public List<Map<String, Object>> getWeiAndYi(Hospital hospital) {
+		return hospitalMapper.queryWeiAndYi(hospital);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllHospitalList(Hospital hospital) {
+		if(hospital.getCodeValue()!=null){
+			//查询所有子节点的地址id
+			Map<String, Object> addrMap=addressMapper.getAddressListByPid(hospital.getCodeValue());
+			hospital.setAddressList(addrMap.get("text").toString().split(","));
+		}
+		return hospitalMapper.queryAllHospitalList(hospital);
+	}
+
+	@Override
+	public int getHospitalContract(Hospital hospital) {
+		return hospitalMapper.queryHospitalContract(hospital);
+	}
+
+	@Override
+	public int updateHospitalContract(Hospital hospital) {
+		return hospitalMapper.updateHospitalContract(hospital);
+	}
+
+	
+}

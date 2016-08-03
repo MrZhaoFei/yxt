@@ -1,0 +1,12 @@
+package org.system.mapper.self;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.self.SelfTestTitle;
+
+public interface SelfTestTitleMapper extends IBaseMapper<SelfTestTitle> {
+
+   public  List<Map<String, Object>>getAllInformation(SelfTestTitle selfTestTitle);
+}

@@ -1,0 +1,78 @@
+package org.system.service.impl.doctor;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.doctor.DoctorDoctorGroup;
+import org.system.entity.doctor.DoctorGroup;
+import org.system.mapper.doctor.DoctorDoctorGroupMapper;
+import org.system.mapper.doctor.DoctorGroupMapper;
+import org.system.service.iface.doctor.IDoctorGroupService;
+
+@Service
+public class DoctorGroupService implements IDoctorGroupService {
+	@Resource
+	private DoctorGroupMapper mapper;
+	@Resource
+	private DoctorDoctorGroupMapper doctorDoctormapper;
+
+	@Override
+	public Map<String, Object> getDoctorGroupByFiled(DoctorGroup doctorGroup) {
+		return mapper.checkExists(doctorGroup);
+	}
+
+	@Override
+	public int insertDoctorGroup(DoctorGroup doctorGroup) {
+		// TODO 团队长权限暂时为1
+		// 设置默认值
+		doctorGroup.setCreateDate(new Date());
+		doctorGroup.setState(0);
+		// 新增团队
+		if (mapper.insert(doctorGroup) > 0) {
+			// 新增成功再增加团队长
+			DoctorDoctorGroup doctorDoctorGroup = new DoctorDoctorGroup();
+			doctorDoctorGroup.setDoctorId(doctorGroup.getDoctorId());
+			doctorDoctorGroup.setDoctorGroupId(doctorGroup.getId());
+			doctorDoctorGroup.setRoleId(1);
+			if (doctorDoctormapper.insert(doctorDoctorGroup) > 0) {
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+	@Override
+	public Map<String, Object> getDoctorGroupDetail(DoctorGroup doctorGroup) {
+		return mapper.queryOne(doctorGroup);
+	}
+
+	@Override
+	public int updateDoctorGroup(DoctorGroup doctorGroup) {
+		return mapper.update(doctorGroup);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorGroupList(DoctorGroup doctorGroup) {
+		return mapper.queryAll(doctorGroup);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorGroupDoctorList(DoctorGroup doctorGroup) {
+		return mapper.getDoctorGroupDoctorList(doctorGroup);
+	}
+
+	@Override
+	public List<Map<String, Object>> getExpertGroupDoctorList(DoctorGroup doctorGroup) {
+		return mapper.getExpertGroupDoctorList(doctorGroup);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorGroupManager(DoctorGroup doctorGroup) {
+		return mapper.getDoctorGroupManager(doctorGroup);
+	}
+
+}

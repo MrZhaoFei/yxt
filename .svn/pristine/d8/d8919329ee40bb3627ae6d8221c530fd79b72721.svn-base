@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.transfer.ImageConsultationDetailyMapper" >
+  <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.service.transfer.ImageConsultationDetaily" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `image_consultation_detaily` (`trans_treat_number`,`snapshot`,`trans_date`, `from_doctor_id`,`doctor_id`, `service_resp_task_id`,`used_count`, `used_date`, `user_service_id`, `sick_time`, `first_diagnosis_desc`, `jws_desc`, `zljg_desc`, `trans_reason`,`status`,hm_zdjg,hm_zljg,hm_kfjy,hm_gjtysjy,update_time) 
+		VALUES (#{transTreatNumber},#{snapshot}, #{transDate},#{fromDoctorId}, #{doctorId}, #{serviceRespTaskId},#{usedCount}, #{usedDate}, #{userServiceId}, #{sickTime}, #{firstDiagnosisDesc}, #{jwsDesc}, #{zljgDesc}, #{transReason},#{status},#{hmZdjg},#{hmZljg},#{hmKfjy},#{hmGjtysjy},#{updateTime})
+	</insert>
+	<insert id="insertImageConsultationDetailyFiles" parameterType="org.system.entity.service.transfer.ImageConsultationDetaily">
+		INSERT INTO `image_medical_record_doc_info` (`doc_url`, `image_consultation_detaily_id`,`doc_type`) 
+		VALUES 
+		<foreach collection="files" item="item" separator=",">
+			(#{item.file}, #{id},#{item.type})
+		</foreach>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.service.transfer.ImageConsultationDetaily">
+		update image_consultation_detaily set id=#{id}
+		<if test="doctorId!=null">
+			,doctor_id=#{doctorId}
+		</if>
+		<if test="sickTime!=null">
+			,sick_time=#{sickTime}
+		</if>
+		<if test="updateTime !=null">
+			,update_time=#{updateTime}
+		</if>
+		<if test="userConfirmTime !=null">
+			,user_confirm_time=#{userConfirmTime}
+		</if>
+		<if test="userRejectTime !=null">
+			,user_reject_time=#{userRejectTime}
+		</if>
+		<if test="synergyRejectTime !=null">
+			,synergy_reject_time=#{synergyRejectTime}
+		</if>
+		<if test="synergyPlanTime !=null">
+			,synergy_plan_time=#{synergyPlanTime}
+		</if>
+		<if test="reportTime !=null">
+			,report_time=#{reportTime}
+		</if>
+		<if test="fromDoctorId !=null">
+			,from_doctor_id=#{fromDoctorId}
+		</if>
+		<if test="status !=null">
+			,status=#{status}
+		</if>
+		<if test="firstDiagnosisDesc !=null and firstDiagnosisDesc !=''">
+			,first_diagnosis_desc=#{firstDiagnosisDesc}
+		</if>
+		<if test="jwsDesc !=null and jwsDesc !=''">
+			,jws_desc=#{jwsDesc}
+		</if>
+		<if test="zljgDesc !=null and zljgDesc !=''">
+			,zljg_desc=#{zljgDesc}
+		</if>
+		<if test="transReason !=null and transReason !=''">
+			,trans_reason=#{transReason}
+		</if>
+		<if test="hmZdjg !=null and hmZdjg !=''">
+			,hm_zdjg=#{hmZdjg}
+		</if>
+		<if test="hmZljg !=null and hmZljg !=''">
+			,hm_zljg=#{hmZljg}
+		</if>
+		<if test="hmKfjy !=null and hmKfjy !=''">
+			,hm_kfjy=#{hmKfjy}
+		</if>
+		<if test="hmGjtysjy !=null and hmGjtysjy !=''">
+			,hm_gjtysjy=#{hmGjtysjy}
+		</if>
+		where id=#{id}
+	</update>
+	<!-- 查询列表 -->
+	<select id="queryAll" parameterType="org.system.entity.service.transfer.ImageConsultationDetaily" resultType="map">
+	select icd.id,icd.user_service_id userServiceId,icd.service_resp_task_id taskId,icd.doctor_id doctorId,srt.user_id userId,
+	srt.task_number taskNumber,icd.trans_treat_number transTreatNumber,ud.`name` userName,ud.contact,dd.`name` doctorName,srt.applied_date appliedDate,
+	icd.trans_date transDate,ps.`name` serviceName,st.`name` serviceTypeName,icd.snapshot,u.phone,
+	icd.`status`,fdd.`name` fromDoctorName,d.doctor_level_id doctorLevelId,dl.doctor_level_name doctorLevelName
+	from image_consultation_detaily icd
+	left join user_service us on us.id=icd.user_service_id
+	left join product_service ps on ps.id=us.product_service_id
+	left join service_type st on st.id=ps.service_type_id
+	left join service_resp_task srt on srt.id=icd.service_resp_task_id
+	left join user_detail ud on ud.user_id=srt.user_id
+	left join user u on u.id=ud.user_id
+	left join doctor d on d.id=icd.doctor_id
+	left join doctor fd on fd.id=icd.from_doctor_id
+	left join doctor_level dl on d.doctor_level_id=dl.id
+	left join doctor_detail dd on dd.doctor_id=icd.doctor_id
+  	left join doctor_detail fdd on fdd.doctor_id=icd.from_doctor_id
+  	where icd.status not in(2,4,6)
+		<if test="serviceRespTaskId !=null">
+			and icd.service_resp_task_id=#{serviceRespTaskId}
+		</if>
+		<if test="serviceType !=null">
+			<if test="serviceType.id !=null ">
+				and st.id=#{serviceType.id}
+			</if>
+		</if>
+		<if test="serviceRespTask !=null">
+		<choose>
+			<when test="serviceRespTask.startDate !=null and serviceRespTask.endDate !=null">
+				and srt.applied_date BETWEEN #{serviceRespTask.startDate} and #{serviceRespTask.endDate}
+			</when>
+			<otherwise>
+				<if test="serviceRespTask.startDate !=null">
+					and srt.applied_date &gt; #{serviceRespTask.startDate}
+				</if>
+				<if test="serviceRespTask.endDate !=null">
+					and srt.applied_date &lt; #{serviceRespTask.endDate}
+				</if>
+			</otherwise>
+		</choose>
+		</if>
+		<choose>
+			<when test="startDate !=null and endDate !=null">
+				and icd.trans_date BETWEEN #{startDate} and #{endDate}
+			</when>
+			<otherwise>
+				<if test="startDate !=null">
+					and icd.trans_date &gt; #{startDate}
+				</if>
+				<if test="endDate !=null">
+					and icd.trans_date &lt; #{endDate}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="status !=null">
+			and icd.status=#{status}
+		</if>
+		<if test="doctor !=null">
+			<if test="doctor.name !=null and doctor.name !=''">
+				and	d.name like CONCAT(CONCAT('%', #{doctor.name}), '%')
+			</if>
+		</if>
+		<if test="doctorName !=null and doctorName !=''">
+			and	dd.`name` like CONCAT(CONCAT('%', #{doctorName}), '%')
+		</if>
+		<if test="fromDoctorName !=null and fromDoctorName !=''">
+			and	fdd.`name` like CONCAT(CONCAT('%', #{fromDoctorName}), '%')
+		</if>
+		<if test="transTreatNumber !=null and transTreatNumber !=''">
+			and	icd.trans_treat_number like CONCAT(CONCAT('%', #{transTreatNumber}), '%')
+		</if>
+		
+		<if test="doctorId !=null">
+			and	icd.doctor_id is null or icd.doctor_id=#{doctorId}
+		</if>
+		<if test="fromDoctorId !=null">
+			and	icd.from_doctor_id=#{fromDoctorId}
+		</if>
+		<if test="user !=null">
+			<if test="user.phone !=null and user.phone !=''">
+				and	u.phone like CONCAT(CONCAT('%', #{user.phone}), '%')
+			</if>
+		</if>
+		<if test="userDetail !=null">
+			<if test="userDetail.contact !=null and userDetail.contact !=''">
+				and	ud.contact like CONCAT(CONCAT('%', #{userDetail.contact}), '%')
+			</if>
+			<if test="userDetail.name !=null and userDetail.name !=''">
+				and	ud.name like CONCAT(CONCAT('%', #{userDetail.name}), '%')
+			</if>
+		</if>
+	order by status,transDate desc
+	</select>
+	<resultMap type="map" id="transMap">
+		<result column="id" property="id"/>
+		<collection property="files" column="id" javaType="list" select="getFiles"/>
+	</resultMap>
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.service.transfer.ImageConsultationDetaily" resultMap="transMap">
+	select icd.id,icd.user_service_id userServiceId,icd.service_resp_task_id taskId,icd.doctor_id doctorId,srt.user_id userId,ps.id productServiceId,ps.`name` serviceName,
+	srt.task_number taskNumber,ud.`name` userName,ud.contact,dd.`name` doctorName,srt.applied_date appliedDate,icd.trans_date transDate,icd.snapshot,
+	icd.`status`,fdd.`name` fromDoctorName,icd.first_diagnosis_desc firstDiagnosisDesc,icd.jws_desc jwsDesc,icd.sick_time sickTime,icd.trans_reason transReason,
+	icd.zljg_desc zljgDesc,icd.trans_treat_number transTreatNumber,icd.used_count usedCount,icd.used_date usedDate,us.times times,us.lock_times lockTimes,icd.from_doctor_id fromDoctorId,
+	icd.hm_zdjg hmZdjg,icd.hm_zljg hmZljg,icd.hm_kfjy hmKfjy,icd.hm_gjtysjy hmGjtysjy,u.phone
+	from image_consultation_detaily icd
+	left join user_service us on us.id=icd.user_service_id
+	left join product_service ps on ps.id=us.product_service_id
+	left join service_resp_task srt on srt.id=icd.service_resp_task_id
+	left join user_detail ud on ud.user_id=srt.user_id
+	left join user u on u.id=ud.user_id
+	left join doctor d on d.id=icd.doctor_id
+	left join doctor_detail dd on dd.doctor_id =d.id
+	left join doctor fd on fd.id=icd.from_doctor_id
+	left join doctor_detail fdd on fdd.doctor_id=fd.id
+	where icd.id=#{id}
+	</select>
+	
+
+	<!-- 后台医生查询用户服务响应的转诊记录列表 -->
+	<select id="getTransTreatDetailyDoctorByUserList" parameterType="org.system.entity.service.transfer.ImageConsultationDetaily" resultType="map">
+	select icd.id,icd.trans_treat_number transTreatNumber,icd.trans_date transDate,icd.from_doctor_id fromDoctorId,dd.name fromDoctorName,
+		icd.doctor_id doctorId,ddl.name doctorName,icd.service_resp_task_id serviceRespTaskId,icd.used_count usedCount,icd.used_date usedDate,
+		icd.user_service_id userServiceId,icd.sick_time sickTime,icd.first_diagnosis_desc firstDiagnosisDesc,icd.jws_desc jwsDesc,
+		icd.zljg_desc zljgDesc,icd.trans_reason transReason,icd.status,srt.task_number taskNumber,icd.snapshot,
+		srt.task_type_id taskTypeId,tt.task_name taskName,srt.applied_date appliedDate
+		from image_consultation_detaily icd
+	LEFT JOIN service_resp_task srt on srt.id=icd.service_resp_task_id
+	LEFT JOIN doctor_detail dda on dda.doctor_id=srt.doctor_id
+	LEFT JOIN task_type tt on tt.id=srt.task_type_id
+	left join doctor_detail dd on dd.doctor_id=icd.from_doctor_id
+	left join doctor_detail ddl on ddl.doctor_id=icd.doctor_id
+	left join doctor d on d.id=dd.doctor_id 
+	left join doctor dh on dh.id=ddl.doctor_id 
+	where icd.service_resp_task_id=#{serviceRespTaskId}
+	</select>
+
+
+	<select id="getFiles" parameterType="int" resultType="map">
+		select id,doc_url docUrl,doc_type docType from image_medical_record_doc_info where image_consultation_detaily_id=#{id}
+	</select>
+</mapper>

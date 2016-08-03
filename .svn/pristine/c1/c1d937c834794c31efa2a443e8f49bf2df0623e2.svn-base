@@ -1,0 +1,136 @@
+package org.system.entity.contract;
+
+import java.util.Date;
+import org.core.entity.BaseEntity;
+
+public class ContractHistory extends BaseEntity {
+    private Integer id;
+
+    private Integer userId;
+
+    private Integer doctorGroupId;
+
+    private Date createDate;
+
+    private Integer creatorId;
+
+    private Integer state;
+
+    private Integer sourceId;
+
+    private Integer firstSendSmsId;
+
+    private String contractNumber;
+
+    private Integer contractSource;
+
+    private Integer userServicePackId;
+
+    private Date expireDate;
+
+    private Date updateTime;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getDoctorGroupId() {
+        return doctorGroupId;
+    }
+
+    public void setDoctorGroupId(Integer doctorGroupId) {
+        this.doctorGroupId = doctorGroupId;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Integer getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Integer creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public Integer getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Integer sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public Integer getFirstSendSmsId() {
+        return firstSendSmsId;
+    }
+
+    public void setFirstSendSmsId(Integer firstSendSmsId) {
+        this.firstSendSmsId = firstSendSmsId;
+    }
+
+    public String getContractNumber() {
+        return contractNumber;
+    }
+
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
+    }
+
+    public Integer getContractSource() {
+        return contractSource;
+    }
+
+    public void setContractSource(Integer contractSource) {
+        this.contractSource = contractSource;
+    }
+
+    public Integer getUserServicePackId() {
+        return userServicePackId;
+    }
+
+    public void setUserServicePackId(Integer userServicePackId) {
+        this.userServicePackId = userServicePackId;
+    }
+
+    public Date getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(Date expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+}

@@ -1,0 +1,39 @@
+package org.system.service.impl.service.visits;
+
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.visits.TnbFollowupFzcheckRecords;
+import org.system.mapper.service.visits.TnbFollowupFzcheckRecordsMapper;
+import org.system.service.iface.service.visits.ITnbFollowupFzcheckRecordsService;
+
+@Service
+public class TnbFollowupFzcheckRecordsService implements ITnbFollowupFzcheckRecordsService {
+
+	@Resource
+	private TnbFollowupFzcheckRecordsMapper mapper;
+
+	@Override
+	public int insertTnbFollowupFzcheckRecords(TnbFollowupFzcheckRecords tnbFollowupFzcheckRecords) {
+		return mapper.insert(tnbFollowupFzcheckRecords);
+	}
+
+	@Override
+	public int updateTnbFollowupFzcheckRecords(TnbFollowupFzcheckRecords tnbFollowupFzcheckRecords) {
+		return mapper.update(tnbFollowupFzcheckRecords);
+	}
+
+	@Override
+	public Map<String, Object> getTnbFollowupFzcheckRecordsDetail(TnbFollowupFzcheckRecords tnbFollowupFzcheckRecords) {
+		return mapper.queryOne(tnbFollowupFzcheckRecords);
+	}
+
+	@Override
+	public int deleteTnbFollowupFzcheckRecords(TnbFollowupFzcheckRecords tnbFollowupFzcheckRecords) {
+		return mapper.delete(tnbFollowupFzcheckRecords);
+	}
+
+	
+}

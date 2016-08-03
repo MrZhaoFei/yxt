@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.department.DepartmentMapper">
+
+ <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.Department"  useGeneratedKeys="true" keyColumn="id">
+		INSERT INTO department (pid,name,remark) VALUES (#{pid},#{name},#{remark})
+	</insert>
+	
+	<!--  -->
+	<select id="queryAllName" parameterType="org.system.entity.Department" resultType="map">	
+	   select id,name from department 
+	</select>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.Department">
+		DELETE FROM department WHERE id=#{id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.Department">		
+		UPDATE department SET id=#{id}
+		<if test="name !=null and name !=''">
+			,name=#{name}
+		</if>
+		<if test="remark !=null and remark !=''">
+			,remark=#{remark}
+		</if>
+		<if test="pid !=null and pid !=''">
+			,pid=#{pid}
+		</if>
+		 WHERE id=#{id}
+	</update>
+	
+	<!-- 查询 -->
+	<select id="queryAll" parameterType="org.system.entity.Department" resultType="map">
+		 select  d.id,fd.name as fatherName,d.name as sonName,
+          d.remark from department d left join department fd on d.pid=fd.id
+		<where>
+			<if test="name!=null and name!=''">
+				d.name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.Department" resultType="map">
+		 select  d.id,fd.id as fatherName,d.name as sonName,
+     d.remark from department d left join department fd on d.pid=fd.id WHERE d.id=#{id}
+	</select>
+
+<!-- 检查数据是否重复 -->
+<select id="checkExists" parameterType="org.system.entity.Department" resultType="map">
+	SELECT id,pid,name,remark FROM department WHERE name=#{name} 
+	<choose>
+		<when test="pid !=null and pid !=''">
+			and pid=#{pid}
+		</when>
+		<otherwise>
+			and pid is null
+		</otherwise>
+	</choose>
+</select>
+
+</mapper>

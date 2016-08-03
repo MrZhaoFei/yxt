@@ -1,0 +1,26 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.RegisterSource;
+import org.system.mapper.service.RegisterSourceMapper;
+import org.system.service.iface.service.IRegisterSourceService;
+
+
+@Service
+public class RegisterSourceService implements IRegisterSourceService {
+
+	
+	
+	@Resource
+	private RegisterSourceMapper registerSourceMapper;
+	@Override
+	public List<Map<String, Object>> getRegisterSourceList(RegisterSource registerSource) {
+		return registerSourceMapper.queryAll(registerSource);
+	}
+
+}

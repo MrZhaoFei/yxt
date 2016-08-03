@@ -1,0 +1,57 @@
+package org.system.service.impl.chat;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.chat.WeixinRecords;
+import org.system.mapper.chat.WeixinRecordsMapper;
+import org.system.service.iface.chat.IWeixinRecordsService;
+
+@Service
+public class WeixinRecordsService implements IWeixinRecordsService {
+	@Resource
+	private WeixinRecordsMapper mapper;
+
+	@Override
+	public Map<String, Object> getWeixinRecordsByFild(WeixinRecords weixinRecords) {
+		return mapper.checkExists(weixinRecords);
+	}
+
+	@Override
+	public int insertWeixinRecords(WeixinRecords weixinRecords) {
+		return mapper.insert(weixinRecords);
+	}
+
+	@Override
+	public int updateWeixinRecords(WeixinRecords weixinRecords) {
+		return mapper.update(weixinRecords);
+	}
+
+	@Override
+	public Map<String, Object> getWeixinRecordsDetail(WeixinRecords weixinRecords) {
+		return mapper.queryOne(weixinRecords);
+	}
+
+	@Override
+	public int deleteWeiXinRecordsByQuery(List<Long> ids) {
+		return mapper.deleteWeiXinRecordsByQuery(ids);
+	}
+
+	@Override
+	public List<Map<String, Object>> getWeixinRecordsDetailList(WeixinRecords weixinRecords) {
+		return mapper.queryAll(weixinRecords);
+	}
+
+	@Override
+	public List<Map<String, Object>> getWeixinRecordsListByUser(WeixinRecords weixinRecords) {
+		return mapper.getWeixinRecordsListByUser(weixinRecords);
+	}
+
+	@Override
+	public List<Map<String, Object>> getWeixinRecordsListByDoctor(WeixinRecords weixinRecords) {
+		return mapper.getWeixinRecordsListByDoctor(weixinRecords);
+	}
+}

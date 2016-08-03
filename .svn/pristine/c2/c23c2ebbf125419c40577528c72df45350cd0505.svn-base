@@ -1,0 +1,124 @@
+package org.system.controller.impl.service.resp;
+
+import java.util.Date;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.service.resp.ITransRecordsInfoController;
+import org.system.entity.doctor.Doctor;
+import org.system.entity.service.resp.ServiceRespTask;
+import org.system.entity.service.resp.TransRecordsInfo;
+import org.system.entity.sys.SysHintMessage;
+import org.system.message.Message;
+import org.system.service.iface.doctor.IDoctorService;
+import org.system.service.iface.service.resp.IServiceRespTaskService;
+import org.system.service.iface.service.resp.ITransRecordsInfoService;
+import org.system.service.iface.sys.ISysHintMessageService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class TransRecordsInfoController implements ITransRecordsInfoController {
+	Logger log = LoggerFactory.getLogger(TransRecordsInfoController.class);
+	@Resource
+	private ITransRecordsInfoService transRecordsInfoService;
+	@Resource
+	private IServiceRespTaskService serviceRespTaskService;
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IDoctorService doctorService;
+	@Resource
+	private ISysHintMessageService sysHintMessageService;
+
+	@Override
+	@Transactional
+	public Map<String, Object> insertTransRecordsInfo(TransRecordsInfo transRecordsInfo, BindingResult result,
+			String token) {
+		/* 缓存中获取医生数据 */
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			/* 判断该服务响应是否存在 并且登录的医生是否与该服务响应内的医生ID是同一人 */
+			ServiceRespTask srt = new ServiceRespTask();
+			srt.setId(transRecordsInfo.getServiceRespTaskId());
+			Map<String, Object> srtMap = serviceRespTaskService.getServiceRespTaskDetail(srt);
+			if (srtMap == null || srtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			} else {
+				/* 判断 登录的医生是否与该服务响应内的医生ID是同一人 */
+				if ((int) srtMap.get("doctorId") != (int) doctorMap.get("id")) {
+					return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR, Message.bundle("record.is.outside.doctor"));
+				}
+			}
+
+			/* 判断医生是否存在 */
+			Doctor doctor = new Doctor();
+			doctor.setId(transRecordsInfo.getDescDoctorId());
+			Map<String, Object> doctorDetilMap = doctorService.getDoctorDetil(doctor);
+			if (doctorDetilMap == null || doctorDetilMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("doctor.empty"));
+			}
+
+			/* 判断医生是否是给自己 */
+			if (transRecordsInfo.getDescDoctorId() == (int) doctorMap.get("id")) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("doctor.choose.error"));
+			}
+			/* 设置原医生ID */
+			transRecordsInfo.setSrcDoctorId((Integer) doctorMap.get("id"));
+			transRecordsInfo.setTransDate(new Date());
+			/**
+			 * 判断 状态是否为 1 未受理，如果为1 可以进行转移，转移后判断状态是否为1  不为1  修改为1
+			 * 
+			 */
+			if ((int)srtMap.get("taskStatus")==1) {
+				/* 新增转移记录 */
+				if (transRecordsInfoService.insertTransRecordsInfo(transRecordsInfo) > 0) {
+					/* 修改服务响应的医生ID */
+					ServiceRespTask serviceRespTask = new ServiceRespTask();
+					serviceRespTask.setId(transRecordsInfo.getServiceRespTaskId());
+					serviceRespTask.setDoctorId(transRecordsInfo.getDescDoctorId());
+					serviceRespTask.setTransRecordsInfoId(transRecordsInfo.getId());
+					//将状态修改为 1 未受理 
+					serviceRespTask.setTaskStatus(1);	
+					/* 新增成功修改原服务的医生id */
+					if (serviceRespTaskService.updateServiceRespTask(serviceRespTask) <= 0) {
+						throw new RuntimeException();
+					}
+					// 新增系统消息给医生
+					SysHintMessage sysHintMessage = new SysHintMessage();
+					sysHintMessage.setFromDoctorId((Integer) doctorMap.get("id"));
+					sysHintMessage.setToDoctorId(transRecordsInfo.getDescDoctorId().toString());
+					sysHintMessage.setMsgType(3);
+					sysHintMessage.setPackageServiceId((Integer) srtMap.get("id"));
+					sysHintMessage.setUserId(srtMap.get("userId").toString());
+					sysHintMessage.setStartTime(new Date());
+					sysHintMessage.setEndTime(new Date());
+					sysHintMessage.setMsgContent(Message.bundle("serviceRespTask.transfer.success.sms.content",
+							doctorMap.get("name"), srtMap.get("taskNumber")));
+					if (sysHintMessageService.insertSysHintMessage(sysHintMessage) <= 0) {
+						throw new RuntimeException();
+					}
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+				}
+			}else {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.status.error"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+}

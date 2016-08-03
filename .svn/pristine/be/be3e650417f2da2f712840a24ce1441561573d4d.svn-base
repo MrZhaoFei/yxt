@@ -1,0 +1,34 @@
+package org.system.service.impl.service.transfer;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.transfer.TransTreatRecordsInfo;
+import org.system.mapper.service.transfer.TransTreatRecordsInfoMapper;
+import org.system.service.iface.service.transfer.ITransTreatRecordsInfoService;
+
+@Service
+public class TransTreatRecordsInfoService implements ITransTreatRecordsInfoService{
+
+	@Resource
+	private TransTreatRecordsInfoMapper mapper;
+	
+	@Override
+	public int insertTransTreatRecordsInfo(TransTreatRecordsInfo transTreatRecordsInfo) {
+		return mapper.insert(transTreatRecordsInfo);
+	}
+
+	@Override
+	public List<Map<String, Object>> getTransTreatRecordsInfoList(TransTreatRecordsInfo transTreatRecordsInfo) {
+		return mapper.queryAll(transTreatRecordsInfo);
+	}
+
+	@Override
+	public Map<String, Object> getTransTreatRecordsInfoDetail(TransTreatRecordsInfo transTreatRecordsInfo) {
+		return mapper.queryOne(transTreatRecordsInfo);
+	}
+
+}

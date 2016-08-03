@@ -1,0 +1,42 @@
+package org.system.entity.doctor;
+
+
+import org.core.entity.BaseEntity;
+
+public class DoctorDoctorGroup extends BaseEntity{
+	
+	private Integer doctorId;
+	private Integer doctorGroupId;
+	private Integer roleId;
+	
+	
+	public Integer getDoctorId() {
+		return doctorId;
+	}
+	public void setDoctorId(Integer doctorId) {
+		this.doctorId = doctorId;
+	}
+	public Integer getDoctorGroupId() {
+		return doctorGroupId;
+	}
+	public void setDoctorGroupId(Integer doctorGroupId) {
+		this.doctorGroupId = doctorGroupId;
+	}
+	public Integer getRoleId() {
+		return roleId;
+	}
+	public void setRoleId(Integer roleId) {
+		this.roleId = roleId;
+	}
+	
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+}

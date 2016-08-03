@@ -1,0 +1,19 @@
+package org.system.service.iface.user.healthinfo;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.user.healthinfo.BloodTransHistory;
+
+public interface IBloodTransHistoryService {
+
+	int insertBloodTransHistoryy(BloodTransHistory bloodTransHistory);
+	
+	int updateBloodTransHistory(BloodTransHistory bloodTransHistory);
+	
+	Map<String, Object> getBloodTransHistoryDetail(BloodTransHistory bloodTransHistory);
+	
+	List<Map<String, Object>>  getBloodTransHistorys(BloodTransHistory bloodTransHistory);
+	
+	int deleteBloodTransHistory(BloodTransHistory bloodTransHistory);
+}

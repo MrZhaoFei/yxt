@@ -1,0 +1,205 @@
+package org.system.entity.user;
+
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.hibernate.validator.constraints.NotBlank;
+import org.utils.spring.Groups;
+
+public class UserDetail extends BaseEntity {
+	@NotNull(message = "{user.id.notnull.valid}", groups = { Groups.Insert.class, Groups.Other.class })
+	private Integer userId;
+
+	private String residenceAddress;
+
+	private String homeAddress;
+
+	private Integer servicePackId;
+
+	@NotBlank(message = "{idcard.notblank.valid}", groups = { Groups.Insert.class, Groups.Update.class,
+			Groups.Other.class })
+	private String idcard;
+
+	@NotBlank(message = "{user.realName.notblank.valid}", groups = { Groups.Insert.class, Groups.Update.class,
+			Groups.Other.class })
+	private String name;
+
+	private String nation;
+
+	private String degree;
+
+	private Integer age;
+
+	private Integer endAge;
+
+	private Integer sex;
+
+	private String occupation;
+
+	private Date birthday;
+
+	private Boolean islocal;
+
+	private Integer marriageType;
+
+	private String contact;
+	private boolean isMember;
+	private String transaction;
+	private String evidence;
+
+	public Integer getEndAge() {
+		return endAge;
+	}
+
+	public void setEndAge(Integer endAge) {
+		this.endAge = endAge;
+	}
+
+	public boolean isMember() {
+		return isMember;
+	}
+
+	public void setMember(boolean isMember) {
+		this.isMember = isMember;
+	}
+
+	public String getTransaction() {
+		return transaction;
+	}
+
+	public void setTransaction(String transaction) {
+		this.transaction = transaction;
+	}
+
+	public String getEvidence() {
+		return evidence;
+	}
+
+	public void setEvidence(String evidence) {
+		this.evidence = evidence;
+	}
+
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getResidenceAddress() {
+		return residenceAddress;
+	}
+
+	public void setResidenceAddress(String residenceAddress) {
+		this.residenceAddress = residenceAddress;
+	}
+
+	public String getHomeAddress() {
+		return homeAddress;
+	}
+
+	public void setHomeAddress(String homeAddress) {
+		this.homeAddress = homeAddress;
+	}
+
+	public Integer getServicePackId() {
+		return servicePackId;
+	}
+
+	public void setServicePackId(Integer servicePackId) {
+		this.servicePackId = servicePackId;
+	}
+
+	public String getIdcard() {
+		if (idcard != null)
+			return idcard.toUpperCase();
+		return idcard;
+	}
+
+	public void setIdcard(String idcard) {
+		this.idcard = idcard;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getNation() {
+		return nation;
+	}
+
+	public void setNation(String nation) {
+		this.nation = nation;
+	}
+
+	public String getDegree() {
+		return degree;
+	}
+
+	public void setDegree(String degree) {
+		this.degree = degree;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
+
+	public String getOccupation() {
+		return occupation;
+	}
+
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	public Boolean getIslocal() {
+		return islocal;
+	}
+
+	public void setIslocal(Boolean islocal) {
+		this.islocal = islocal;
+	}
+
+	public Integer getMarriageType() {
+		return marriageType;
+	}
+
+	public void setMarriageType(Integer marriageType) {
+		this.marriageType = marriageType;
+	}
+}

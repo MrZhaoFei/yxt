@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.visits.GxyFollowupDragRecordsMapper" >
+  
+  <delete id="delete" parameterType="map" >
+    delete from gxy_followup_drag_records
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="org.system.entity.service.visits.GxyFollowupDragRecords" >
+    insert into gxy_followup_drag_records ( gxy_followup_records_id, yljgbm, 
+      sfjlbh, jkdabh, yybh, 
+      ypbm, ypmc, yplb, mcyl, 
+      yldw, zl, zldw, yytjdm, 
+      yypc, zylbdm, klrq, 
+      zfbz, update_time)
+    values ( #{gxyFollowupRecordsId}, #{yljgbm}, 
+      #{sfjlbh}, #{jkdabh}, #{yybh}, 
+      #{ypbm}, #{ypmc}, #{yplb}, #{mcyl}, 
+      #{yldw}, #{zl}, #{zldw}, #{yytjdm}, 
+      #{yypc}, #{zylbdm}, #{klrq}, 
+      #{zfbz}, #{updateTime})
+  </insert>
+  <update id="update" parameterType="org.system.entity.service.visits.GxyFollowupDragRecords" >
+    update gxy_followup_drag_records set  id=#{id}
+    <if test="yljgbm !=null and yljgbm !=''">
+      	,yljgbm = #{yljgbm}
+    </if>
+    <if test="sfjlbh !=null and sfjlbh !=''">
+      	,sfjlbh = #{sfjlbh}
+    </if>
+    <if test="jkdabh !=null and jkdabh !=''">
+      	,jkdabh = #{jkdabh}
+    </if>
+    <if test="yybh !=null and yybh !=''">
+      	,yybh = #{yybh}
+    </if>
+    <if test="ypbm !=null and ypbm !=''">
+      	,ypbm = #{ypbm}
+    </if>
+    <if test="ypmc !=null and ypmc !=''">
+      	,ypmc = #{ypmc}
+    </if>
+    <if test="yplb !=null and yplb !=''">
+      	,yplb = #{yplb}
+    </if>
+    <if test="mcyl !=null ">
+      	,mcyl = #{mcyl }
+    </if>
+    <if test="yldw !=null and yldw !=''">
+      	,yldw = #{yldw }
+    </if>
+    <if test="zl !=null">
+      	,zl = #{zl }
+    </if>
+    <if test="zldw !=null and zldw !=''">
+      	,zldw = #{zldw }
+    </if>
+    <if test="yytjdm !=null and yytjdm !=''">
+      	,yytjdm = #{yytjdm }
+    </if>
+    <if test="yypc !=null and yypc !=''">
+      	,yypc = #{yypc }
+    </if>
+    <if test="zylbdm !=null and zylbdm !=''">
+      	,zylbdm = #{zylbdm }
+    </if>
+    <if test="klrq !=null ">
+      	,klrq = #{klrq }
+    </if>
+    <if test="zfbz !=null and zfbz !=''">
+      	,zfbz = #{zfbz }
+    </if>
+    <if test="updateTime !=null">
+      	,update_time = #{updateTime }
+    </if>
+    where id = #{id}
+  </update>
+  <select id="queryOne" parameterType="org.system.entity.service.visits.GxyFollowupDragRecords" resultType="map">
+        select   gfdr.id, gfdr.gxy_followup_records_id, gfr.yljgbm,fn_print_hospital_name_result(gfr.yljgbm) yljgbmName,hi.jkdabh,hi.yxt_jkdabh yxtJkdabh,gfdr.sfjlbh,gfdr.yybh, gfdr.ypbm, gfdr.ypmc, gfdr.yplb, 
+    	gfdr.mcyl, gfdr.yldw, gfdr.zl, gfdr.zldw, gfdr.yytjdm, gfdr.yypc, gfdr.zylbdm, gfdr.klrq, gfdr.zfbz, gfdr.update_time updateTime,
+   		gfr.service_resp_task_id serviceRespTaskId,srt.doctor_id doctorId
+		from gxy_followup_drag_records gfdr
+		left join gxy_followup_records gfr on gfr.id=gfdr.gxy_followup_records_id
+		left join service_resp_task srt on srt.id=gfr.service_resp_task_id
+		left join health_info hi on hi.user_id=gfr.user_id
+   		where gfdr.id = #{id}
+  </select>
+</mapper>

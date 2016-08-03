@@ -1,0 +1,84 @@
+package org.system.controller.iface;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.PackageType;
+import org.utils.spring.Groups;
+
+@RequestMapping("/admin")
+public interface IPackageTypeController {
+	 /** 所有的
+	 * @param packageType
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/packageType", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("packageType:list")
+	public Map<String, Object> getPackageTypeList(@Validated({ Groups.Select.class }) PackageType packageType, BindingResult result,HttpServletRequest req);
+    
+	
+	/**
+	 * 新增
+	 * @param packageType
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/packageType/insert", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("packageType:insert")
+	public Map<String, Object> insertPackageType(@Validated({ Groups.Insert.class }) PackageType packageType, BindingResult result);
+	
+	
+	
+	
+	
+	/**
+	 * 修改
+	 * @param id
+	 * @param packageType
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/packageType/{id}/update", method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("packageType:update")
+	public Map<String, Object> updatePackageType(@PathVariable("id") Integer id,
+			@Validated({ Groups.Update.class }) PackageType packageType, BindingResult result);
+	
+	
+
+	/**
+	 * 单个信息
+	 * @param ID
+	 * @param packageType
+	 * @return
+	 */
+	@RequestMapping(value = "/packageType/{id}/detail", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("packageType:detail")
+	public Map<String, Object> getPackageTypeDetail(@PathVariable("id") Integer id, PackageType packageType);
+	
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @param packageType
+	 * @return
+	 */
+	@RequestMapping(value = "/packageType/{id}/delete", method = RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions("packageType:delete")
+	public  Map<String, Object> deletePackageType(@PathVariable("id") Integer id, PackageType packageType);
+	
+	
+}

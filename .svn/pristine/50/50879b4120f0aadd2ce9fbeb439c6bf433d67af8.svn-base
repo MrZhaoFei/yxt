@@ -1,0 +1,56 @@
+package org.system.entity;
+
+
+
+import org.core.entity.BaseEntity;
+
+public class Department extends BaseEntity {
+
+	private Integer id;
+	
+	private Integer pid;
+	private String name;
+	private String remark;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getpid() {
+		return pid;
+	}
+
+	public void setpid(Integer pid) {
+		this.pid = pid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+	
+}

@@ -1,0 +1,315 @@
+
+.common_imagesbox,
+.common_upimgctrl,
+.common_upfilectrl {
+    min-width: 300px;
+}
+
+.common_imagesbox .img_box,
+.common_upimgctrl .img_box,
+.common_upfilectrl .file_box {
+    position: relative;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    border: 1px solid #e6e6e6;
+    width: 160px;
+    height: 140px;
+}
+
+.common_upfilectrl .file_box .file_infobox {
+    padding: 5px;
+    text-align: center;
+}
+
+.common_upfilectrl .file_box .file_infobox .file_name {
+    padding: 20px 0;
+    height: 60px;
+}
+
+.common_upfilectrl .file_box .file_infobox .file_down a {
+    font-size: 14px;
+    font-weight: bold;
+    color: #168a00;
+}
+
+.common_imagesbox .img_box .upimg,
+.common_upimgctrl .img_box .upimg,
+.common_filesbox .file_box .upfile {
+    width: auto;
+    height: auto;
+    max-height: 100%;
+    max-width: 100%;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.common_upimgctrl .img_box .remove_img,
+.common_upfilectrl .file_box .remove_file {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    position: absolute;
+    z-index: 3;
+    top: -10px;
+    right: -10px;
+    display: block;
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    background: #7d7d7d url("../images/upimg_ctrl_remove.png") no-repeat center;
+}
+
+.common_upimgctrl .img_box .remove_img:hover,
+.common_upfilectrl .file_box .remove_file:hover {
+    background-color: #696969;
+}
+
+.common_upimgctrl .img_box .add_img_btn,
+.common_upfilectrl .file_box .add_file_btn {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    display: block;
+    width: 160px;
+    height: 140px;
+    background: url("../images/upimg_ctrl_addbtn.png") no-repeat center;
+}
+
+.common_upimgctrl .img_box .add_img_btn:hover,
+.common_upfilectrl .file_box .add_file_btn:hover {
+    background-color: #f0f0f0;
+}
+
+.common_upfilectrl .file_box .file_btn,
+.common_upimgctrl .img_box .img_btn {
+    /*position: relative;*/
+}
+
+.common_upfilectrl .file_box .file_btn .loadtip,
+.common_upfilectrl .file_box .file_btn .loadtip_backer,
+.common_upimgctrl .img_box .img_btn .loadtip_backer,
+.common_upimgctrl .img_box .img_btn .loadtip {
+    position: absolute;
+    margin: 50px 0 0 0;
+    height: 30px;
+    line-height: 30px;
+    width: 160px;
+    text-align: center;
+}
+
+.common_upfilectrl .file_box .file_btn .loadtip,
+.common_upimgctrl .img_box .img_btn .loadtip {
+    z-index: 2;
+    color: #ffffff;
+}
+
+.common_upfilectrl .file_box .file_btn .loadtip_backer,
+.common_upimgctrl .img_box .img_btn .loadtip_backer {
+    z-index: 1;
+    background: #2966b6;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+
+.imgloading {
+    display: none;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    top: 100px;
+    padding: 15px 0px 15px 0px;
+    text-align: center;
+    color: #FFF;
+    transition: opacity 0.3s ease;
+    -webkit-transition: opacity 0.3s ease;
+}
+
+.common_imagelookbacker {
+    display: none;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    background-color: #000000;
+    transition: opacity 0.3s ease;
+    -webkit-transition: opacity 0.3s ease;
+}
+
+.common_imagelookbox {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+}
+
+.common_imagelookbox a.lookbtn {
+    position: absolute;
+    display: block;
+    cursor: pointer;
+    -webkit-transition: background-color .4s ease;
+    transition: background-color .4s ease;
+
+    /*禁止选中*/
+    moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.common_imagelookbox a.closebtn {
+    cursor: pointer;
+    display: block;
+    position: absolute;
+    z-index: 10;
+    width: 80px;
+    height: 46px;
+    top: 20px;
+    right: 2%;
+    background: url("../images/closebtn001.png") no-repeat center;;
+    transition: transform 0.5s ease;
+}
+
+.common_imagelookbox a.closebtn:hover {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+}
+
+.common_imagelookbox a.closebtn:active {
+    background-image: url("../images/closebtn002.png");
+}
+
+.common_imagelookbox a.leftpagebtn {
+    margin: auto;
+    position: absolute;
+    bottom: 0px;
+    width: 80px;
+    height: 80%;
+    left: 2%;
+    top: 0px;
+    display: none;
+    background: url("../images/prepage001.png") no-repeat center;
+}
+
+.common_imagelookbox a.leftpagebtn:active {
+    background: url("../images/prepage002.png") no-repeat center;
+}
+
+.common_imagelookbox a.rightpagebtn {
+    margin: auto;
+    position: absolute;
+    bottom: 0px;
+    width: 80px;
+    height: 80%;
+    right: 2%;
+    top: 0px;
+    display: none;
+    background: url("../images/nextpage001.png") no-repeat center;
+}
+
+.common_imagelookbox a.rightpagebtn:active {
+    background: url("../images/nextpage002.png") no-repeat center;
+}
+
+.common_imagelookbox .pagetip {
+    position: absolute;
+    bottom: 5%;
+    width: 100%;
+    height: 26px;
+    line-height: 26px;
+    font-size: 12px;
+    color: #ffffff;
+    text-align: center;
+}
+
+.common_imagelookbox .lookimgbox {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    white-space: nowrap;
+    opacity: 0;
+}
+
+.common_imagelookbox .lookimgbox ul {
+    white-space: nowrap;
+    width: 100%;
+    height: 100%;
+}
+
+.common_imagelookbox .lookimgbox ul li.lookcontenter {
+    display: inline-block;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.common_imagelookbox .lookimgbox ul li.lookcontenter img.lookimg {
+    /*垂直、水平都居中*/
+    display: inline-block;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    max-width: 80%;
+    max-height: 80%;
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, .6);
+}
+
+.common_imagelookbox .lookopacity {
+    opacity: 1;
+}
+
+.common_imagelook_backeropacity {
+    opacity: 0.5;
+}
+
+.common_upfilectrl {
+
+}
+
+.common_upfilectrl .file_item,
+.common_filedownctrl .file_item {
+    line-height: 28px;
+}
+
+.common_upfilectrl .file_item .add_file_btn {
+    display: block;
+    padding: 0 0 0 30px;
+    height: 22px;
+    line-height: 22px;
+    width: 120px;
+    background: url("../images/upfile_ctrl_addbtn.png") no-repeat left;
+}
+
+.common_upfilectrl .file_item .file_name,
+.common_filedownctrl .file_item .file_name {
+    display: block;
+    width: 280px;
+}
+
+.common_upfilectrl .file_item .remove_file,
+.common_filedownctrl .file_item .down_file {
+    font-size: 13px;
+    color: #ff0000;
+    text-decoration: underline;
+}

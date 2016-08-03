@@ -1,0 +1,54 @@
+package org.system.service.impl.self;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.self.SelfTestQuestion;
+import org.system.mapper.self.SelfTestQuestionMapper;
+import org.system.service.iface.self.ISelfTestQuestionService;
+
+@Service
+public class SelfTestQuestionService implements ISelfTestQuestionService{
+
+	@Resource
+	private SelfTestQuestionMapper mapper;
+	
+	@Override
+	public int insertSelfTestQuestion(SelfTestQuestion selfTestQuestion) {
+		return mapper.insert(selfTestQuestion);
+	}
+
+	@Override
+	public int deleteSelfTestQuestion(SelfTestQuestion selfTestQuestion) {
+		return mapper.delete(selfTestQuestion);
+	}
+
+	@Override
+	public int updateSelfTestQuestion(SelfTestQuestion selfTestQuestion) {
+		return mapper.update(selfTestQuestion);
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestQuestionDetail(SelfTestQuestion selfTestQuestion) {
+		return mapper.queryOne(selfTestQuestion);
+	}
+
+	@Override
+	public List<Map<String, Object>> getSelfTestQuestions(SelfTestQuestion selfTestQuestion) {
+		return mapper.queryAll(selfTestQuestion);
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestQuestionByFiled(SelfTestQuestion selfTestQuestion) {
+		return mapper.checkExists(selfTestQuestion);
+	}
+
+	@Override
+	public List<Map<String, Object>> getQuestionOfAnswer(SelfTestQuestion selfTestQuestion) {
+		return mapper.queryQuestionOfAnswer(selfTestQuestion);
+	}
+
+}

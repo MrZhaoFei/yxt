@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.about.SysAboutMapper" >
+
+
+    <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.about.SysAbout" useGeneratedKeys="true" keyColumn="id">
+		insert into sys_about (title,content,covers,files,create_date,type) values (#{title},#{content},#{covers},#{files},now(),#{type})
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.about.SysAbout">
+		DELETE FROM sys_about WHERE id=#{id}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.about.SysAbout">
+		UPDATE sys_about SET id=#{id},create_date=now()
+		<if test="title !=null and title !=''">
+			,title=#{title}
+		</if>
+		<if test="content !=null and content !=''">
+			,content=#{content}
+		</if>
+		<if test="covers !=null and covers !=''">
+			,covers=#{covers}
+		</if>
+		<if test="files !=null and files !=''">
+			,files=#{files}
+		</if>
+		<if test="type !=null and type !=''">
+			,type=#{type}
+		</if>
+		 WHERE id=#{id}
+	</update>
+	
+
+	
+	<!-- 查询全部  按时间降序排列 -->
+	<select id="queryAll" parameterType="org.system.entity.about.SysAbout" resultType="map">
+		select id,title,content,covers,files,create_date createDate,type from sys_about
+		 <where>
+			<if test="title!=null and title!=''">
+				title like CONCAT(CONCAT('%', #{title}), '%')
+			</if>
+		</where>
+		order by createDate desc 
+	</select>
+	
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.about.SysAbout" resultType="map">
+		select id,title,content,covers,files,create_date createDate,type from sys_about WHERE id=#{id}
+	</select>
+	
+	
+	<!-- 检查唯一性 -->
+    <select id="checkExists" parameterType="org.system.entity.about.SysAbout" resultType="map">
+	     SELECT id,title,content,covers,files,create_date createDate,type FROM sys_about where title=#{title} 
+	     and content=#{content} and files=#{files} and create_date=now() and type=#{type}
+     </select>
+
+
+</mapper>

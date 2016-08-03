@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head> 
+  <base href="/yxt-admin/" /> 
+  <title>列表</title> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+   <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+   <META HTTP-EQUIV="Expires" CONTENT="0">
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/gray/easyui.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="js/trumbowyg/design/css/trumbowyg.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/jquery.flex-images.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/icon/font-awesome.min.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/webuploader.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/style.css?ver=1001" /> 
+  <link rel="stylesheet" type="text/css" href="css/web.css?ver=1001" /> 
+  <script type="text/javascript" src="js/jquery.min.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/easyui/jquery.easyui.min.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/easyui/extend.easyui.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/jquery.flex-images.min.js?ver=1001"></script> 
+  <script type="text/javascript" src="js/trumbowyg/trumbowyg.min.js?ver=1001"></script> 
+  <script type="text/javascript">
+  $(function() {
+	 
+	  /*初始化控件*/
+	  $('#main_table').datagrid({
+	    method: 'get',
+	    url: '/yxt-admin/admin/packageService?ran=' + Math.random(),
+	    toolbar: '#seach',
+	    pagination: true,
+	    fit: true,
+	    pageSize:20,
+	    fitColumns: true,
+	    border: false,
+	    rownumbers: true,
+	    singleSelect: true,
+	    loadFilter: function(data) {
+	    	if(data.stateCode=='205'){
+	    		   top.location.href="/yxt-admin/adminLogin.html";
+	    		return;
+	    	}else if(data.stateCode=='203'){
+	    		return {total:0,rows:[]};
+	    	}
+	      return data.data;
+	    }
+	  });
+	});
+  
+  
+  function _stateformatter(value, row, index) {
+	  if (value == 1) {
+	    return "上架";
+	  }if (value == 2){
+	  return "下架";
+		  
+	  }
+	}
+  
+  
+  
+	function query() {
+	  $('#main_table').datagrid('load', {
+		  name: $('#productName').textbox('getValue')
+	  });
+	}
+	function clear() {
+	  $('#productName').textbox('clear');
+	}
+	 function re(){
+   	  history.go(0) 
+     }
+	function _opformatter(value, row, index) {
+	  var a = '&nbsp;<a href="javascript:edit(\'' + index + '\',' + row.id + ')" title="编辑和详情"><i class="fa fa-pencil"></i></a>';	
+	  var c = '&nbsp;&nbsp;&nbsp;<a href="javascript:del(\'' + row.id + '\')" title="删除"><i class="fa fa-trash"></i></a>';
+	  return a +  c;
+	}
+	
+	
+	 function _priceformatter(value, row, index) {
+		  if (value == null || value==0) {
+		    return "￥ 0.00";
+		  }if(value!=null){
+			  var f = value.toFixed(2);	
+			  return  "￥"+f;
+		  }
+		}
+
+	function findAllPackageService(){
+		$.ajax({
+			  method: 'get',
+			  url:'/yxt-admin/admin/packageService',
+			  success: function(data){
+				  var rows = data.data.rows;rowslen = rows.length;				 
+				 for(var i = 0; i < rowslen; i++){	
+					 $('#packageTypeName').append("<option value="+rows[i].id+">"+rows[i].servicePackName+"</option>");
+				 }
+	
+			 }
+		})
+	}
+	
+	
+	
+	
+	function add() {
+		findAllPackageService();
+	  $('#form').form('reset');
+	  $('#dialog').dialog({
+		    title: '添加',
+		    width: 400,
+		    height: 420,
+		    closed: false,
+		    modal: true,
+		    buttons: [{
+		      text: '确定',
+		      handler: function() {
+		    	  var optionsrs=$("#packageTypeName option:selected");
+		    	/*   alert($('#createDate').datetimebox('getValue'));
+            	  alert($('#servicePackName').textbox('getValue'));
+            	  alert("===="+create_date); */
+		        var v = $('#form').form('validate');
+		        if (v) {      	
+		        	 $.ajax({
+		                  type: 'POST',
+		                  url:'/yxt-admin/admin/servicePack/insert',
+		                  data:$('#form').form('load',{
+		                	  
+		                	  name:$('#servicePackName').textbox('getValue'),
+		                	  price:$('#price').textbox('getValue'),
+		                	  desc:$('#de').textbox('getValue'),
+		                	  create_date:$('#createDate').datetimebox('getValue'),
+		                	  acquisitive:$('#acquisitive').textbox('getValue'),
+		                      state:$('#state').textbox('getValue'),
+		                	  package_type_id:optionsrs.val()  		                		  
+		                  }),
+		                  success: function(data) {
+		                	 
+		                    if (data.stateCode == 200) {
+		                      $('#dialog').dialog('close');
+		                      $('#main_table').datagrid('reload');
+		                      $.messager.show({
+		                        title: '提示消息',
+		                        msg: data.message,
+		                        timeout: 5000,
+		                        showType: 'slide'
+		                      });
+		                    } else {
+		                      $.messager.show({
+		                        title: '提示',
+		                        msg: data.message
+		                      });
+		                    }
+		                  },
+		                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                    $.messager.show({
+		                      title: '提示',
+		                      msg: '请求发生错误请联系开发者'
+		                    });
+		                  }
+		                });
+		               
+		          }
+		        }
+		      },
+		    
+		    
+		    {
+		      text: '取消',
+		      handler: function() {
+		        $('#dialog').dialog('close');
+		      }
+		    }]
+		  
+		  
+		  });
+	}
+	
+	
+	
+	
+	function edit(index, id) {
+	
+	  $('#form').form('load',$('#main_table').datagrid('getData').rows[index]);
+	  $.get('/yxt-admin/admin/packageService/' + id + '/detail',
+	  function(data) {
+	    $('#form').form('load', data.data);	  
+	  });	
+	  $("#psvName").textbox('readonly');
+	  $('#dialog').dialog({
+	    title: '编辑',
+	    width: 400,
+	    height: 420,
+	    closed: false,
+	    modal: true,
+	    buttons: [{
+	      text: '确定',
+	      handler: function() {
+	        var v = $('#form').form('validate');
+	        if (v) {
+	          //AJAX提交
+	          $.ajax({
+	            type: 'put',
+	            url: '/yxt-admin/admin/packageService/' + id + '/update',
+	            data:$('#form').form('load',{
+	                price:$('#psPrice').val(),
+	                times:$('psTime').val()
+                }),
+	            success: function(data) {
+	            	alert(name);
+	              if (data.stateCode == 200) {
+	                $('#dialog').dialog('close');
+	                $('#form').form('reset');
+	                $('#main_table').datagrid('reload');
+	                $.messager.show({
+	                  title: '提示消息',
+	                  msg: data.message,
+	                  timeout: 5000,
+	                  showType: 'slide'
+	                });
+	              } else {
+	                $.messager.show({
+	                  title: '提示',
+	                  msg: data.message
+	                });
+	              }
+	            },
+	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+	              $.messager.show({
+	                title: '提示',
+	                msg: '请求发生错误请联系开发者'
+	              });
+	            }
+	          });
+	        }
+	      }
+	    },
+	    {
+	      text: '取消',
+	      handler: function() {
+	        $('#dialog').dialog('close');
+	      }
+	    }]
+	  });
+	}
+	
+	
+	function del(id) {
+	  $.messager.confirm('确认', '您确认想要删除记录吗？',
+	  function(r) {
+	    if (r) {
+	      $.ajax({
+	        type: 'delete',
+	        url: '/yxt-admin/admin/packageService/' + id + '/delete',
+	        success: function(data) {
+	          if (data.stateCode == 200) {
+	            $('#main_table').datagrid('reload');
+	            $.messager.show({
+	              title: '提示消息',
+	              msg: data.message,
+	              timeout: 5000,
+	              showType: 'slide'
+	            });
+	          } else {
+	            $.messager.show({
+	              title: '提示',
+	              msg: data.message
+	            });
+	          }
+	        },
+	        error: function(XMLHttpRequest, textStatus, errorThrown) {
+	          $.messager.show({
+	            title: '提示',
+	            msg: '请求发生错误请联系开发者'
+	          });
+	        }
+	      });
+	    }
+	  });
+	}
+	
+
+</script> 
+ </head> 
+ <body> 
+  <!-- 全局日历控件 --> 
+  <!--  <div id="sc" class="easyui-calendar" data-options="validator: function(date){return date<=new Date();}"></div> -->
+  <!-- 搜索栏 --> 
+  <div id="seach"> 
+   <label>服务项目名称</label> 
+   <input id="productName" class="easyui-textbox" style="width: 120px;" /> 
+   
+   <a href="javascript:query()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+   <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-ban"></i> 清除</a>
+    <a href="javascript:re()" class="easyui-linkbutton"><i class="fa  fa-refresh"></i> 刷新当前页面</a>  
+  </div> 
+  <!-- 内容表格 --> 
+  <table id="main_table"> 
+   <thead> 
+    <tr> 
+     <th data-options="field:'id',width:20">id</th>    
+      <th data-options="field:'productServiceName',width:90">服务项目名称</th> 
+      <th data-options="field:'price',width:90,align:'right',formatter:_priceformatter">服务项价格</th> 
+      <th data-options="field:'price2',width:90,align:'right',editor:{type:'numberbox',options:{precision:2}}">优惠价格</th> 
+      <th data-options="field:'times',width:90,editor:'numberbox',align:'right'">服务次数</th> 
+     <th data-options="field:'img',align:'center',width:30,formatter:_opformatter">操作</th> 
+     
+    </tr> 
+   </thead> 
+  </table> 
+ 
+  <!-- 添加 --> 
+  <div id="dialog">  
+   <form id="form" method="post"> 
+    <table class="table-edit" width="100%" align="center"> 
+     <tbody> 
+      <tr> 
+       <td style="width: 110px;">产品包名称</td> 
+       <td><input class="easyui-textbox" name="psvName"  id="psvName" class="psvName"  style="width: 200px" data-options="required:true,validType:'length[0,32]',missingMessage:'服务类型名称不能为空'"/>
+       </td> 
+       </tr>
+       <tr> 
+       <td style="width: 110px;">产品包价格</td> 
+       <td><input class="easyui-textbox" name="psPrice" id="psPrice" style="width: 200px" data-options="precision:2,align:'right',value:0.00"/>
+       </td> 
+       </tr>
+        <tr> 
+       <td style="width: 110px;">服务次数</td> 
+       <td><input class="easyui-textbox" name="psTime" id="psTime" style="width: 200px" data-options="min:0"/>
+       </td> 
+       </tr>       
+     </tbody> 
+    </table> 
+   </form>  
+  </div> 
+ 
+  
+  
+  
+   
+ </body>
+</html>

@@ -1,0 +1,54 @@
+package org.system.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.Department;
+import org.system.mapper.department.DepartmentMapper;
+import org.system.service.iface.IDepartmentService;
+@Service
+public class DepartmentService  implements IDepartmentService{
+	
+	@Resource
+	private DepartmentMapper departmentMapper;
+
+	@Override
+	public int insertDepartment(Department department) {
+		return departmentMapper.insert(department);
+	}
+
+	@Override
+	public int updateDepartment(Department department) {
+		return departmentMapper.update(department);
+	}
+
+	@Override
+	public int deleteDepartment(Department department) {
+		return departmentMapper.delete(department);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDepartmentList(Department department) {
+		return departmentMapper.queryAll(department);
+	}
+
+	@Override
+	public Map<String, Object> getDepartmentDetail(Department department) {
+		return departmentMapper.queryOne(department);
+	}
+
+	@Override
+	public Map<String, Object> getDepartmentByFiled(Department department) {
+		return departmentMapper.checkExists(department);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDepartmentAllList(Department department) {
+		return departmentMapper.queryAllName(department);
+		
+	}
+
+}

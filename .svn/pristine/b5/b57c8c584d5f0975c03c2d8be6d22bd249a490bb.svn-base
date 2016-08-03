@@ -1,0 +1,55 @@
+package org.system.service.impl.sms;
+
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.sms.SmsSendTask;
+import org.system.mapper.sms.SmsSendTaskMapper;
+import org.system.service.iface.sms.ISmsSendTaskService;
+@Service
+public class SmsSendTaskService implements ISmsSendTaskService{
+
+	@Resource
+	private SmsSendTaskMapper mapper;
+	
+	@Override
+	public int insertSms(SmsSendTask sms) {
+		return mapper.insert(sms);
+	}
+
+	@Override
+	public int updateSms(SmsSendTask sms) {
+		return mapper.update(sms);
+	}
+
+	@Override
+	public int deleteSms(SmsSendTask sms) {
+		return mapper.delete(sms);
+	}
+
+	@Override
+	public List<Map<String, Object>> getSmsList(SmsSendTask sms) {
+		return mapper.queryAll(sms);
+	}
+
+	@Override
+	public List<Map<String, Object>> getSmsSendHistoryList(SmsSendTask sms) {
+		return mapper.getSmsSendHistoryList(sms);
+	}
+
+	@Override
+	public int insertSms(Map<String, Object> param) {
+		return mapper.insertByMap(param);
+	}
+
+	@Override
+	public int deleteSmsByMap(Map<String, Object> param) {
+		return mapper.deleteByMap(param);
+	}
+	
+	 
+}

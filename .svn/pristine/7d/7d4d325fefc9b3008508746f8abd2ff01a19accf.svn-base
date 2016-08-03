@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ <mapper namespace="org.system.mapper.service.PackageTypeMapper" >
+    
+    <select id="queryAll" parameterType="org.system.entity.service.PackageType" resultType="map">
+           select id,name from package_type
+           <where>
+			<if test="name!=null and name!=''">
+				name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			</where>
+    </select>
+    
+    <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.service.PackageType" useGeneratedKeys="true" keyColumn="id">
+		insert into package_type (name) values (#{name})
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.service.PackageType">
+		DELETE FROM package_type WHERE id=#{id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.service.PackageType">
+		UPDATE package_type SET id=#{id}
+		<if test="name !=null and name !=''">
+			,name=#{name}
+		</if>
+		 WHERE id=#{id}
+	</update>
+	
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.service.PackageType" resultType="map">
+		SELECT id,name FROM package_type WHERE id=#{id}
+	</select>
+	
+	
+	<!-- 检查唯一性 -->
+    <select id="checkExists" parameterType="org.system.entity.service.PackageType" resultType="map">
+	    SELECT id,name FROM package_type WHERE name=#{name} 
+     </select>
+  
+ </mapper>

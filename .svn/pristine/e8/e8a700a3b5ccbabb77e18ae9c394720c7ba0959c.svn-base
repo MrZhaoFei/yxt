@@ -1,0 +1,151 @@
+package org.system.controller.impl.user.healthInfo;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.user.healthInfo.IOperateHistoryController;
+import org.system.entity.user.healthinfo.HealthInfo;
+import org.system.entity.user.healthinfo.OperateHistory;
+import org.system.message.Message;
+import org.system.service.iface.service.IGdNumberInfoService;
+import org.system.service.iface.user.healthinfo.IHealthInfoService;
+import org.system.service.iface.user.healthinfo.IOperateHistoryService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+@Controller
+public class OperateHistoryController implements IOperateHistoryController{
+
+	Logger log = LoggerFactory.getLogger(OperateHistoryController.class);
+	
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IHealthInfoService healthInfoService; 
+	@Resource
+	private IGdNumberInfoService gdNumberInfoService;
+	@Resource
+	private IOperateHistoryService operateHistoryService;
+	
+	
+	@Override
+	public Map<String, Object> insertOperateHistory(OperateHistory operateHistory, BindingResult result, String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			// 判断健康档案是否存在
+			HealthInfo healthInfo =new HealthInfo();
+			healthInfo.setId(operateHistory.getHealthInfoId());
+			Map<String, Object> acMap = healthInfoService.getHealthInfoDetail(healthInfo);
+			if (acMap == null || acMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("healthInfo.empty"));
+			}
+			//设置默认值 作废标志 0 正常  作废
+			operateHistory.setZfbz("0");
+			//设置默认值 数据更新时间
+			operateHistory.setUpdateTime(new Date());
+			// 执行新增操作
+			if (operateHistoryService.insertOperateHistory(operateHistory) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS,
+						Message.bundle("insert.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updatetOperateHistory(Integer operateHistoryyId, OperateHistory operateHistory,
+			BindingResult result, String token) {
+		operateHistory.setId(Long.valueOf(operateHistoryyId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			//设置默认值 数据更新时间
+			operateHistory.setUpdateTime(new Date());
+			// 执行修改操作
+			if (operateHistoryService.updateOperateHistory(operateHistory)> 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS,
+						Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getOperateHistoryList(OperateHistory operateHistory, BindingResult result,
+			String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> ohList = operateHistoryService.getOperateHistorys(operateHistory);
+			if (ohList != null && ohList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, operateHistory.getTotal());
+				resultMap.put(Global.DATA_ROWS, ohList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> deletetOperateHistory(Integer operateHistoryId, OperateHistory operateHistory,
+			BindingResult result, String token) {
+		operateHistory.setId(Long.valueOf(operateHistoryId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			//设置默认值 数据更新时间
+			operateHistory.setUpdateTime(new Date());
+			// 执行修改操作
+			if (operateHistoryService.deleteOperateHistory(operateHistory)> 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS,
+						Message.bundle("delete.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getOperateHistoryListByUser(OperateHistory operateHistory, BindingResult result,
+			String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> ohList = operateHistoryService.getOperateHistorys(operateHistory);
+			if (ohList != null && ohList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, operateHistory.getTotal());
+				resultMap.put(Global.DATA_ROWS, ohList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+}

@@ -1,0 +1,53 @@
+package org.system.controller.iface.doctor;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.doctor.DoctorDoctorGroup;
+import org.utils.spring.Groups;
+
+/**
+ * 医生和医生团队处理
+ * 
+ * @author ZF
+ *
+ */
+@RequestMapping()
+public interface IDoctorDoctorGroupController {
+
+	/**
+	 * 团队长 剔除 团队成员
+	 * 
+	 * @param doctorGroupId
+	 * @param doctorGroup
+	 * @param result
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/doctor/doctorGroupDoctor/reject/{groupId}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public Map<String, Object> updateDoctorGroupDoctorReject(@PathVariable("groupId") Integer doctorGroupId,
+			@Validated({ Groups.Delete.class }) DoctorDoctorGroup doctorDoctorGroup, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 团队长转移权限
+	 * 
+	 * @param doctorGroupId
+	 * @param doctorGroup
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/doctorGroupDoctor/transfer/{groupId}", method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updateDoctorGroupDoctorTransfer(@PathVariable("groupId") Integer doctorGroupId,
+			@Validated({ Groups.Update.class }) DoctorDoctorGroup doctorDoctorGroup, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+}

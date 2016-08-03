@@ -1,0 +1,19 @@
+package org.system.service.iface.service.resp;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.resp.ServiceRespProcessInfo;
+
+public interface IServiceRespProcessInfoService {
+
+	Map<String, Object> getServiceRespProcessInfoByFild(ServiceRespProcessInfo serviceRespProcessInfo);
+
+	int insertServiceRespProcessInfo(ServiceRespProcessInfo serviceRespProcessInfo);
+
+	int updateServiceRespProcessInfo(ServiceRespProcessInfo serviceRespProcessInfo);
+
+	List<Map<String, Object>> getServiceRespProcessInfoList(ServiceRespProcessInfo serviceRespProcessInfo);
+
+	Map<String, Object> getServiceRespProcessInfoDetail(ServiceRespProcessInfo serviceRespProcessInfo);
+}

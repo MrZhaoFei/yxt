@@ -1,0 +1,25 @@
+package org.system.mapper.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.Address;
+
+public interface AddressMapper extends IBaseMapper<Address> {
+	
+	
+ 	 List<Map<String, Object>> getAddressChildList(Address address);
+ 	 List<Map<String, Object>>	queryAddress(Address address);
+ 	 
+ 	  Map<String, Object> queryOne(Address address);
+ 	 
+ 	  Map<String, Object> queryMaxId(Address address);
+ 	  
+ 	  Map<String, Object>  queryCodeValue(Address address);
+ 	  
+ 	 Map<String, Object> getAddressListByPid(String id);
+ 	 
+ 	 
+
+}

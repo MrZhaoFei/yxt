@@ -1,0 +1,32 @@
+package org.system.service.iface.service;
+
+import java.util.Date;
+
+import org.utils.service.ServiceEnum;
+
+public interface IGdNumberInfoService {
+	/**
+	 * 根据服务类型和时间获取流水号
+	 * 
+	 * @param service
+	 * @param time
+	 * @return
+	 */
+	public String getGdnumberForDay(ServiceEnum serviceEnum, Date time);
+
+
+	/**
+	 * @Title: getGdnumberForHospital
+	 * @Description: 根据机构取机构签约流水号
+	 * @param hosiptalId
+	 * @return String
+	 */
+	public String getGdnumberForHospital(Integer hosiptalId);
+
+	/**
+	 * 获取订单号
+	 * 
+	 * @return
+	 */
+	public String getOrderNumber();
+}

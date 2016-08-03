@@ -1,0 +1,85 @@
+package org.system.controller.iface.user.healthtest;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.user.healthtest.SelfTestTitle;
+import org.utils.spring.Groups;
+
+/**
+ * @ClassName ISelfTestTitleController
+ * @author <font color="red"><b>LiuMrLiu</b></font>
+ * @date 2016年3月21日 上午11:08:04
+ * @version 1.0
+ * @description 问卷类型
+ */
+@RequestMapping(value = { "/user" })
+public interface ISelfTestTitleController {
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param selfTestTitle
+	 * @param result
+	 * @return
+	 * @date 2016年3月18日 下午5:30:14
+	 * @version 1.0
+	 * @description 新增问卷类型
+	 */
+	@RequestMapping(value = "/selfTestTitle", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("selfTestTitle:insert")
+	public Map<String, Object> insertSelfTestTitle(@Validated({ Groups.Insert.class }) SelfTestTitle selfTestTitle,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param selfTestTitleId
+	 * @param selfTestTitle
+	 * @param result
+	 * @return
+	 * @date 2016年3月18日 下午5:30:26
+	 * @version 1.0
+	 * @description 修改问卷类型
+	 */
+	@RequestMapping(value = "/selfTestTitle/{selfTestTitleId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("selfTestTitle:update")
+	public Map<String, Object> updateSelfTestTitle(@PathVariable("selfTestTitleId") Integer selfTestTitleId,
+			@Validated({ Groups.Update.class }) SelfTestTitle selfTestTitle, BindingResult result);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param selfTestTitle
+	 * @return
+	 * @date 2016年3月18日 下午5:30:38
+	 * @version 1.0
+	 * @description 问卷类型列表
+	 */
+	@RequestMapping(value = "/selfTestTitles", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("selfTestTitle:list")
+	public Map<String, Object> getSelfTestTitleList(@Validated({ Groups.Select.class }) SelfTestTitle selfTestTitle,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param selfTestTitleId
+	 * @param selfTestTitle
+	 * @return
+	 * @date 2016年3月18日 下午5:30:48
+	 * @version 1.0
+	 * @description 问卷类型详情
+	 */
+	@RequestMapping(value = "/selfTestTitle/{selfTestTitleId}", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("selfTestTitle:detail")
+	public Map<String, Object> getSelfTestTitleDetail(@PathVariable("selfTestTitleId") Integer selfTestTitleId,
+			SelfTestTitle selfTestTitle);
+}

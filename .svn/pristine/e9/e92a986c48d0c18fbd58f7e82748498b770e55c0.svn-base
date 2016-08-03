@@ -1,0 +1,20 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.ProductService;
+
+public interface IProductServiceService {
+    public int insertProductService(ProductService productService);
+	
+	public int updateProductService(ProductService productService);
+	
+	public int deleteProductService(ProductService productService);
+	
+	public List<Map<String, Object>> getProductServiceList(ProductService productService);
+	
+	public Map<String, Object> getProductServiceDetail(ProductService productService);
+	
+	public Map<String, Object> getProductServiceByFiled(ProductService productService);
+}

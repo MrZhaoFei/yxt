@@ -1,0 +1,153 @@
+package org.system.controller.impl.self;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.self.ISelfTestTitleController;
+import org.system.entity.self.SelfTestAnswer;
+import org.system.entity.self.SelfTestQuestion;
+import org.system.entity.self.SelfTestTitle;
+import org.system.message.Message;
+import org.system.service.iface.self.ISelfTestAnswerService;
+import org.system.service.iface.self.ISelfTestQuestionService;
+import org.system.service.iface.self.ISelfTestTitleService;
+
+@Controller
+public class SelfTestTitleController implements ISelfTestTitleController{
+
+	Logger log = LoggerFactory.getLogger(SelfTestTitleController.class);
+	@Resource 
+	private ISelfTestTitleService selfTestTitleService;
+	
+	@Resource
+	private ISelfTestAnswerService selfTestAnswerService;
+	
+	@Resource 
+	private ISelfTestQuestionService selfTestQuestionService;
+	
+	@Override
+	public Map<String, Object> insertSelfTestTitle(SelfTestTitle selfTestTitle, BindingResult result) {
+		
+		// 检查数据是否存在
+		Map<String, Object> sttMap = selfTestTitleService.getSelfTestTitleByFiled(selfTestTitle);
+		if (sttMap != null && sttMap.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+		}
+		// 执行新增操作
+		if (selfTestTitleService.insertSelfTestTitle(selfTestTitle) > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+	}
+
+	@Override
+	public Map<String, Object> updatetSelfTestTitle(Integer selfTestTitleId, SelfTestTitle selfTestTitle,
+			BindingResult result) {
+		selfTestTitle.setId(selfTestTitleId);
+		// 检查数据是否存在
+		Map<String, Object> sttMap = selfTestTitleService.getSelfTestTitleByFiled(selfTestTitle);
+		if (sttMap != null && sttMap.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+		}
+		// 执行修改操作
+		if (selfTestTitleService.updateSelfTestTitle(selfTestTitle) > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestTitleList(SelfTestTitle selfTestTitle, BindingResult result,HttpServletRequest req) {
+		// 定义返回对象
+		   HttpSession session=req.getSession();
+			 if(session.getAttribute("user")!=null){
+				 Map<String, Object> resultMap = new HashMap<>();
+				 List<Map<String, Object>> sttList = selfTestTitleService.getSelfTestTitles(selfTestTitle);
+				 if (sttList != null && sttList.size() > 0) {
+					 // 得到数据总数
+					 resultMap.put(Global.DATA_TOTAL, selfTestTitle.getTotal());
+					 resultMap.put(Global.DATA_ROWS, sttList);
+					 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+				 }
+				 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			 }else{
+				 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+			 }
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestTitleDetail(Integer selfTestTitleId, SelfTestTitle selfTestTitle,
+			BindingResult result) {
+	    // 设置实例的id属性
+		selfTestTitle.setId(selfTestTitleId);
+		Map<String, Object> resultList = selfTestTitleService.getSelfTestTitleDetail(selfTestTitle);
+		if (resultList != null && resultList.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultList, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	@Transactional
+	public Map<String, Object> deleteSelfTestTitle(Integer selfTestTitleId, SelfTestTitle selfTestTitle,
+			BindingResult result) {
+		    selfTestTitle.setId(selfTestTitleId);
+		    
+		    SelfTestAnswer sfa=new SelfTestAnswer();
+		    SelfTestQuestion atq=new SelfTestQuestion();
+			List<Map<String, Object>> sttList = selfTestTitleService.getAllInformation(selfTestTitle);
+			int num=sttList.size();
+			for(int i=0;i<num;i++){
+				
+				if(sttList.get(i).get("questionId")!=null){
+					
+					int ay=(int) sttList.get(i).get("questionId");
+					if(ay!=0){						
+						sfa.setQuestionId(ay);
+						selfTestAnswerService.deleteSelfTestAnswer(sfa);
+					}/*else{
+						throw new RuntimeException();
+					}*/
+				}
+				if(sttList.get(i).get("titleId")!=null){
+					
+					int array=(int)sttList.get(i).get("titleId");
+					if(array!=0){
+						atq.setTitleId(array);
+						selfTestQuestionService.deleteSelfTestQuestion(atq);
+						
+					}
+				}
+			}
+			
+		    
+		// 执行删除操作
+		if (selfTestTitleService.deleteSelfTestTitle(selfTestTitle) > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("delete.success"));
+		}
+		else{
+			throw new RuntimeException();
+		}
+		//return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+	}
+
+	@Override
+	public Map<String, Object> getAllInformation(Integer selfTestTitleId, SelfTestTitle selfTestTitle,
+			BindingResult result) {
+		return null;
+	}
+
+}

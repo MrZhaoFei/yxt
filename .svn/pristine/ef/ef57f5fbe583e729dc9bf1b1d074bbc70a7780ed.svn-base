@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.doctor.DoctorDetailMapper" >
+
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from doctor_detail
+    where doctor_id = #{doctorId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="org.system.entity.doctor.DoctorDetail" >
+    insert into doctor_detail (doctor_id, IDCard, name, 
+      birthday, photo, school, 
+      grade, address_detail, zp_hospital_id, 
+      zp_department_id, profile, gootat
+      )
+    values (#{doctorId,jdbcType=INTEGER}, #{idcard,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=DATE}, #{photo,jdbcType=VARCHAR}, #{school,jdbcType=VARCHAR}, 
+      #{grade,jdbcType=INTEGER}, #{addressDetail,jdbcType=VARCHAR}, #{zpHospitalId,jdbcType=INTEGER}, 
+      #{zpDepartmentId,jdbcType=INTEGER}, #{profile,jdbcType=LONGVARCHAR}, #{gootat,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="update" parameterType="org.system.entity.doctor.DoctorDetail" >
+    update doctor_detail set doctor_id = #{doctorId}
+	   <if test="photo !=null and photo !=''">
+	   		 ,photo = #{photo}
+	   </if>
+	   <if test="gootat !=null and gootat !=''">
+	   		 ,gootat = #{gootat}
+	   </if>
+	   <if test="addressDetail !=null and addressDetail !=''">
+	   		 ,address_detail = #{addressDetail}
+	   </if>
+    	where doctor_id = #{doctorId}
+  </update>
+  <select id="queryOne" resultType="map" parameterType="org.system.entity.doctor.DoctorDetail" >
+    select doctor_id, IDCard, name, birthday, photo, school, grade, address_detail, zp_hospital_id, 
+    zp_department_id, profile, gootat
+    from doctor_detail
+    where doctor_id = #{doctorId,jdbcType=INTEGER}
+  </select>
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.doctor.DoctorDetail" >
+    select doctor_id, IDCard, name, birthday, photo, school, grade, address_detail, zp_hospital_id, 
+    zp_department_id, profile, gootat
+    from doctor_detail
+  </select>
+</mapper>

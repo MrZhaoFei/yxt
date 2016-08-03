@@ -1,0 +1,15 @@
+package org.system.service.iface.address;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.address.Address;
+
+public interface IAddressService {
+
+	public List<Map<String, Object>> getAddressList(Address address);
+
+	public Map<String, Object> getAddressDetail(Address address);
+
+	public List<Map<String, Object>> getAddressListByRaidus(Map<String, Object> map);
+}

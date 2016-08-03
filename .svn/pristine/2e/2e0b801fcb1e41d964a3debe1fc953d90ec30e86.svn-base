@@ -1,0 +1,69 @@
+package org.system.controller.impl.user.healthtest;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.user.healthtest.ISelfTestTitleController;
+import org.system.entity.user.healthtest.SelfTestTitle;
+import org.system.message.Message;
+import org.system.service.iface.user.healthtest.ISelfTestTitleService;
+
+import net.sf.ehcache.CacheManager;
+
+@Controller
+public class SelfTestTitleController implements ISelfTestTitleController {
+	Logger log = LoggerFactory.getLogger(SelfTestTitleController.class);
+	@Resource
+	private ISelfTestTitleService selfTestTitleService;
+	@Resource
+	private CacheManager cache;
+
+	@Override
+	public Map<String, Object> insertSelfTestTitle(SelfTestTitle selfTestTitle, BindingResult result, String token) {
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> updateSelfTestTitle(Integer selfTestTitleId, SelfTestTitle selfTestTitle,
+			BindingResult result) {
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestTitleList(SelfTestTitle selfTestTitle, BindingResult result, String token) {
+		// 定义返回对象
+		Map<String, Object> resultMap = new HashMap<>();
+		// 根据用户id查询用户的服务项
+		List<Map<String, Object>> selfTestTitleList = selfTestTitleService.getSelfTestTitleList(selfTestTitle);
+		if (selfTestTitleList != null && selfTestTitleList.size() > 0) {
+			// 得到数据总数
+			resultMap.put(Global.DATA_TOTAL, selfTestTitle.getTotal());
+			resultMap.put(Global.DATA_ROWS, selfTestTitleList);
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestTitleDetail(Integer selfTestTitleId, SelfTestTitle selfTestTitle) {
+		// 设置主键
+		selfTestTitle.setId(selfTestTitleId);
+		// 查询详情
+		Map<String, Object> resultMap = selfTestTitleService.getSelfTestTitleDetail(selfTestTitle);
+		if (resultMap != null && resultMap.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+}

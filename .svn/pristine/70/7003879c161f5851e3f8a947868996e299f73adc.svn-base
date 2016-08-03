@@ -1,0 +1,1347 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head> 
+  <base href="/yxt-admin/" /> 
+  <title>优惠包列表</title> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+   <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+   <META HTTP-EQUIV="Expires" CONTENT="0">
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css" /> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/gray/easyui.css" /> 
+  <link rel="stylesheet" type="text/css" href="js/trumbowyg/design/css/trumbowyg.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/jquery.flex-images.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/icon/font-awesome.min.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/webuploader.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/style.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/web.css" /> 
+  <script type="text/javascript" src="js/jquery.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script> 
+  <script type="text/javascript" src="js/easyui/extend.easyui.js"></script> 
+  <script type="text/javascript" src="js/jquery.flex-images.min.js"></script> 
+  <script type="text/javascript" src="js/trumbowyg/trumbowyg.min.js"></script> 
+
+ </head> 
+ <body> 
+  <!-- 全局日历控件 --> 
+  <!--  <div id="sc" class="easyui-calendar" data-options="validator: function(date){return date<=new Date();}"></div> -->
+  <!-- 搜索栏 --> 
+  <div id="seach"> 
+   
+    
+    <label>产品包</label> 
+     <input class="easyui-combobox"  name="servicePackId" id="servicePackId" style="width:200px;"
+      data-options=" url:'/yxt-admin/admin/servicePack',
+                editable:false, 
+			    method:'get',
+			    valueField:'id',    
+			    textField:'servicePackName',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"/> 
+					
+	<label>包来源</label> 
+    <input class="easyui-combobox" name="packageSourceId" id="packageSourceId" style="width:200px;"
+      data-options=" url:'/yxt-admin/admin/registerSource',
+                editable:false, 
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"/> 
+				
+<!-- <label>    省: </label>     <input class="easyui-combobox" name="codeName" id="codeNameLook" style="width:120px;"/> 
+ <label>	市  : </label>   <input class="easyui-combobox" name="code_nameShi" id="code_nameShiLook" style="width:120px;" />
+ <label>	区/县: </label>  <input class="easyui-combobox" name="code_nameQu" id="code_nameQuLook" style="width:120px;"/> 
+ <label>	街道:  </label>  <input class="easyui-combobox" name="code_namebut" id="code_namebutLook" style="width:150px;" />	
+ <label>	 社区: </label>   <input class="easyui-combobox" name="code_nameSheQu" id="code_nameSheQuLook" style="width:150px;"/>
+   <input name="addressId" id="addressId" style="display:none" > -->
+
+    
+   <a href="javascript:query()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+  <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-ban"></i> 清除搜索条件</a> 
+   <a href="javascript:add()" class="easyui-linkbutton"><i class="fa fa-plus"></i> 添加</a>
+    <a href="javascript:re()" class="easyui-linkbutton"><i class="fa  fa-refresh"></i> 刷新当前页面</a>    
+  </div> 
+  
+
+  
+  <!-- 内容表格 --> 
+  <table id="main_table"> 
+   <thead> 
+    <tr>
+      <th data-options="field:'id',width:10">id</th>  
+      <th data-options="field:'spName',width:50">产品包</th> 
+      <th data-options="field:'sprice',width:30,align:'right',formatter:_priceformatter">产品包价格</th>
+    <!--<th data-options="field:'enableStartTime',width:50">开始时间</th> 
+      <th data-options="field:'enableEndTime',width:50">结束时间</th> -->
+      <th data-options="field:'code_nameSheQu',width:50">产品包定区域</th>
+      <th data-options="field:'rsName',width:30">产品包定购渠道</th> 
+      <th data-options="field:'img',align:'center',width:50,formatter:_opformatter">操作</th> 
+     
+    </tr> 
+   </thead> 
+  </table> 
+ 
+  
+ 
+  
+   <div id="dialog">  
+   <form id="form" method="post"> 
+    <table class="table-edit" width="100%" align="center" style="height:400px;"> 
+     <tbody> 
+      <tr> 
+       <td style="width: 110px;">产品包</td> 
+       <td>
+           <input class="easyui-combobox"  name="spName" id="spName" style="width:200px;" 
+           data-options=" url:'/yxt-admin/admin/servicePack', 
+                required:true,
+                 editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'servicePackName',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}">  
+       </td> 
+       </tr>
+       
+        <!-- <tr> 
+       <td style="width: 110px;">开始时间</td> 
+       <td><input class="easyui-datetimebox" name="enableStartTime"  id="enableStartTime"  style="width: 200px" />
+       </td> 
+       </tr>
+       <tr> 
+       <td style="width: 110px;">结束时间</td> 
+       <td><input class="easyui-datetimebox" name="enableEndTime" id="enableEndTime" style="width: 200px" />
+       </td> 
+       </tr>  -->
+       <tr> 
+       <td style="width: 110px;">产品包定购渠道</td> 
+       <td>
+           <input class="easyui-combobox"  name="rsName" id="rsName" style="width:200px;" 
+           data-options=" url:'/yxt-admin/admin/registerSource', 
+                editable:false,
+                required:true,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"/>
+ 
+       </td> 
+       </tr>
+       
+      <tr> 
+       <td style="width: 110px;">产品区域</td> 
+       <td colspan="4">
+    <div id="address_box2">
+              省:&nbsp;&nbsp;&nbsp;&nbsp;<input class="easyui-combobox" name="codeName" id="codeName" style="width:150px;" data-options="editable:false"/><br/> 
+	  市:&nbsp;&nbsp;&nbsp;&nbsp;<input class="easyui-combobox" name="code_nameShi" id="code_nameShi" style="width:150px;" data-options="editable:false"/><br/> 
+	区/县:<input class="easyui-combobox" name="code_nameQu" id="code_nameQu" style="width:150px;" data-options=" editable:false"/><br/>  
+	街道:&nbsp;<input class="easyui-combobox" name="code_namebut" id="code_namebut" style="width:150px;" data-options="editable:false"/><br/> 	
+	 社区:&nbsp;<input class="easyui-combobox" name="code_nameSheQu" id="code_nameSheQu" style="width:150px;" data-options="editable:false"/><br/> 
+	 <input name="addressId" id="addressId" style="display:none" ></div>
+    </td>
+                    
+     </tbody> 
+    </table> 
+   </form>  
+  </div> 
+  
+  
+  
+  
+  <div id="addPrduct">
+  <div> <a href="javascript:addService()" class="easyui-linkbutton" id="addService"><i class="fa fa-plus"></i> 添加服务</a> </div>
+   <div id="out" style="height:500px;">
+   <table id="_main_table" class="easyui-datagrid"> 
+   <thead> 
+    <tr> 
+        
+    <th data-options="field:'productServiceName',width:110">项目服务名称</th>    
+    <th data-options="field:'price',width:60,align:'right',precision:2,min:0,formatter:_doublePrice">基础价格(元)</th>
+     <th data-options="field:'price2',width:60,align:'right',precision:2,min:0,formatter:_doublePrice">发布价格(元)</th>
+     <th  data-options="field:'times',width:60,align:'right'">服务次数</th>
+     <th data-options="field:'img',align:'center',width:80,formatter:_optionMatter">操作</th> 
+    </tr> 
+   </thead>  
+  </table>    
+   </div>  
+  </div> 
+  
+  
+  
+  
+ 
+   <div id="out11" >
+   <table id="add_main_table" class="easyui-datagrid"> 
+   <thead > 
+    <tr> 
+     
+    <th data-options="field:'productServiceName',width:250">项目服务名称</th>    
+    <th data-options="field:'price',width:100,align:'right',precision:2,min:0,formatter:_doublePrice">基础价格(元)</th>
+     <th data-options="field:'pricePublic',width:100,align:'right',editor:{type:'numberbox',options:{precision:2,min:0}}">发布价格(元)</th>
+     <th  data-options="field:'timesPublic',width:100,editor:{type:'numberbox',options:{align:'right',min:1}}">服务次数</th>
+ 
+    </tr> 
+   </thead>  
+  </table>    
+   </div>
+   
+    
+   <div id="dialogService">  
+   <form id="formService" method="post"> 
+    <table class="table-edit" width="100%" align="center"  > 
+     <tbody> 
+     <tr>
+      <td style="width: 110px;">项目服务名称</td>
+      <td ><input class="easyui-combobox" style="width: 260px;" id="productServiceName" name="productServiceName" data-options="
+                                 valueField:'id',
+                               editable:false,
+								textField:'productServiceName',
+								method:'get',
+								url:'/yxt-admin/admin/productService',
+								 editable:false,
+								required:true,
+								loadFilter:function(data){
+									 return data.data.rows;
+									}"/></td>
+     </tr>
+     <tr>
+     <td style="width: 110px;">发布价格(元)</td>
+     <td><input class="easyui-numberbox" style="width:260px;" name="price2" id="price2"  data-options="precision:2,min:0"/></td>
+     </tr>
+     <tr>
+     <td style="width: 110px;">服务次数</td>
+     <td ><input class="easyui-numberbox" style="width: 260px;" id="times" name="times"  data-options="align:'right',min:1,max:100"/></td>
+     </tr>
+     </tbody>
+     </table>
+     </form>
+     </div> 
+     
+    
+ </body>
+</html>
+  <script type="text/javascript">
+          var addressServiceId="";
+		  var editIndex = undefined;
+		  var sheQuId="";
+         var pid="";
+         var jge="";
+         var servicePackConditionId="";
+         var editIndex = undefined;
+        
+       
+	 $(function() {		
+		  /*初始化控件*/
+		
+		  $('#main_table').datagrid({
+		    method: 'get',
+		    url: '/yxt-admin/admin/servicePackCondition',
+		    toolbar: '#seach',
+		    pagination: true,
+		    pageSize:20,		
+		    fit: true,
+		    fitColumns: true,
+		    border: false,
+		    rownumbers: true,
+		    singleSelect: true,
+		   loadFilter: function(data) {
+			   if(data.stateCode=='205'){
+				   top.location.href="/yxt-admin/adminLogin.html";
+		    		return;
+		    	}
+		    	 var rows = data.data.rows,rowslen = rows.length,i;
+		    	for(i = 0 ; i < rowslen; ++i){
+			    	rows[i].enableEndTime = DateToString(rows[i].enableEndTime);
+			    	rows[i].enableStartTime = DateToString(rows[i].enableStartTime);
+		    	} 
+		      return data.data;
+		    }
+		  });
+		  
+		  
+		  
+		  
+		  $('#doctor_table').datagrid({
+			    method: 'get',
+			    url: '/yxt-admin/admin/doctor',
+			   toolbar: '#look',
+			     width:400, 
+			    rownumbers: true,
+			    singleSelect: true ,
+			    frozenColumns:[[
+				                {field:'id',checkbox:true}
+				    		]],
+			  loadFilter: function(data) {
+			    	if(data.stateCode=='205'){
+			    		top.location.href="/yxt-admin/adminLogin.html";
+			    		return;
+			    	}if(data.stateCode=='203'){
+			    		return {total:0,rows:[]};
+			    	}
+			      return data.data;
+			    } 
+			   
+		  });  
+ 
+		});
+	 
+
+  function _stateformatter(value, row, index) {
+	  if (value == 1) {
+	    return "上架";
+	  }if (value == 2){
+	  return "下架";
+		  
+	  }
+	}
+  function _priceformatter(value, row, index) {
+	  if (value == null || value==0) {
+	    return "￥ 0.00";
+	  }if(value!=null){
+		  var f = value.toFixed(2);	
+		  return  "￥"+f;
+	  }
+	}
+  
+ function _showPrice(value, row, index){
+	  if(value==0){
+		  
+		  return "0.00";
+	  }
+	  
+  }
+ 
+ 
+ 
+ function _doublePrice(value, row, index){
+	 if(value!=null)
+         return value.toFixed(2);
+ }
+      function re(){
+    	  history.go(0) 
+      }
+   
+	function query() {
+	      $('#main_table').datagrid('load', {
+		  packageSourceId:$('#packageSourceId').combobox('getValue'),
+		  servicePackId:$('#servicePackId').combobox('getValue'),
+	  });
+		 $('#main_table').datagrid('reload');
+	}
+	function clear() {
+		  $('#packageSourceId').combobox('clear');
+		  $('#servicePackId').combobox('clear');
+		 
+		}
+	function _opformatter(value, row, index) {
+	  var a = '&nbsp;<a href="javascript:edit(\'' + index + '\',' + row.id + ')" title="编辑和详情"><i class="fa fa-pencil"></i></a>';	
+	 var b='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:look(\'' + row.id + '\')" >查看包内服务</a>';
+	  var d='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:addProduct(\'' + row.ptId + '\',' + row.id + ')" >产品服务编辑</a>'; 
+	  return a+b+d;
+	}
+	
+	function _optionMatter(value, row, index){
+		  var a = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:delet(\'' + row.idd + '\')" title="删除"><i class="fa fa-trash"></i></a>';
+		  var b = '&nbsp;&nbsp;&nbsp;<a href="javascript:editService(\'' + index + '\',' + row.idd + ')" title="编辑和详情"><i class="fa fa-pencil"></i></a>';	
+		  return b+a ;
+	}
+	
+	function _optionMatterAdd(value, row, index){
+		  var a = '&nbsp;&nbsp;&nbsp;<a href="javascript:addProduct(\'' + row.id + '\')" title="添加"></a>';
+		  return a ;
+	}
+	
+	 function _showPublicPrice(value, row, index){
+		  if(value==null){
+			  return "0.00";
+		  }
+		  
+	  }
+	 function _showPublicTimes(value, row, index){
+		  if(value==null){
+			  return "1";
+		  }
+		  
+	  }
+	 
+	 
+	// 修改优惠包信息	
+		function edit(index, id) {
+		     $('#out11').hide();
+			 $('#dialog').show();
+			 $('#addressid').hide();
+			    addressbox.ReSet();
+		  $.get('/yxt-admin/admin/servicePackCondition/' + id + '/detail',
+		  function(data) {
+			 /*  data.data.enableEndTime=DateToString(data.data.enableEndTime);
+			  data.data.enableStartTime=DateToString(data.data.enableStartTime); */
+		    $('#form').form('load', data.data);	
+		    addressServiceId=data.data.addressId;
+		    
+		    $.ajax({
+			 		type:'get',
+			 		url:'/yxt-admin/admin/address/' + addressServiceId,
+			 		success:function(back){
+			 		addressbox.SetAddress(back.data.code);
+			 		}
+			 	})	
+		  $('#dialog').dialog({
+		    title: '编辑/查看信息',
+		    width: 450,
+		    height: 500,
+		    closed: false,
+		    modal: true,
+		    buttons: [{
+		      text: '确定修改',
+		      handler: function() {
+		    	   /*  var startTime=$('#enableStartTime').datetimebox('getValue');
+			    	startTime=startTime.replace(/-/g,"/");
+			    	var startdate=new Date(startTime);
+			    	var endTime=$('#enableEndTime').datetimebox('getValue');
+			    	endTime=endTime.replace(/-/g,"/");
+			    	var enddate=new Date(endTime); */
+			    	
+			    	 var address=addressbox.GetVal();
+		        var v = $('#form').form('validate');
+		       
+		        if (v) {
+		          //AJAX提交
+		        	   $.ajax({
+		   	            type: 'put',
+		   	            url: '/yxt-admin/admin/servicePackCondition/' + id + '/update',
+		   	            data:{
+		                 	 packageSourceId:$("#rsName").combobox('getValue'),
+		                  	 servicePackId:$("#spName").combobox('getValue'),
+		                  	 addressCode:address
+		                  	/*  enableStartTime:startdate,
+		                  	 enableEndTime:enddate */
+		                 		
+		                   },
+		   	            success: function(data) {
+		   	              if (data.stateCode == 200) {
+		   	                $('#dialog').dialog('close');
+		   	                $('#form').form('reset');
+		   	                $('#main_table').datagrid('reload');
+		   	                $.messager.show({
+		   	                  title: '提示消息',
+		   	                  msg: data.message,
+		   	                  timeout: 5000,
+		   	                  showType: 'slide'
+		   	                });
+		   	              } else {
+		   	                $.messager.show({
+		   	                  title: '提示',
+		   	                  msg: data.message
+		   	                });
+		   	              }
+		   	            },
+		   	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+		   	              $.messager.show({
+		   	                title: '提示',
+		   	                msg: '请求发生错误请联系开发者'
+		   	              });
+		   	            }
+		   	          });
+		        }
+
+		      }
+		    },
+		    {
+		      text: '取消关闭',
+		      handler: function() {
+		        $('#dialog').dialog('close');
+		      }
+		    }]
+		  });
+		  });
+		}
+		//添加优惠包
+		 function add(){
+			$('#spName').combobox('reload');
+			$('#rsName').combobox('reload');
+			 $('#dialog').show();
+			 $('#out11').hide();
+			 $('#dialogService').hide();
+			 $('#addPrduct').hide();
+			  $('#form').form('reset');  
+			 addressbox.ReSet();
+		    $('#dialog').dialog({
+			    title: '添加信息',
+			    width: 450,
+			    height: 500,
+			    closed: false,
+			    modal: true,
+			    buttons: [{
+			      text: '确定添加',
+			      handler: function() {		    	
+			    	/* var startTime=$('#enableStartTime').datetimebox('getValue');
+			    	startTime=startTime.replace(/-/g,"/");
+			    	var startdate=new Date(startTime);
+			       
+			    	var endTime=$('#enableEndTime').datetimebox('getValue');
+			    	endTime=endTime.replace(/-/g,"/");
+			    	var enddate=new Date(endTime); */
+
+			        var v = $('#form').form('validate');
+			    	var adresscode = addressbox.GetVal();		    	
+			        if (v) { 
+			        	if(window.parent){
+				  			if(window.parent._service_pack_condition_list_adressdata){
+				  				window.parent._service_pack_condition_list_adressdata.splice(0,window.parent._service_pack_condition_list_adressdata.length);
+				  			}else{
+					  			window.parent._service_pack_condition_list_adressdata = [];
+				  			}
+					 		var selectboxs = ["codeName", "code_nameShi", "code_nameQu", "code_namebut", "code_nameSheQu"],
+					 		len=selectboxs.length,i;
+							for(i = 0 ; i < len ; ++i){
+								window.parent._service_pack_condition_list_adressdata.push($('#'+ selectboxs[i]).combobox('getValue'));
+							}
+						}
+			        	 $.ajax({
+			                  type: 'POST',
+			                  url:'/yxt-admin/admin/servicePackCondition/insert',		               
+			                  data:{
+			                	 /*  enableStartTime:startdate,
+			                  	  enableEndTime:enddate, */
+			                  	  packageSourceId:$("#rsName").combobox('getValue'),
+			           		      servicePackId:$("#spName").combobox('getValue'),
+			           		      addressCode:adresscode
+			                  },		                  
+			                  success: function(data) {  
+			                    if (data.stateCode == 200) {
+			                      $('#dialog').dialog('close');
+			                      $('#main_table').datagrid('reload');
+			                      $.messager.show({
+			                        title: '提示消息',
+			                        msg: data.message,
+			                        timeout: 5000,
+			                        showType: 'slide'
+			                      });
+			                      
+			                    } else {
+			                      $.messager.show({
+			                        title: '提示',
+			                        msg: data.message
+			                      });
+			                    }
+			                  },
+			                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+			                    $.messager.show({
+			                      title: '提示',
+			                      msg: '请求发生错误请联系开发者'
+			                    });
+			                  }
+			                });
+			               
+			          }
+			        }
+			      },
+			    {
+			      text: '取消关闭',
+			      handler: function() {
+			        $('#dialog').dialog('close');
+			      }
+			    }]
+			  });
+	}
+
+	//添加产品服务
+	function addProduct(ptId,id){
+		$('#out11').show();
+		servicePackConditionId=id;
+		$('#addService').show();
+		$("#_main_table").datagrid('showColumn', 'img');
+		$('#addPrduct').show();
+		$('#serviccePackConditionId').hide();
+		jge=ptId;
+		 $('#form1').form('load',{
+			 servicePackConditionId:servicePackConditionId	
+		    }); 
+		
+		 $.ajax({
+			    type:'get',
+				url:'/yxt-admin/admin/userServicePack?servicePackId='+servicePackConditionId,
+				success:function(data){
+					if(data.stateCode == 200){
+					$("#_main_table").datagrid('hideColumn', 'img');
+					$('#addService').hide();
+					$('#serviccePackConditionId').hide();
+					}else{
+						$("#_main_table").datagrid('showColumn', 'img');
+						$('#addService').show();
+					}
+				}
+		 })
+ 
+		$('#addPrduct').dialog({
+			    title: '编辑产品服务',    			   
+			    width:640,	 
+			    height:575,
+			    cache:false,
+			    modal: true, 
+			    rownumbers: true,
+			    onOpen:function(){			    	
+			    	$('#_main_table').datagrid({
+			    	method:'get',
+			 	    url: '/yxt-admin/admin/packageService/'+servicePackConditionId,			 	  
+			 	    pagination: true,
+			 	    pageSize:20,
+			 	    fit: true,
+			 	    fitColumns: true,
+			 	    border: false,
+			 	    rownumbers: true,
+			 	    loadFilter: function(data) { 
+			 	    	if(data.stateCode=='205'){
+			 	    		top.location.href="/yxt-admin/adminLogin.html";
+			 	    		return;
+			 	    	}if(data.stateCode=='203'){
+			 	    		return {total:0,rows:[]};
+				    		
+				    	}
+			 	      return data.data;
+			 	    },
+			    	})
+			    },
+			     onClose:function(){
+			    	 $('#_main_table').datagrid('reload'); 
+				   $.ajax({
+						type:'get',
+						url:'/yxt-admin/admin/servicePackCondition/'+servicePackConditionId+'/detail',
+						success: function(data){
+						 	var da=data.data.sprice;
+						 	 $.ajax({
+						 		 type:'put',
+						 		 url:'/yxt-admin/admin/servicePackCondition/'+servicePackConditionId+'/update',
+						 		 data:{
+						 			 price:da
+						 		 },
+						 	success: function(data){
+						 		 $('#main_table').datagrid('reload'); 
+						 	}
+						 	 })
+						 }
+					})
+			   }  
+		});
+	}
+
+	  function addService(){
+		  if(jge==1||jge==2){// 判断是否为免费包/基公卫服务包
+			  $('#out11').dialog({
+				    title: '产品服务',    			   
+				    width:640,	 
+				    height:575,
+				    cache:false,
+				    modal: true, 
+				    rownumbers: true,
+				    onOpen:function(){
+				  $('#add_main_table').datagrid({
+					  onClickCell: onClickCell,
+					    pagination: false,
+					    fit: true,
+				 	    fitColumns: true,
+					    method: 'get',
+					    url: '/yxt-admin/admin/productServiceNotIn?id='+servicePackConditionId,
+					    rownumbers: true,
+					    singleSelect: false ,
+					    frozenColumns:[[
+						                {field:'id',checkbox:true}
+						    		]],
+					   loadFilter: function(data) {
+					    	if(data.stateCode=='205'){
+					    		top.location.href="/yxt-admin/admin/adminLogin.html";
+					    		return;
+					    	}if(data.stateCode=='203'){
+					    		return {total:0,rows:[]};
+					    	}
+					    	
+					      return data.data;
+					    }
+					    
+					   
+				  });
+				  $.messager.alert('服务提醒','该服务包为免费包/基公卫服务包,发布价格应为0元！','info');
+
+				    },
+				    buttons:[{
+				    	text:'确定添加',
+				    	handler:function(){
+				    		 var temID="";
+					    	  var selRow = $("#add_main_table").datagrid('getSelections');	
+		                      
+					    	
+					    	  
+					    
+					    	  if(selRow.length==1){
+					    		 
+					    		      for( var i=0;i<selRow.length;i++){
+					    		    	  temID = selRow[i].id ;
+					    		    	 /*  alert(temID);
+					    		    	 
+                                         alert($('#add_main_table').datagrid('getData').rows[temID].timesPublic); */
+					    		    	if($('#add_main_table').datagrid('getData').rows[temID].timesPublic!='' && $('#add_main_table').datagrid('getData').rows[temID].pricePublic!=''){
+					    		      		 $.ajax({
+							           			  type: 'POST',
+								                  url:'/yxt-admin/admin/packageService/insert',		               
+								                  data:{
+								                	    serviceId:$('#add_main_table').datagrid('getData').rows[i].id,
+										          	    servicePackConditionId:servicePackConditionId,
+										          	    times:$('#add_main_table').datagrid('getData').rows[i].timesPublic,
+								               	        price:0
+								                  },
+					   			               success:function(data){
+					   			            	 if (data.stateCode == 200) {
+					   			            		 $('#out11').dialog('close');
+								                      $('#_main_table').datagrid('reload');
+								                      $('#main_table').datagrid('reload'); 
+								                      $.messager.show({
+								                        title: '提示消息',
+								                        msg: data.message,
+								                        timeout: 5000,
+								                        showType: 'slide'
+								                      });
+								                    } else {
+								                      $.messager.show({
+								                        title: '提示',
+								                        msg: data.message
+								                      });
+								                    }
+					   			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+								                    $.messager.show({
+					  			                      title: '提示',
+					  			                      msg: '请求发生错误请联系开发者'
+					  			                    });
+					  			                  }
+					   			                });	
+					    		    	}/* else {
+					    		    		$.messager.alert('提示消息','请提交正确的内容（失去焦点后提交）','info');
+
+
+					    		    	} */
+		  
+					    		      }
+						     
+					    		 
+					    	  }else  if (selRow.length>1){
+					    		   for(var i=0;i<selRow.length;i++){
+					    			   temID = selRow[i].id + "," + temID; 
+			    		               var ss = temID.split(",");
+			    		              if ($('#add_main_table').datagrid('getData').rows[i].timesPublic!=''
+						    		    
+						    		    	&& $('#add_main_table').datagrid('getData').rows[i].pricePublic!=''){
+			    		            	  $.ajax({
+			    			                  type: 'POST',
+			    			                  url: '/yxt-admin/admin/packageService/insert',
+			    			                 data:{	                	
+			    			                	    serviceId: $('#add_main_table').datagrid('getData').rows[i].id,
+									          	    servicePackConditionId:servicePackConditionId,
+									          	    times:$('#add_main_table').datagrid('getData').rows[i].timesPublic,
+							               	        price:0
+			    			                },
+			    			               success:function(data){
+			    			            	 if (data.stateCode == 200) {
+			    			            		 $('#out11').dialog('close');
+			 			                      $('#_main_table').datagrid('reload');
+			 			                     $('#main_table').datagrid('reload'); 
+			 			                      $.messager.show({
+			 			                        title: '提示消息',
+			 			                        msg: data.message,
+			 			                        timeout: 5000,
+			 			                        showType: 'slide'
+			 			                      });
+			 			                    } else {
+			 			                      $.messager.show({
+			 			                        title: '提示',
+			 			                        msg: data.message
+			 			                      });
+			 			                    }
+			    			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+			 			                    $.messager.show({
+			   			                      title: '提示',
+			   			                      msg: '请求发生错误请联系开发者'
+			   			                    });
+			   			                  }
+			    			                });  
+			    		              }
+			    		              
+					    		   }
+					    	  }
+				
+				    	}
+				    	
+				    },{
+				    	text:'取消关闭',
+				    	handler:function(){
+				    	    $('#out11').dialog('close');
+				    	}
+				    }]
+				  })
+		  }else{
+			  $('#out11').dialog({
+				    title: '产品服务()',    			   
+				    width:640,	 
+				    height:575,
+				    cache:false,
+				    modal: true, 
+				    rownumbers: true,
+				    onOpen:function(){
+				  $('#add_main_table').datagrid({
+					  onClickCell: onClickCell,
+					    pagination: false,
+					    fit: true,
+				 	    fitColumns: true,
+					    method: 'get',
+					    url: '/yxt-admin/admin/productServiceNotIn?id='+servicePackConditionId,
+					    rownumbers: true,
+					    frozenColumns:[[
+						                {field:'id',checkbox:true}
+						    		]],
+					   loadFilter: function(data) {
+					    	if(data.stateCode=='205'){
+					    		top.location.href="/yxt-admin/admin/adminLogin.html";
+					    		return;
+					    	}if(data.stateCode=='203'){
+					    		return {total:0,rows:[]};
+					    	}
+					    	
+					      return data.data;
+					    },
+					    onClickRow:function(index, row){
+					         roleId=row.id;
+					        
+					    }
+					    
+					   
+				  }); 
+
+				    },
+				    buttons:[{
+				    	text:'确定添加',
+				    	handler:function(){
+				    		 var temID="";
+					    	  var selRow = $("#add_main_table").datagrid('getSelections');	
+		                      
+					    	   var j= $('#add_main_table').datagrid('getData').rows[0].id;
+					    
+					    	  if(selRow.length==1){
+					    		      for( var i=0;i<selRow.length;i++){
+					    		    	  temID = selRow[i].id ;
+					    		    	 
+					    		    	if( $('#add_main_table').datagrid('getData').rows[i].timesPublic!=''
+					    		    		&& $('#add_main_table').datagrid('getData').rows[i].pricePublic!=''){
+					    		      		 $.ajax({
+							           			  type: 'POST',
+								                  url:'/yxt-admin/admin/packageService/insert',		               
+								                  data:{
+								                	    serviceId:$('#add_main_table').datagrid('getData').rows[i].id,
+										          	    servicePackConditionId:servicePackConditionId,
+										          	    times:$('#add_main_table').datagrid('getData').rows[i].timesPublic,
+								               	        price:$('#add_main_table').datagrid('getData').rows[i].pricePublic
+								                  },
+					   			               success:function(data){
+					   			            	 if (data.stateCode == 200) {
+					   			            		 $('#out11').dialog('close');
+								                      $('#_main_table').datagrid('reload');
+								                      $('#main_table').datagrid('reload'); 
+								                      $.messager.show({
+								                        title: '提示消息',
+								                        msg: data.message,
+								                        timeout: 5000,
+								                        showType: 'slide'
+								                      });
+								                    } else {
+								                      $.messager.show({
+								                        title: '提示',
+								                        msg: data.message
+								                      });
+								                    }
+					   			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+								                    $.messager.show({
+					  			                      title: '提示',
+					  			                      msg: '请求发生错误请联系开发者'
+					  			                    });
+					  			                  }
+					   			                });	
+					    		    	}else {
+					    		    		$.messager.alert('提示消息','请提交正确的内容（失去焦点后提交）','info');
+
+
+					    		    	}
+		  
+					    		      }
+						     
+					    		 
+					    	  }else  if (selRow.length>1){
+					    		   for(var i=0;i<selRow.length;i++){
+					    			   temID = selRow[i].id + "," + temID; 
+			    		               var ss = temID.split(",");
+			    		                alert(ss);
+			    		              
+			    		               alert("11111111-----------"+$('#add_main_table').datagrid('getData').rows[ss[i]].timesPublic);
+			    		          
+			    		              if ( $('#add_main_table').datagrid('getData').rows[i].timesPublic!=''
+						    		    	&& $('#add_main_table').datagrid('getData').rows[i].pricePublic!=''){
+			    		            	  $.ajax({
+			    			                  type: 'POST',
+			    			                  url: '/yxt-admin/admin/packageService/insert',
+			    			                 data:{	                	
+			    			                	    serviceId: $('#add_main_table').datagrid('getData').rows[i].id,
+									          	    servicePackConditionId:servicePackConditionId,
+									          	    times:$('#add_main_table').datagrid('getData').rows[i].timesPublic,
+							               	        price:$('#add_main_table').datagrid('getData').rows[i].pricePublic
+			    			                },
+			    			               success:function(data){
+			    			            	 if (data.stateCode == 200) {
+			    			            		 $('#out11').dialog('close');
+			 			                      $('#_main_table').datagrid('reload');
+			 			                     $('#main_table').datagrid('reload'); 
+			 			                      $.messager.show({
+			 			                        title: '提示消息',
+			 			                        msg: data.message,
+			 			                        timeout: 5000,
+			 			                        showType: 'slide'
+			 			                      });
+			 			                    } else {
+			 			                      $.messager.show({
+			 			                        title: '提示',
+			 			                        msg: data.message
+			 			                      });
+			 			                    }
+			    			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+			 			                    $.messager.show({
+			   			                      title: '提示',
+			   			                      msg: '请求发生错误请联系开发者'
+			   			                    });
+			   			                  }
+			    			                });  
+			    		              }
+			    		              
+					    		   }
+					    	  }
+				
+				    	}
+				    	
+				    },{
+				    	text:'取消关闭',
+				    	handler:function(){
+				    	    $('#out11').dialog('close');
+				    	}
+				    }]
+				  })
+		  }
+		  
+		  
+		  
+		 
+	  }
+	  
+	  function endEditing(){
+          if (editIndex == undefined){return true}
+          if ($('#add_main_table').datagrid('validateRow', editIndex)){
+              $('#add_main_table').datagrid('endEdit', editIndex);
+              editIndex = undefined;
+              return true;
+          } else {
+              return false;
+          }
+      }
+      function onClickCell(index, field){    	
+          if (editIndex != index){
+              if (endEditing()){
+                  $('#add_main_table').datagrid('selectRow', index)
+                          .datagrid('beginEdit', index);
+                  var ed = $('#add_main_table').datagrid('getEditor', {index:index,field:field});
+                  if (ed){
+                      ($(ed.target).data('numberbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                  }
+                  editIndex = index;
+              } else {
+                  setTimeout(function(){
+                      $('#add_main_table').datagrid('selectRow', editIndex);
+                  },0);
+              }
+          }
+      }  
+	  
+  	
+  	function look(id){
+  		$("#_main_table").datagrid('hideColumn', 'img');
+  		$('#addService').hide();
+  		/* $('#serviccePackConditionId').hide(); */
+  		//jge=ptId;
+  		 $('#form1').form('load',{
+  			 serviccePackConditionId:id	
+  		    }); 
+  		$('#addPrduct').dialog({
+  		    title: '查看产品服务',    			   
+  		    width:540,	 
+  		    height:550,
+  		    cache:false,
+  		    modal: true, 
+  		    rownumbers: true,
+  		    onOpen:function(){			    	
+  		    	$('#_main_table').datagrid({
+  		    	method:'get',
+  		 	    url: '/yxt-admin/admin/packageService/'+id,
+  		 	    /* checkbox:true, */
+  		 	    pagination: true,
+  		 	    fit: true,
+  		 	    fitColumns: true,
+  		 	    border: false,
+  		 	    rownumbers: true,
+  		 	    loadFilter: function(data) { 
+  		 	    	if(data.stateCode=='205'){
+  		 	    		top.location.href="/yxt-admin/admin/adminLogin.html";
+  		 	    		return;
+  		 	    	}
+  		 	      return data.data;
+  		 	    },
+  		    	});
+  		    }
+  		});
+  	}
+  	
+
+		// 删除优惠包的产品服务
+		function delet(idd){
+			$.ajax({
+				type:'get',
+				url:'/yxt-admin/admin/userServicePack?servicePackId='+servicePackConditionId,
+				success:function(data){
+					
+					if(data.stateCode==200){
+						$.messager.alert('提示消息','该产品发布包已被购买不能删除！','info');
+					}else if(data.stateCode==203){
+						 $.messager.confirm('确认', '您确认想要删除记录吗？',
+								  function(r) {
+								    if (r) {
+								      $.ajax({
+								        type: 'delete',
+								        url: '/yxt-admin/admin/packageService/' + idd + '/delete',
+								        success: function(data) {
+								          if (data.stateCode == 200) {
+								            $('#_main_table').datagrid('reload');
+								        	$('#main_table').datagrid('reload');
+								            $.messager.show({
+								              title: '提示消息',
+								              msg: data.message,
+								              timeout: 5000,
+								              showType: 'slide'
+								            });
+								          } else {
+								            $.messager.show({
+								              title: '提示',
+								              msg: data.message
+								            });
+								          }
+								        },
+								        error: function(XMLHttpRequest, textStatus, errorThrown) {
+								          $.messager.show({
+								            title: '提示',
+								            msg: '请求发生错误请联系开发者'
+								          });
+								        }
+								      });
+								    }
+								  });
+					}
+				}		
+				
+			})
+			
+			
+			
+			
+			
+			
+			
+
+			 
+		} 
+		 
+
+		//地址选择
+		 var AddressBox = function () {
+			   var self = this;
+			   this.selectboxs = ["codeName", "code_nameShi", "code_nameQu", "code_namebut", "code_nameSheQu"];
+			   var len = this.selectboxs.length, i, obj;
+			   for (i = 0; i < len; ++i) {					  
+			        obj = $("#" + this.selectboxs[i]);				       
+			        if(i<len){
+				        obj.combobox({
+				        	valueField:'code_value',   
+				            textField:'name',
+				            onChange: (function (index) {
+				                return function (newValue, oldValue) {
+				                	if(newValue && newValue.length > 0){
+					                    self.Clear(index + 1);
+					                    self.Load(index + 1, newValue);
+				                    }
+				                };
+				            })(i)
+				        });				        	
+			        }
+			    }
+			};
+			
+			AddressBox.prototype = {
+			    Clear: function (index) {
+			        var i, ob;
+			        index = index || 0;
+			        for (i = index; i < this.selectboxs.length; ++i) {
+			            ob = $("#" + this.selectboxs[i]);
+	                  ob.combobox("clear");	
+	                  ob.combobox("loadData", []);
+			        }
+			    },
+			    Load: function (index, pid, initvalue, fun) {
+			    	index = index || 0 ;
+			    	pid = pid || "156";
+			        if (pid) {
+				        var self = this;
+			            $.ajax({
+			                url: '/yxt-admin/admin/address/' + pid + '/name',
+			                success: function (back) {
+			                	if(back.data) {
+				                	var rows = back.data.rows, ob = $("#" + self.selectboxs[index]);					          
+			                        ob.combobox("loadData", rows);
+				                	if(initvalue !== undefined){
+				                		ob.combobox("setValue", parseInt(initvalue));
+				                	}
+				                	if(fun){
+				                		fun(ob.combobox("getValue"));
+				                	}
+		                        }
+			                    self = null;
+			                    pid = null;
+			                    v = null;
+			                }
+			            });
+			        }
+			    },
+			    ReSet:function(){
+					 this.Clear();
+					 // obj = [];
+					 if(window.parent && window.parent._service_pack_condition_list_adressdata){
+						 var adressdata = window.parent._service_pack_condition_list_adressdata ,len = this.selectboxs.length, i;
+						 for (i = 0; i < len; ++i) {
+							this.Load(i, adressdata[i-1], adressdata[i]);                        
+						 }
+					 }else{
+					     this.Load();
+					 }
+			    },
+			    GetVal:function(){
+					   var len = this.selectboxs.length, i, val, selectlv = 0, code = "", selectlv = 1, code = 0;
+					   for (i = len - 1; i >= selectlv; --i) {					  
+						   val = $('#' + this.selectboxs[i]).combobox('getValue');
+						   if(val.length>0){
+							   code = val;
+							   break;
+						   }		        
+					    }
+					  return code;
+			    },
+			    SetAddress:function(code){
+			    	var codes = code.split(";"), len = codes.length, i=0 , pid = null;
+			    	for(; i<len; ++i){
+			    		this.Load(i, pid, codes[i]);
+			    		pid = codes[i];
+			    	}
+			    	this.Load(i, pid);
+			    	return this;
+			    }
+			};
+
+			var addressbox = new AddressBox();
+				
+
+
+		
+		// 修改优惠包中的服务
+		function editService(index,idd){
+			
+			 if(jge==1||jge==2){// 免费包 或者基公为包 发布价格为0，不可修改的！
+				 $('#price2').numberbox('setValue','0.00');
+				 $('#price2').numberbox({ disabled: true });
+					$('#dialogService').show();
+					$('#productServiceName').combobox({ disabled: true });
+					 $('#formService').form('load',$('#_main_table').datagrid('getData').rows[index]);
+					  $.get('/yxt-admin/admin/packageService/' + idd+'/detail',
+					  function(data) {
+					    $('#formService').form('load', data.data);
+					  }); 
+					  $('#dialogService').dialog({
+						    title: '修改服务',
+						    width: 400,
+						    height: 300,
+						    closed: false,
+						    modal: true,
+						    buttons: [{
+						      text: '确定修改',
+						      handler: function() {  
+						        var v = $('#formService').form('validate');
+						        if (v) { 
+						        	 $.ajax({
+						                  type: 'put',
+						                  url:'/yxt-admin/admin/packageService/'+idd+'/update',		               
+						                  data:{
+						                	    serviceId:$('#productServiceName').combobox('getValue'),					          	  
+								          	    times:$('#times').numberbox('getValue'),
+						               	        price:$('#price2').numberbox('getValue') 
+						                  },		                  
+						                  success: function(data) {  
+						                    if (data.stateCode == 200) {
+						                      $('#dialogService').dialog('close');
+						                      $('#_main_table').datagrid('reload');
+						                      $('#main_table').datagrid('reload');
+						                      $.messager.show({
+						                        title: '提示消息',
+						                        msg: data.message,
+						                        timeout: 5000,
+						                        showType: 'slide'
+						                      });
+						                      
+						                    } else {
+						                      $.messager.show({
+						                        title: '提示',
+						                        msg: data.message
+						                      });
+						                    }
+						                  },
+						                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+						                    $.messager.show({
+						                      title: '提示',
+						                      msg: '请求发生错误请联系开发者'
+						                    });
+						                  }
+						                });
+						               
+						          }
+						        }
+						      },
+						    
+						    
+						    {
+						      text: '取消关闭',
+						      handler: function() {
+						        $('#dialogService').dialog('close');
+						      }
+						    }]
+						  });
+			 }else {
+				
+		 			$('#price2').numberbox({ disabled: false });
+					$('#dialogService').show();
+					$('#productServiceName').combobox({ disabled: true });
+					 $('#formService').form('load',$('#_main_table').datagrid('getData').rows[index]);
+					  $.get('/yxt-admin/admin/packageService/' + idd+'/detail',
+					  function(data) {
+					    $('#formService').form('load', data.data);
+					  }); 
+					  $('#dialogService').dialog({
+						    title: '修改服务',
+						    width: 400,
+						    height: 300,
+						    closed: false,
+						    modal: true,
+						    buttons: [{
+						      text: '确定修改',
+						      handler: function() {  
+						        var v = $('#formService').form('validate');
+						        if (v) { 
+						        	 $.ajax({
+						                  type: 'put',
+						                  url:'/yxt-admin/admin/packageService/'+idd+'/update',		               
+						                  data:{
+						                	    serviceId:$('#productServiceName').combobox('getValue'),					          	  
+								          	    times:$('#times').numberbox('getValue'),
+						               	        price:$('#price2').numberbox('getValue') 
+						                  },		                  
+						                  success: function(data) {  
+						                    if (data.stateCode == 200) {
+						                      $('#dialogService').dialog('close');
+						                      $('#_main_table').datagrid('reload');
+						                      $('#main_table').datagrid('reload');
+						                      $.messager.show({
+						                        title: '提示消息',
+						                        msg: data.message,
+						                        timeout: 5000,
+						                        showType: 'slide'
+						                      });
+						                      
+						                    } else {
+						                      $.messager.show({
+						                        title: '提示',
+						                        msg: data.message
+						                      });
+						                    }
+						                  },
+						                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+						                    $.messager.show({
+						                      title: '提示',
+						                      msg: '请求发生错误请联系开发者'
+						                    });
+						                  }
+						                });
+						               
+						          }
+						        }
+						      },
+						    
+						    
+						    {
+						      text: '取消关闭',
+						      handler: function() {
+						        $('#dialogService').dialog('close');
+						      }
+						    }]
+						  });
+			 }
+			
+			
+		}
+		
+
+	// 时间转化
+		function DateToString(date, format) {
+	        if (!date) return "";
+	        format = format || "yyyy-MM-dd HH:mm:ss";
+	        switch (typeof date) {
+	            case "string":
+	                date = new Date(date.replace(/-/, "/"));
+	                break;
+	            case "number":
+	                date = new Date(date);
+	                break;
+	        }
+	        if (!date instanceof Date) return "";
+	        var dict = {
+	            "yyyy": date.getFullYear(),
+	            "yy": (date.getFullYear() + "").substr(2),
+	            "M": date.getMonth() + 1,
+	            "d": date.getDate(),
+	            "H": date.getHours(),
+	            "m": date.getMinutes(),
+	            "s": date.getSeconds(),
+	            "MM": ("" + (date.getMonth() + 101)).substr(1),
+	            "dd": ("" + (date.getDate() + 100)).substr(1),
+	            "HH": ("" + (date.getHours() + 100)).substr(1),
+	            "mm": ("" + (date.getMinutes() + 100)).substr(1),
+	            "ss": ("" + (date.getSeconds() + 100)).substr(1)
+	        };
+	        return format.replace(/(yyyy|yy|MM?|dd?|HH?|ss?|mm?)/g, function () {
+	            return dict[arguments[0]];
+	        });
+	    }
+ 
+	  
+	  
+</script> 

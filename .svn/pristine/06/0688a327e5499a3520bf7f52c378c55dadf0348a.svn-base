@@ -1,0 +1,20 @@
+package org.system.mapper.service.resp;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.resp.ServiceRespTask;
+
+public interface ServiceRespTaskMapper extends IBaseMapper<ServiceRespTask> {
+
+	List<Map<String, Object>> getServiceRespTaskListByuser(ServiceRespTask serviceRespTask);
+	
+	public int updateServiceRespTaskRemind(ServiceRespTask serviceRespTask);
+
+	List<Map<String, Object>> getTaskStatusByUnfinished(ServiceRespTask serviceRespTask);
+
+	List<Map<String, Object>> getUnfinishedTransTreatDetailyList(ServiceRespTask serviceRespTask);
+
+	List<Map<String, Object>> getUnfinishedImageConsultationDetaily(ServiceRespTask serviceRespTask);
+}

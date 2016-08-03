@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.transfer.MedicalRecordDocInfoMapper" >
+<!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.service.transfer.MedicalRecordDocInfo">
+		
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.service.transfer.MedicalRecordDocInfo">
+		
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.service.transfer.MedicalRecordDocInfo">
+		
+	</update>
+	
+	<!-- 查询列表 -->
+	<select id="queryAll" parameterType="org.system.entity.service.transfer.MedicalRecordDocInfo" resultType="map">
+		
+	</select>
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.service.transfer.MedicalRecordDocInfo" resultType="map">
+		
+	</select>
+	
+	<!-- 根据约束键查询数据是否存在 -->
+	<select id="checkExists" parameterType="org.system.entity.service.transfer.MedicalRecordDocInfo" resultType="map">
+	
+	</select>
+</mapper>

@@ -1,0 +1,120 @@
+package org.system.controller.impl.user.healthtest;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.user.healthtest.IUserSelfTestRecordController;
+import org.system.entity.user.healthtest.SelfTestResult;
+import org.system.entity.user.healthtest.UserSelfTestRecord;
+import org.system.message.Message;
+import org.system.service.iface.user.healthtest.ISelfTestResultService;
+import org.system.service.iface.user.healthtest.IUserSelfTestRecordService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class UserSelfTestRecordController implements IUserSelfTestRecordController {
+	Logger log = LoggerFactory.getLogger(UserSelfTestRecordController.class);
+	@Resource
+	private IUserSelfTestRecordService userSelfTestRecordService;
+	@Resource
+	private ISelfTestResultService selfTestResultService;
+	@Resource
+	private CacheManager cache;
+
+	@Override
+	public Map<String, Object> insertUserSelfTestRecord(UserSelfTestRecord userSelfTestRecord, BindingResult result,
+			String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置用户id
+			userSelfTestRecord.setUserId((Integer) userMap.get("id"));
+			// 查询结果属于什么等级
+			SelfTestResult selfTestResult = new SelfTestResult();
+			selfTestResult.setScore(userSelfTestRecord.getScore());
+			selfTestResult.setTitleId(userSelfTestRecord.getTitleId());
+			Map<String, Object> resultMap = selfTestResultService.getSelfTestResultByFild(selfTestResult);
+			if (resultMap != null && resultMap.size() > 0) {
+				userSelfTestRecord.setResultId((Integer) resultMap.get("id"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("test.result.empty"));
+			}
+			// 判断数据是否存在 不存在新增 存在修改
+			Map<String, Object> userSelfTestRecordMap = userSelfTestRecordService
+					.getUserSelfTestRecordByFild(userSelfTestRecord);
+			if (userSelfTestRecordMap != null && userSelfTestRecordMap.size() > 0) {
+				// 执行修改 判断状态
+				userSelfTestRecord.setId((Integer) userSelfTestRecordMap.get("id"));
+				if (userSelfTestRecordService.updateUserSelfTestRecord(userSelfTestRecord) > 0) {
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+				}
+			} else {
+				// 执行新增 判断状态
+				if (userSelfTestRecordService.insertUserSelfTestRecord(userSelfTestRecord) > 0) {
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+				}
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+
+	}
+
+	@Override
+	public Map<String, Object> updateUserSelfTestRecord(Integer userSelfTestRecordId,
+			UserSelfTestRecord userSelfTestRecord, BindingResult result) {
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getUserSelfTestRecordList(UserSelfTestRecord userSelfTestRecord, BindingResult result,
+			String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置用户id
+			userSelfTestRecord.setUserId((Integer) userMap.get("id"));
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			// 根据用户id查询用户的服务项
+			List<Map<String, Object>> userSelfTestRecordList = userSelfTestRecordService
+					.getUserSelfTestRecordList(userSelfTestRecord);
+			if (userSelfTestRecordList != null && userSelfTestRecordList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, userSelfTestRecord.getTotal());
+				resultMap.put(Global.DATA_ROWS, userSelfTestRecordList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getUserSelfTestRecordDetail(Integer userSelfTestRecordId,
+			UserSelfTestRecord userSelfTestRecord) {
+		return null;
+	}
+
+}

@@ -1,0 +1,58 @@
+package org.system.service.iface.doc;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doc.DocTmplate;
+
+public interface IDocTmplateService {
+
+	/**
+	 * 新增文档模板
+	 * 
+	 * @param docTmplate
+	 * @return int
+	 */
+	public int insertDocTmplate(DocTmplate docTmplate);
+
+	/**
+	 * 删除文档模板
+	 * 
+	 * @param docTmplate
+	 * @return int
+	 */
+	public int deleteDocTmplate(DocTmplate docTmplate);
+
+	/**
+	 * 修改文档模板
+	 * 
+	 * @param docTmplate
+	 * @return int
+	 */
+	public int updateDocTmplate(DocTmplate docTmplate);
+
+	/**
+	 * 文档模板细节
+	 * 
+	 * @param docTmplate
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getDocTmplateDetail(DocTmplate docTmplate);
+
+	/**
+	 * 检查文档模板唯一性
+	 * 
+	 * @param docTmplate
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getDocTmplateByFiled(DocTmplate docTmplate);
+
+	/**
+	 * 所有文档模板列表
+	 * 
+	 * @param docTmplate
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getDocTmplates(DocTmplate docTmplate);
+
+}

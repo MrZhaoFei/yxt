@@ -1,0 +1,78 @@
+package org.system.controller.iface.doctor;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.doctor.DoctorGroupRely;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IDoctorGroupRelyController {
+	
+	/**
+	 * 新增 支持团队信息
+	 * 
+	 * @param doctorGroupRely
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/doctorGroupRely" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertDoctorGroupRely(
+			@Validated({ Groups.Insert.class }) DoctorGroupRely doctorGroupRely, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	
+	/**
+	 * 修改 支持团队信息
+	 * 
+	 * @param doctorGroupRelyId
+	 * @param doctorGroupRely
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/doctorGroupRely/{id}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updatetDoctorGroupRely(@PathVariable("id") Integer doctorGroupRelyId,
+			@Validated({ Groups.Update.class }) DoctorGroupRely doctorGroupRely, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 查询 支持团队信息列表
+	 * 
+	 * @param doctorGroupRely
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/doctorGroupRelys", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getDoctorGroupRelyList(@Validated({ Groups.Select.class }) DoctorGroupRely doctorGroupRely,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	/**
+	 * 删除 支持团队信息
+	 * 
+	 * @param doctorGroupRelyId
+	 * @param doctorGroupRely
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/doctorGroupRely/{id}" }, method = RequestMethod.DELETE)
+	@ResponseBody
+	public Map<String, Object> deletetDoctorGroupRely(@PathVariable("id") Integer doctorGroupRelyId, DoctorGroupRely doctorGroupRely, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	
+}

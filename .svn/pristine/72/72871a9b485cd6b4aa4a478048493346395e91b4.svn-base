@@ -1,0 +1,8 @@
+package org.system.mapper.doctor;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.doctor.Title;
+
+public interface TitleMapper extends IBaseMapper<Title>{
+
+}

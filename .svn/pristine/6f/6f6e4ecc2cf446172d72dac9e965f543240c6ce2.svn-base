@@ -1,0 +1,138 @@
+package org.system.controller.impl.self;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.self.ISelfTestAnswerController;
+import org.system.entity.self.SelfTestAnswer;
+import org.system.entity.self.SelfTestQuestion;
+import org.system.message.Message;
+import org.system.service.iface.self.ISelfTestAnswerService;
+import org.system.service.iface.self.ISelfTestQuestionService;
+
+@Controller
+public class SelfTestAnswerController implements ISelfTestAnswerController{
+
+	Logger log = LoggerFactory.getLogger(SelfTestAnswerController.class);
+	@Resource
+	private ISelfTestAnswerService selfTestAnswerService; 
+	@Resource
+	private ISelfTestQuestionService selfTestQuestionService;
+	
+	@Override
+	public Map<String, Object> insertSelfTestAnswer(SelfTestAnswer selfTestAnswer, BindingResult result) {
+		//判断问题是否存在
+		SelfTestQuestion stq=new SelfTestQuestion();
+		stq.setId(selfTestAnswer.getQuestionId());
+		if (stq.getId()!=null ) {
+			Map<String, Object> questionMap = selfTestQuestionService.getSelfTestQuestionDetail(stq);
+			if (questionMap == null || questionMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("selfTestQuestion.empty"));
+			}
+		}
+		//检查数据是否重复
+		Map<String, Object> stqMap = selfTestAnswerService.getSelfTestAnswerByFiled(selfTestAnswer);
+		if (stqMap != null && stqMap.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+		}
+		// 执行新增操作
+		if (selfTestAnswerService.insertSelfTestAnswer(selfTestAnswer) > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+	}
+
+	@Override
+	public Map<String, Object> updatetSelfTestAnswer(Integer selfTestAnswerId, SelfTestAnswer selfTestAnswer,
+			BindingResult result) {
+		selfTestAnswer.setId(selfTestAnswerId);
+		//得到原数据
+		Map<String, Object> staMap=selfTestAnswerService.getSelfTestAnswerDetail(selfTestAnswer);
+		if (staMap == null || staMap.size() <= 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("selfTestAnswer.empty"));
+		}
+		Integer questionId=(Integer)staMap.get("questionId");
+		//判断问题是否存在
+		SelfTestQuestion stq=new SelfTestQuestion();
+		if (selfTestAnswer.getQuestionId()!=null) {
+			stq.setId(selfTestAnswer.getQuestionId());
+		}else {
+			selfTestAnswer.setQuestionId(questionId);
+		}
+		//查询问题是否存在
+		if (stq.getId()!=null) {
+			Map<String, Object> questionMap = selfTestQuestionService.getSelfTestQuestionDetail(stq);
+			if (questionMap == null || questionMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("selfTestQuestion.empty"));
+			}
+		}
+		//检查数据是否重复
+		if (selfTestAnswer.getId()!=null) {
+			Map<String, Object> stqMap = selfTestAnswerService.getSelfTestAnswerByFiled(selfTestAnswer);
+			if (stqMap != null && stqMap.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+			}
+		}
+		// 执行修改操作
+		if (selfTestAnswerService.updateSelfTestAnswer(selfTestAnswer) > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestAnswerList(SelfTestAnswer selfTestAnswer, BindingResult result,HttpServletRequest req) {
+		 HttpSession session=req.getSession();
+		 if(session.getAttribute("user")!=null){
+			 
+			 // 定义返回对象
+			 Map<String, Object> resultMap = new HashMap<>();
+			 List<Map<String, Object>> staList = selfTestAnswerService.getSelfTestAnswers(selfTestAnswer);
+			 if (staList != null && staList.size() > 0) {
+				 // 得到数据总数
+				 resultMap.put(Global.DATA_TOTAL, selfTestAnswer.getTotal());
+				 resultMap.put(Global.DATA_ROWS, staList);
+				 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			 }
+			 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		 }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		 }
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestAnswerDetail(Integer selfTestAnswerId, SelfTestAnswer selfTestAnswer,
+			BindingResult result) {
+		 // 设置实例的id属性
+		selfTestAnswer.setId(selfTestAnswerId);
+		Map<String, Object> resultList = selfTestAnswerService.getSelfTestAnswerDetail(selfTestAnswer);
+		if (resultList != null && resultList.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultList, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	public Map<String, Object> deleteSelfTestAnswer(Integer selfTestAnswerId, SelfTestAnswer selfTestAnswer,
+			BindingResult result) {
+		selfTestAnswer.setId(selfTestAnswerId);
+		// 执行修改操作
+		if (selfTestAnswerService.deleteSelfTestAnswer(selfTestAnswer) > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("delete.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+	}
+
+}

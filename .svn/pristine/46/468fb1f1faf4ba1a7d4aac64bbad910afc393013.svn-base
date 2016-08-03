@@ -1,0 +1,11 @@
+package org.system.service.iface.order;
+
+import java.util.Map;
+
+import org.system.entity.order.PayType;
+
+public interface IPackagePayTypeService {
+	
+	Map<String, Object> getPayTypeDetail(PayType payType);
+	
+}

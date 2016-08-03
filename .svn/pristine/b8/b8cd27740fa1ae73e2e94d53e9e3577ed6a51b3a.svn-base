@@ -1,0 +1,21 @@
+package org.system.service.iface.user.healthinfo;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.user.healthinfo.OperateHistory;
+
+
+
+public interface IOperateHistoryService {
+
+	int insertOperateHistory(OperateHistory operateHistory);
+	
+	int updateOperateHistory(OperateHistory operateHistory);
+	
+	Map<String, Object> getOperateHistoryDetail(OperateHistory operateHistory);
+	
+	List<Map<String, Object>>  getOperateHistorys(OperateHistory operateHistory);
+	
+	int deleteOperateHistory(OperateHistory operateHistory);
+}

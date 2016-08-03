@@ -1,0 +1,55 @@
+package org.system.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.AdminUser;
+import org.system.mapper.admin.AdminUserMapper;
+import org.system.service.iface.IAdminUserService;
+@Service
+public class AdminUserService implements IAdminUserService{
+	
+	@Resource
+	private  AdminUserMapper adminUserMapper;
+
+	@Override
+	public int updateAdmin(AdminUser admin) {
+		return adminUserMapper.update(admin);
+	}
+
+	@Override
+	public Map<String, Object> getAdminUserByFiled(AdminUser admin) {
+		return adminUserMapper.checkExists(admin);
+	}
+
+	@Override
+	public int inserAdminUser(AdminUser admin) {
+		return adminUserMapper.insert(admin);
+	}
+
+	@Override
+	public int deleteAdminUser(AdminUser admin) {
+		return adminUserMapper.delete(admin);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAdminUserList(AdminUser admin) {
+		return adminUserMapper.queryAll(admin);
+	}
+
+	@Override
+	public Map<String, Object> getAdminUserDetail(AdminUser admin) {
+		return adminUserMapper.queryOne(admin);
+	}
+
+	
+	
+
+	
+
+	
+
+}

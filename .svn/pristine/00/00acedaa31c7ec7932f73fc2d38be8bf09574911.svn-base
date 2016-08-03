@@ -1,0 +1,108 @@
+package org.system.entity.doctor;
+
+import java.util.Date;
+
+
+import org.core.entity.BaseEntity;
+
+public class DoctorDetail extends BaseEntity{
+	
+	private Integer doctorId;
+	private String addressDetail;
+	private String idCard;
+	private String name;
+	private Date birthday;
+	private String photo;
+	private String school;
+	private String profile;
+	private Integer grade;
+	private String gootat;
+	private Integer zpHospitalId;
+	private Integer zpDepartmentId;
+	
+	public Integer getDoctorId() {
+		return doctorId;
+	}
+	public void setDoctorId(Integer doctorId) {
+		this.doctorId = doctorId;
+	}
+	
+	public String getAddressDetail() {
+		return addressDetail;
+	}
+	public void setAddressDetail(String addressDetail) {
+		this.addressDetail = addressDetail;
+	}
+	public String getIdCard() {
+		return idCard;
+	}
+	public void setIdCard(String idCard) {
+		this.idCard = idCard;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Date getBirthday() {
+		return birthday;
+	}
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+	public String getPhoto() {
+		return photo;
+	}
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+	public String getSchool() {
+		return school;
+	}
+	public void setSchool(String school) {
+		this.school = school;
+	}
+	public String getProfile() {
+		return profile;
+	}
+	public void setProfile(String profile) {
+		this.profile = profile;
+	}
+	public Integer getGrade() {
+		return grade;
+	}
+	public void setGrade(Integer grade) {
+		this.grade = grade;
+	}
+	public String getGootat() {
+		return gootat;
+	}
+	public void setGootat(String gootat) {
+		this.gootat = gootat;
+	}
+
+	public Integer getZpHospitalId() {
+		return zpHospitalId;
+	}
+	public void setZpHospitalId(Integer zpHospitalId) {
+		this.zpHospitalId = zpHospitalId;
+	}
+	public Integer getZpDepartmentId() {
+		return zpDepartmentId;
+	}
+	public void setZpDepartmentId(Integer zpDepartmentId) {
+		this.zpDepartmentId = zpDepartmentId;
+	}
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+	
+
+}

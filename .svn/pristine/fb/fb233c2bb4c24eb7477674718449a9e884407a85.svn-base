@@ -1,0 +1,31 @@
+package org.system.mapper.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.ProductService;
+
+public interface ProductServiceMapper extends IBaseMapper<ProductService> {
+	
+	/**
+	 * 该基础服务是否存在产品发布包中
+	 * @param productService
+	 * @return
+	 */
+   public List<Map<String, Object>> queryProductCondition(ProductService productService);
+   
+   /**
+    *  查询该基础服务是否被用户购买 
+    * @param productService id
+    * @return
+    */
+   public int queryProductByUservice(ProductService productService);
+   
+   /**
+    *  查询基础服务不在优惠包中其他的基础服务
+    * @param productService
+    * @return 
+    */
+   public List<Map<String, Object>> queryProductNotIn(ProductService productService);
+}

@@ -1,0 +1,8 @@
+package org.system.service.iface.doctor;
+
+import org.system.entity.doctor.SysDoctorLogs;
+
+public interface ISysDoctorLogsService {
+
+	public int insertSysDoctorLogs(SysDoctorLogs sysDoctorLogs);
+}

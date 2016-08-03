@@ -1,0 +1,82 @@
+package org.system.controller.iface.doctor;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.doctor.DoctorDoctorGroup;
+import org.utils.spring.Groups;
+
+@RequestMapping("/admin")
+public interface IDoctorDoctorGroupController {
+	
+	/**
+	 * 添加医生 和医生团队关联
+	 * 
+	 * @param doctorDoctorGroup
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/doctorDoctorGroup/insert", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("doctorDoctorGroup:insert")
+	public Map<String, Object> insertDoctorDoctorGroup(@Validated({ Groups.Insert.class }) DoctorDoctorGroup doctorDoctorGroup, BindingResult result);
+	
+	
+	/**
+	 * 
+	 * 删除医生 和医生团队关联
+	 * 
+	 * @param doctorId
+	 * @param doctorGroupId
+	 * @param doctorDoctorGroup
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/doctorDoctorGroup/{doctorId}/{doctorGroupId}/delete", method = RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions("doctorDoctorGroup:delete")
+	public  Map<String, Object> deleteDoctorDoctorGroup(@PathVariable("doctorId") Integer doctorId,@PathVariable("doctorGroupId") Integer doctorGroupId, DoctorDoctorGroup doctorDoctorGroup);
+
+	
+	/**
+	 * 修改医生 和医生团队关联
+	 * 
+	 * @param doctorId
+	 * @param doctorGroupId
+	 * @param doctorDoctorGroup
+	 * @return
+	 */
+	@RequestMapping(value = "/doctorDoctorGroup/{doctorId}/{doctorGroupId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("doctorDoctorGroup:update")
+	public  Map<String, Object> updateDoctorDoctorGroup(@PathVariable("doctorId") Integer doctorId
+			,@PathVariable("doctorGroupId") Integer doctorGroupId, DoctorDoctorGroup doctorDoctorGroup);
+
+
+	/**
+	 *  查询 医生 和医生团队关联列表
+	 * 
+	 * @param doctorDoctorGroup
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/doctorDoctorGroups", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getDoctorDoctorGroupList(@Validated({ Groups.Select.class }) DoctorDoctorGroup doctorDoctorGroup,
+			BindingResult result,HttpServletRequest req);
+	
+    
+    @RequestMapping(value="/doctorDoctorGroup/doctorExistsGroup", method = RequestMethod.GET)
+	@ResponseBody
+    public 	int getOneDoctorExistsGroup(DoctorDoctorGroup doctorDoctorGroup);
+
+}

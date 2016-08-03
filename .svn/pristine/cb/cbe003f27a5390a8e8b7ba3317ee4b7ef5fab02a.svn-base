@@ -1,0 +1,50 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.DoctorLevel;
+
+public interface IDoctorLevelService {
+	/**
+	 * 新增医生级别
+	 * @param doctorLevel
+	 * @return int
+	 */
+    public int insertDoctorLevel(DoctorLevel doctorLevel);
+	
+    /**
+	 * 修改医生级别
+	 * @param doctorLevel
+	 * @return int
+	 */
+	public int updateDoctorLevel(DoctorLevel doctorLevel);
+	
+	/**
+	 * 删除医生级别
+	 * @param doctorLevel
+	 * @return int
+	 */
+	public int deleteDoctorLevel(DoctorLevel doctorLevel);
+	
+	/**
+	 * 医生级别列表
+	 * @param doctorLevel
+	 * @return int
+	 */
+	public List<Map<String, Object>> getDoctorLevelList(DoctorLevel doctorLevel);
+	
+	/**
+	 * 医生级别详细信息
+	 * @param doctorLevel
+	 * @return int
+	 */
+	public Map<String, Object> getDoctorLevelDetail(DoctorLevel doctorLevel);
+	
+	/**
+	 * 检查医生级别唯一性
+	 * @param doctorLevel
+	 * @return int
+	 */
+	public Map<String, Object> getDoctorLevelByFiled(DoctorLevel doctorLevel);
+}

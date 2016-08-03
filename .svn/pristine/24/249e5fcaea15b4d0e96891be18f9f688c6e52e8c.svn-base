@@ -1,0 +1,7 @@
+package org.system.mapper.service.visits;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.visits.GxyFollowupRecords;
+
+public interface GxyFollowupRecordsMapper extends IBaseMapper<GxyFollowupRecords> {
+}

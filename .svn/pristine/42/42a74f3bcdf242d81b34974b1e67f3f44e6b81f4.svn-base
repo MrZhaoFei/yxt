@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.contract.ContractFeedbackMapper" >
+  <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.contract.ContractFeedback">
+		insert into contract_feedback(contract_id,doctor_id,create_date,reason) values (#{contractId},#{doctorId},#{createDate},#{reason})
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.contract.ContractFeedback">
+		update contract_feedback set id=#{id}
+		<if test="reason!=null and reason !=''">
+			,reason=#{reason}
+		</if>
+		<if test="contractId !=null">
+			,contract_id=#{contractId}
+		</if>
+		<if test="doctorId !=null">
+			,doctor_id=#{doctorId}
+		</if>
+		where id=#{id}
+	</update>
+	
+	<!-- 查询列表 -->
+	<select id="queryAll" parameterType="org.system.entity.contract.ContractFeedback" resultType="map">
+		select cf.id,cf.reason,cf.create_date createDate,d.id doctorId,d.name doctorName from contract_feedback cf
+		left join doctor d on d.id=cf.doctor_id
+		left join contract c on c.id=cf.contract_id
+		<where>
+			<if test="doctorId !=null">
+				doctor_id=#{doctorId}
+			</if>
+			<if test="contractId !=null">
+				and contract_id=#{contractId}
+			</if>
+			<if test="reason !=null and reason !=''">
+				and reason like CONCAT(CONCAT('%', #{reason}), '%')
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.contract.ContractFeedback" resultType="map">
+		select cf.id,cf.reason,cf.create_date createDate,d.id doctorId,d.name doctorName from contract_feedback cf
+		left join doctor d on d.id=cf.doctor_id
+		left join contract c on c.id=cf.contract_id where cf.id=#{id}
+	</select>
+</mapper>

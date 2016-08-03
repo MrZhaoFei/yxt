@@ -1,0 +1,61 @@
+package org.system.service.impl.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.doctor.Doctor;
+import org.system.mapper.doctor.DoctorMapper;
+import org.system.service.iface.doctor.IDoctorService;
+
+@Service
+public class DoctorService implements IDoctorService{
+	
+	@Resource
+	private DoctorMapper doctorMapper;
+	
+	@Override
+	public int insertDoctor(Doctor doctor) {
+		return doctorMapper.insert(doctor);
+	}
+
+	@Override
+	public int updateDoctor(Doctor doctor) {
+		return doctorMapper.update(doctor);
+	}
+
+	@Override
+	public int deleteDoctor(Doctor doctor) {
+		return doctorMapper.delete(doctor);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorList(Doctor doctor) {
+		return doctorMapper.queryAll(doctor);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorDetail(Doctor doctor) {
+		return doctorMapper.queryOne(doctor);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorByFiled(Doctor doctor) {
+		return doctorMapper.checkExists(doctor);
+	}
+
+	/*@Override
+	public Map<String, Object> getDoctorDetailByDoctorId(Doctor doctor) {
+		return doctorMapper.queryByDoctorId(doctor);
+	}
+
+
+
+	@Override
+	public int getDoctorMaxId(Doctor doctor) {
+		return doctorMapper.queryMaxId(doctor);
+	}*/
+
+}

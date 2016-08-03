@@ -1,0 +1,34 @@
+package org.system.service.impl.address;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.SysCodeRecods;
+import org.system.mapper.address.SysCodeRecodsMapper;
+import org.system.service.iface.address.ISysCodeRecodsService;
+
+@Service
+public class SysCodeRecodsService implements ISysCodeRecodsService{
+	
+	@Resource
+	private SysCodeRecodsMapper sysCodeRecodsMapper;
+
+	@Override
+	public List<Map<String, Object>> getAddressByCode(SysCodeRecods sysCodeRecode) {
+		return sysCodeRecodsMapper.queryPro(sysCodeRecode);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAddressByCodeName(SysCodeRecods sysCodeRecode) {
+		return sysCodeRecodsMapper.queryLike(sysCodeRecode);
+	}
+
+	@Override
+	public List<Map<String, Object>> getHospitalByCodeName(SysCodeRecods sysCodeRecode) {
+		return sysCodeRecodsMapper.queryHospital(sysCodeRecode);
+	}
+
+}

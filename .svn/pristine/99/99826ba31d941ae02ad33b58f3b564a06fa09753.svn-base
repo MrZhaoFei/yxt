@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.user.UserMapper">
+	<!-- 查询权限 -->
+	<select id="getPermission" parameterType="map" resultType="map">
+		select o.resource from user_role ur
+		left join user u on u.id=ur.user_id
+		right join role r on r.id=ur.role_id
+		left join role_permission rp on
+		rp.role_id=r.id
+		left join permission p on p.id=rp.permission_id
+		left
+		join permission_operation op on op.permission_id=p.id
+		left join
+		operation o on o.id=op.operation_id where r.id=1
+		<if test="id!=null and id!=''">
+			or ur.user_id=#{id}
+		</if>
+	</select>
+	<!-- 查询单个用户 -->
+	<select id="queryOne" parameterType="org.system.entity.user.User"
+		resultType="map">
+		select id,name,password from user where name=#{name} and password=#{password}
+	</select>
+	<select id="getUserDetail" parameterType="org.system.entity.user.User"
+		resultType="map">
+		select id,name,phone,wechat_id wechatId,wx_doc_pwd docPwd from user where id=#{id}
+	</select>
+	<resultMap type="map" id="userResultMap">
+		<result property="id" column="id"/>
+		<collection property="contractDetail" column="id" javaType="list" select="getContractList"/>
+	</resultMap>
+	<!-- 微信登陆 -->
+	<select id="getUserByWechatId" parameterType="org.system.entity.user.User" resultType="map">
+		select u.id,u.name account,u.phone,u.wechat_id openId,u.union_id unionId,ud.name,
+		u.register_date registerDate,rs.name registerSourceName from user u
+		left join register_source rs on rs.id=u.register_source_id
+		left join user_detail ud on ud.user_id=u.id
+		where u.wechat_id=#{wechatId}
+	</select>
+	<select id="getContractList" parameterType="int" resultType="map">
+		select d.id doctorId,d.`name` doctorName from contract c 
+		left join doctor d on d.id=c.creator_id where c.user_id=#{id}
+	</select>
+	<!-- 检测数据是否存在 -->
+	<select id="checkExists" parameterType="org.system.entity.user.User"
+		resultType="map">
+		select id,name,phone from user
+		<where>
+			<if test="phone != null and phone !=''">
+				phone=#{phone} and wechat_id is null
+			</if>
+			<if test="wechatId !=null and wechatId!=''">
+				and wechat_id=#{wechatId}
+			</if>
+			<if test="id !=null">
+				and id=#{id}
+			</if>
+		</where>
+	</select>
+	<!-- -->
+	<update id="updateForPhone" parameterType="org.system.entity.user.User">
+		update user
+		<set>
+			<if test="wechatId !=null and wechatId!=''">
+				wechat_id=#{wechatId},
+			</if>
+			<if test="unionId !=null and unionId !=''">
+				union_id=#{unionId},
+			</if>
+		</set>
+		where phone=#{phone}
+	</update>
+	
+	<update id="update" parameterType="org.system.entity.user.User">
+		update user set id=#{id}
+			<if test="name !=null and name!=''">
+				,name=#{name}
+			</if>
+			<if test="unionId !=null and unionId !=''">
+				,union_id=#{unionId}
+			</if>
+			<if test="phone !=null and phone !=''">
+				,phone=#{phone}
+			</if>
+			<if test="wxDocPwd !=null and wxDocPwd !=''">
+				,wx_doc_pwd=#{wxDocPwd}
+			</if>
+			<if test="userTypeTag !=null and userTypeTag !=''">
+				,user_type_tag=#{userTypeTag}
+			</if>
+		where id=#{id}
+	</update>
+	<update id="updateUserWechatUnBind" parameterType="org.system.entity.user.User">
+		update user
+		set wechat_id=null where phone=#{phone} and wechat_id=#{wechatId}
+	</update>
+
+	<select id="getUserByFiled" parameterType="org.system.entity.user.User" resultType="map">
+		select id,name,phone from user
+		<where>
+			<if test="phone != null and phone !=''">
+				phone=#{phone}
+			</if>
+			<if test="wechatId !=null and wechatId!=''">
+				and wechat_id=#{wechatId}
+			</if>
+		</where>
+	</select>
+	<insert id="insert" parameterType="org.system.entity.user.User" useGeneratedKeys="true" keyProperty="id">
+		insert into user(phone,wechat_id,union_id,register_source_id,register_date) values(#{phone},#{wechatId},#{unionId},#{registerSourceId},#{registerDate})
+	</insert>
+	<select id="getUserByDetailFiled" parameterType="org.system.entity.user.User" resultType="map">
+		SELECT u.id,u.phone,ud.residence_address residenceAddress,ud.id_card idcard FROM user_detail ud left join user u on u.id=ud.user_id where ud.id_card IDCard=#{userDetail.idcard}
+	</select>
+	<select id="getUserListByMap" parameterType="map" resultType="map">
+		select id,phone from user
+		where id in 
+		<foreach collection="ids" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</select>
+</mapper>

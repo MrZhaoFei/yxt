@@ -1,0 +1,12 @@
+package org.system.service.iface.userService;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.userService.UserService;
+
+public interface IUserService {
+	
+	public List<Map<String, Object>> getUserServiceList(UserService userService);
+
+}

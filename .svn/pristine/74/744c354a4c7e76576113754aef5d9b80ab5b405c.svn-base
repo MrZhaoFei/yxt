@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.resp.TaskTypeMapper" >
+	<!-- 查询列表 -->
+	<select id="queryAll" parameterType="org.system.entity.service.resp.TaskType" resultType="map">
+		select tt.id,tt.task_name taskName,tt.task_desp taskDesp from task_type tt
+	</select>
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.service.resp.TaskType" resultType="map">
+		select tt.id,tt.task_name taskName,tt.task_desp taskDesp from task_type tt
+		where tt.id=#{id}
+	</select>
+</mapper>

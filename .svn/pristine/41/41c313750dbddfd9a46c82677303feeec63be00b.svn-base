@@ -1,0 +1,23 @@
+package org.system.service.iface;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.AdminUser;
+
+public interface IAdminUserService {
+
+	public int inserAdminUser(AdminUser admin);
+
+	public int deleteAdminUser(AdminUser admin);
+
+	public int updateAdmin(AdminUser admin);
+
+	public List<Map<String, Object>> getAdminUserList(AdminUser admin);
+
+	public Map<String, Object> getAdminUserDetail(AdminUser admin);
+
+	public Map<String, Object> getAdminUserByFiled(AdminUser admin);
+	
+	
+}

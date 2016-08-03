@@ -1,0 +1,23 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.ServicePack;
+
+public interface IServicePackService {
+
+	Map<String, Object> getServicePackByFild(ServicePack servicePack);
+
+	int insertServicePack(ServicePack servicePack);
+
+	int updateServicePack(ServicePack servicePack);
+
+	List<Map<String, Object>> getServicePackList(ServicePack servicePack);
+
+	Map<String, Object> getServicePackDetail(ServicePack servicePack);
+
+	List<Map<String, Object>>  getServicePackDetailByBase(ServicePack servicePack);
+	
+	List<Map<String, Object>> getServicePackListByDoctor(ServicePack servicePack);
+}

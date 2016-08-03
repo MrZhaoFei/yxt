@@ -1,0 +1,20 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.DoctorLevel;
+
+public interface IDoctorLevelService {
+public int insertDoctorLevel(DoctorLevel doctorLevel);
+	
+	public int updateDoctorLevel(DoctorLevel doctorLevel);
+	
+	public int deleteDoctorLevel(DoctorLevel doctorLevel);
+	
+	public List<Map<String, Object>> getDoctorLevelList(DoctorLevel doctorLevel);
+	
+	public Map<String, Object> getDoctorLevelDetail(DoctorLevel doctorLevel);
+	
+	public Map<String, Object> getDoctorLevelByFiled(DoctorLevel doctorLevel);
+}

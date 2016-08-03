@@ -1,0 +1,60 @@
+package org.system.entity.user.healthtest;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+public class SelfTestQuestion extends BaseEntity {
+	private Integer id;
+
+	private Integer titleId;
+
+	private String question;
+
+	private Integer viewOrder;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getTitleId() {
+		return titleId;
+	}
+
+	public void setTitleId(Integer titleId) {
+		this.titleId = titleId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+
+	public Integer getViewOrder() {
+		return viewOrder;
+	}
+
+	public void setViewOrder(Integer viewOrder) {
+		this.viewOrder = viewOrder;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

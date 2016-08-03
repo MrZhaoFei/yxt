@@ -1,0 +1,114 @@
+package org.system.controller.iface.user.healthtest;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.user.healthtest.UserDailyBloodPressure;
+import org.utils.spring.Groups;
+
+/**
+ * @ClassName IUserDailyBloodPressureController
+ * @author <font color="red"><b>LiuMrLiu</b></font>
+ * @date 2016年3月21日 上午11:08:04
+ * @version 1.0
+ * @description 用户血压
+ */
+@RequestMapping(value = { "/user" })
+public interface IUserDailyBloodPressureController {
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param userDailyBloodPressure
+	 * @param result
+	 * @return
+	 * @date 2016年3月18日 下午5:30:14
+	 * @version 1.0
+	 * @description 新增用户血压
+	 */
+	@RequestMapping(value = "/userDailyBloodPressure", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("userDailyBloodPressure:insert")
+	public Map<String, Object> insertUserDailyBloodPressure(@Validated({ Groups.Insert.class }) UserDailyBloodPressure userDailyBloodPressure,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	/**
+	 * 
+	 * 医生新增 用户血压
+	 * 
+	 * @param userDailyBloodPressure
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/userDailyBloodPressure", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertDoctorUserDailyBloodPressure(@Validated({ Groups.Other.class }) UserDailyBloodPressure userDailyBloodPressure,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param userDailyBloodPressureId
+	 * @param userDailyBloodPressure
+	 * @param result
+	 * @return
+	 * @date 2016年3月18日 下午5:30:26
+	 * @version 1.0
+	 * @description 修改用户血压
+	 */
+	@RequestMapping(value = "/userDailyBloodPressure/{userDailyBloodPressureId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("userDailyBloodPressure:update")
+	public Map<String, Object> updateUserDailyBloodPressure(@PathVariable("userDailyBloodPressureId") Integer userDailyBloodPressureId,
+			@Validated({ Groups.Update.class }) UserDailyBloodPressure userDailyBloodPressure, BindingResult result);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param userDailyBloodPressure
+	 * @return
+	 * @date 2016年3月18日 下午5:30:38
+	 * @version 1.0
+	 * @description 用户血压列表
+	 */
+	@RequestMapping(value = "/userDailyBloodPressures", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("userDailyBloodPressure:list")
+	public Map<String, Object> getUserDailyBloodPressureList(@Validated({ Groups.Select.class }) UserDailyBloodPressure userDailyBloodPressure,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param userDailyBloodPressureId
+	 * @param userDailyBloodPressure
+	 * @return
+	 * @date 2016年3月18日 下午5:30:48
+	 * @version 1.0
+	 * @description 用户血压详情
+	 */
+	@RequestMapping(value = "/userDailyBloodPressure/{userDailyBloodPressureId}", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("userDailyBloodPressure:detail")
+	public Map<String, Object> getUserDailyBloodPressureDetail(@PathVariable("userDailyBloodPressureId") Integer userDailyBloodPressureId,
+			UserDailyBloodPressure userDailyBloodPressure);
+	
+	/**
+	 * 医生查询 用户血压列表
+	 * 
+	 * @param userDailyBloodPressure
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/userDailyBloodPressures", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getDoctorUserDailyBloodPressureList(@Validated({ Groups.Select.class }) UserDailyBloodPressure userDailyBloodPressure,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	
+}

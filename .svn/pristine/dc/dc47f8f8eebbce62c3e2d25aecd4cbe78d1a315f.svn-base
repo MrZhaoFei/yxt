@@ -1,0 +1,49 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.ServiceType;
+
+public interface IServiceTypeService {
+	/**
+	 * 新增
+	 * @param serviceType
+	 * @return
+	 */
+    public int insertServiceType(ServiceType serviceType);
+    /**
+	 * 修改
+	 * @param serviceType
+	 * @return
+	 */
+	public int updateServiceType(ServiceType serviceType);
+	
+	/**
+	 * 刪除
+	 * @param serviceType
+	 * @return
+	 */
+	public int deleteServiceType(ServiceType serviceType);
+	
+	/**
+	 * 数据列表
+	 * @param serviceType
+	 * @return
+	 */
+	public List<Map<String, Object>> getServiceTypeList(ServiceType serviceType);
+	
+	/**
+	 * 单条数据详情
+	 * @param serviceType
+	 * @return
+	 */
+	public Map<String, Object> getServiceTypeDetail(ServiceType serviceType);
+	
+	/**
+	 * 检查唯一性
+	 * @param serviceType
+	 * @return
+	 */
+	public Map<String, Object> getServiceTypeByFiled(ServiceType serviceType);
+}

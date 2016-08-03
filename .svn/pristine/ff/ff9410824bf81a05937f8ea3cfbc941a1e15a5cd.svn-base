@@ -1,0 +1,102 @@
+package org.system.controller.iface.service.transfer;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.transfer.ImageConsultationDetaily;
+import org.utils.spring.Groups;
+
+/**
+ * 影像会诊
+ * 
+ * @author Administrator
+ *
+ */
+@RequestMapping()
+public interface IImageConsultationDetailyController {
+
+	/**
+	 * 新增影像会诊
+	 * 
+	 * @param imageConsultationDetaily
+	 * @param resul
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/imageConsultationDetaily", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("imageConsultationDetaily:insert:user")
+	public Map<String, Object> insertImageConsultationDetaily(
+			@Validated({ Groups.Insert.class }) ImageConsultationDetaily imageConsultationDetaily, BindingResult resul,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 用户确认或取消影像会诊
+	 * 
+	 * @param imageConsultationDetailyId
+	 * @param imageConsultationDetaily
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/user/imageConsultationDetaily/sure/{transId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("imageConsultationDetaily:update:sure")
+	public Map<String, Object> updateTransTreatSure(@PathVariable("transId") Integer imageConsultationDetailyId,
+			@Validated({ Groups.Update.class }) ImageConsultationDetaily imageConsultationDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 医生查询影像会诊记录详情
+	 * 
+	 * @param imageConsultationDetailyId
+	 * @param imageConsultationDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/imageConsultationDetaily/{transId}" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("imageConsultationDetaily:detail")
+	public Map<String, Object> getImageConsultationDetailyDetail(
+			@PathVariable("transId") Integer imageConsultationDetailyId,ImageConsultationDetaily imageConsultationDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+
+	/**
+	 * 用户查询影像会诊记录详情
+	 * 
+	 * @param imageConsultationDetailyId
+	 * @param imageConsultationDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/user/imageConsultationDetaily/{transId}" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("imageConsultationDetaily:detail")
+	public Map<String, Object> getImageConsultationDetailyDetailByUser(
+			@PathVariable("transId") Integer imageConsultationDetailyId,
+			ImageConsultationDetaily imageConsultationDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 医生查询自己的影像会诊列表
+	 * 
+	 * @param imageConsultationDetaily
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/imageConsultationDetailys", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("imageConsultationDetaily:list")
+	public Map<String, Object> getImageConsultationDetailyList(
+			@Validated({ Groups.Select.class }) ImageConsultationDetaily imageConsultationDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+}

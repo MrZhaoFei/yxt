@@ -1,0 +1,116 @@
+package org.system.entity.service;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+public class UserService extends BaseEntity {
+
+	public interface getServiceListByUser {
+	}
+
+	private Integer id;
+
+	private Integer userServicePackId;
+
+	private Integer productServiceId;
+
+	@NotNull(message = "{user.id.notnull.valid}", groups = { UserService.getServiceListByUser.class })
+	private Integer userId;
+
+	private Integer times;
+
+	private Integer lockTimes;
+
+	@NotNull(message = "{serviceRespTask.id.notnull.valid}", groups = { UserService.getServiceListByUser.class })
+	private Integer taskId;
+
+	private ServiceType serviceType;
+	private ServicePack servicePack;
+	
+
+	public ServicePack getServicePack() {
+		return servicePack;
+	}
+
+	public void setServicePack(ServicePack servicePack) {
+		this.servicePack = servicePack;
+	}
+
+	public ServiceType getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(ServiceType serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public Integer getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(Integer taskId) {
+		this.taskId = taskId;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getUserServicePackId() {
+		return userServicePackId;
+	}
+
+	public void setUserServicePackId(Integer userServicePackId) {
+		this.userServicePackId = userServicePackId;
+	}
+
+	public Integer getProductServiceId() {
+		return productServiceId;
+	}
+
+	public void setProductServiceId(Integer productServiceId) {
+		this.productServiceId = productServiceId;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getTimes() {
+		return times;
+	}
+
+	public void setTimes(Integer times) {
+		this.times = times;
+	}
+
+	public Integer getLockTimes() {
+		return lockTimes;
+	}
+
+	public void setLockTimes(Integer lockTimes) {
+		this.lockTimes = lockTimes;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

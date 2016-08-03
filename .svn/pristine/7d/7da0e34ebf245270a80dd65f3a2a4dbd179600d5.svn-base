@@ -1,0 +1,8 @@
+package org.system.mapper.doctorType;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.DoctorType;
+
+public interface DoctorTypeMapper extends IBaseMapper<DoctorType> {
+
+}

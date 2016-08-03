@@ -1,0 +1,87 @@
+package org.system.service.iface;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.Hospital;
+
+public interface IHospitalService {
+    
+	/**
+	 * 新增机构
+	 * @param hospital
+	 * @return int
+	 */
+	public int insertHospital(Hospital hospital);
+
+	/**
+	 * 修改机构
+	 * @param hospital
+	 * @return int
+	 */
+	public int updateHospital(Hospital hospital);
+
+	/**
+	 * 删除机构
+	 * @param hospital
+	 * @return int
+	 */
+	public int deleteHospital(Hospital hospital);
+    
+	/**
+	 * 机构列表
+	 * @param hospital
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getHospitalList(Hospital hospital);
+
+	/**
+	 * 单个机构细节
+	 * @param hospital
+	 * @return  Map<String, Object>
+	 */
+	public Map<String, Object> getHospitalDetail(Hospital hospital);
+
+	/**
+	 * 检查唯一性
+	 * @param hospital
+	 * @return  Map<String, Object>
+	 */
+	public Map<String, Object> getHospitalByFiled(Hospital hospital);
+
+	/**
+	 * @description 根据行政区域的code_value的查询出行政区域的id值
+	 * @param hospital
+	 *            code_value=#{addressCode}
+	 * @return 行政区域id值
+	 */
+	public int queryCodeId(Hospital hospital);
+    
+	/**
+	 * 查询机构中的 卫生服务中心 和医院类型列表 
+	 * @param hospital
+	 * @return 卫生服务中心 和医院类型列表
+	 */
+	public List<Map<String, Object>> getWeiAndYi(Hospital hospital);
+    
+	/**
+	 * 查询所有机构根据五级地址  根据地址的code_value
+	 * @param hospital
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getAllHospitalList(Hospital hospital);
+    
+	/**
+	 * 查询该机构是否存在团队中
+	 * @param hospital
+	 * @return int
+	 */
+	public int getHospitalContract(Hospital hospital);
+  
+	/**
+	 * 修改存在团队中的机构 ()
+	 * @param hospital
+	 * @return int
+	 */
+	public int updateHospitalContract(Hospital hospital);
+}

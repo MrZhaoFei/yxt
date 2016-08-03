@@ -1,0 +1,20 @@
+package org.system.mapper.service;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.ServicePackCondition;
+
+public interface ServicePackConditionMapper extends IBaseMapper<ServicePackCondition> {
+		/**
+		 * 根据地址的code_value查询地址的id号
+		 * @param servicePackCondition
+		 * @return int
+		 */
+       public 	int queryCodeId(ServicePackCondition servicePackCondition);
+       
+       /**
+        * 查询该优惠包是否被用户购买
+        * @param servicePackCondition
+        * @return int
+        */
+       public int queryConditionByBuy(ServicePackCondition servicePackCondition);
+}

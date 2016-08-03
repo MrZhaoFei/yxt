@@ -1,0 +1,128 @@
+package org.system.entity.sms;
+
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.utils.spring.Groups;
+
+public class SmsSendTask extends BaseEntity {
+	private Long id;
+
+	private String from;
+
+	private Integer fromDoctorId;
+	private Integer smsType;
+
+	private String to;
+
+	@NotNull(message = "{user.id.notnull.valid}", groups = { Groups.Insert.class, Groups.Other.class })
+	private Integer toUserId;
+
+	@NotBlank(message = "{sms.content.notblank.valid}", groups = { Groups.Insert.class })
+	private String content;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date startSendTime;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date endSendTime;
+	
+	private Date createTime;
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getEndSendTime() {
+		return endSendTime;
+	}
+
+	public void setEndSendTime(Date endSendTime) {
+		this.endSendTime = endSendTime;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public Integer getFromDoctorId() {
+		return fromDoctorId;
+	}
+
+	public void setFromDoctorId(Integer fromDoctorId) {
+		this.fromDoctorId = fromDoctorId;
+	}
+
+	public Integer getSmsType() {
+		return smsType;
+	}
+
+	public void setSmsType(Integer smsType) {
+		this.smsType = smsType;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
+	public Integer getToUserId() {
+		return toUserId;
+	}
+
+	public void setToUserId(Integer toUserId) {
+		this.toUserId = toUserId;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Date getStartSendTime() {
+		return startSendTime;
+	}
+
+	public void setStartSendTime(Date startSendTime) {
+		this.startSendTime = startSendTime;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class,Groups.Other.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class,Groups.Other.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+}

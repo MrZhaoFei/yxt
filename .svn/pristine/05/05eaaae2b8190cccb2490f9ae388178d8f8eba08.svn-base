@@ -1,0 +1,825 @@
+﻿/*
+ =============== 2016年5月26日 WorldNebula
+ =============== 文件上传功能基于百度webuploader...
+ =============== NebFiles封装，采用闭包模式，避免与其他代码有干扰
+ 对外公开的对象：NebFiles
+ 对外公开的类：
+ 1 NebFiles.FileUp 文件上传类    主要方法：GetFiles()  取得上传后的所有图片的ID
+ 2 NebFiles.ImagesBox 图片展示框类   主要方法：SetImages(imageids)  设置所有的图片
+ 3 详细使用说明见demo
+ */
+(function () {
+    // 基础配置信息，请根据自己服务器情况自行修改
+    var WEB_INFO = {
+    		 // 取token的地址
+    		FILE_TOKEN_WEB: "/yxt-admin/admin/store",   //本地
+    		  // 文件服务器地址
+    		FILE_WEB: "http://company.99kst.com:10081/File/" , // 服务器
+    		
+    		// 李琼本地
+    	   /* FILE_TOKEN_WEB: "http://company.99kst.com:8088/yxt-admin/admin/store", // 李琼本地
+    		FILE_WEB: "http://company.99kst.com:10081/File/" , // 服务器
+*/    		
+    		// 云端
+    		//FILE_TOKEN_WEB: "http://118.123.167.66:8080/yxt-admin/admin/store", //云端
+	       // FILE_WEB: "http://service.99kst.com:10081/File/",  // 云端文件服务器
+    };
+    // TOKEN管理器类对象，用于获取和管理token
+    var nebfiles = (function () {
+        // 文件管理器类
+        var _tokenmanager = function (config) {
+            config = config || {};
+            this.tokens = {};
+            this.tokenurl = config.tokenurl || WEB_INFO.FILE_TOKEN_WEB;
+            this.GetToken("all");
+        };
+        _tokenmanager.prototype = {
+            GetToken: function (type, callback) {
+                if (typeof type === "function") {
+                    callback = type;
+                    type = "file";
+                } else {
+                    type = type || "file";
+                }
+                var token = this.tokens[type] || {token: "", acquisitive: 0, createDate: 0};
+                // 先判断时间是否过期
+                if ((token.token.length === 0) || ((token.createDate + (token.acquisitive - 1) * 60 * 1000) < new Date().getTime())) {
+                    var self = this;
+                    $.ajax({
+                        url: this.tokenurl,
+                        success: function (back) {
+                            if (back["stateCode"] === 200) {
+                                var data = back.data;
+                                for (var name in data) {
+                                    self.tokens[name] = self.tokens[name] || {};
+                                    self.tokens[name].token = encodeURIComponent(data[name].token);
+                                    self.tokens[name].acquisitive = data[name].acquisitive;
+                                    self.tokens[name].createDate = data[name].createDate;
+                                }
+                                if (callback) {
+                                    callback(self.tokens[type].token);
+                                }
+                            }
+                            type = null;
+                            self = null;
+                        }
+                    });
+                } else {
+                    if (callback) {
+                        callback(token.token);
+                    }
+                }
+            }
+        };
+        var tokenmanager = new _tokenmanager();
+        // 图片浏览
+        var _imagelookbox = function (config) {
+            config = config || {};
+            var self = this;
+            this.url = config.url || WEB_INFO.FILE_WEB + "GetImage/";
+            this.backer = $("<div class='common_imagelookbacker'></div>");
+            this.window = $("<div class='common_imagelookbox'><div class='lookimgbox'><ul></ul></div>" +
+                "<a href='javascript:void(0);' class='lookbtn closebtn' name='closebtn'></a>" +
+                "<a href='javascript:void(0);' class='lookbtn leftpagebtn' name='leftpagebtn'></a>" +
+                "<a href='javascript:void(0);' class='lookbtn rightpagebtn' name='rightpagebtn'></a>" +
+                "<div class='pagetip'></div></div>");
+            this.images = [];
+            this.imageIndex = 0;
+            this.imageBox = this.window.find(".lookimgbox");
+            //this.closeBtn = this.window.find(".closebtn");
+            this.leftPageBtn = this.window.find(".leftpagebtn");
+            this.rightPageBtn = this.window.find(".rightpagebtn");
+            this.imagePageTip = this.window.find(".pagetip");
+
+            this.window.on("click", "a.lookbtn", function (evt) {
+                var name = $(this).attr("name");
+                switch (name) {
+                    case "rightpagebtn":
+                        self.ChangePage(self.imageIndex + 1);
+                        break;
+                    case "leftpagebtn":
+                        self.ChangePage(self.imageIndex - 1);
+                        break;
+                    case "closebtn":
+                        self.Close();
+                        break;
+                }
+            });
+        };
+        _imagelookbox.prototype = {
+            SetImages: function (imgs) {
+                this.images = imgs;
+                var len = this.images.length, img, i, li, ul = this.window.find("ul"), url;
+                ul.empty();
+                var self = this;
+                var fn = function (token) {
+                    for (i = 0; i < len; ++i) {
+                        url = self.url + "?encodeStr=" + token + "&objectID=" + self.images[i];
+                        li = $("<li class='lookcontenter'><a href='" + url + "' target='_blank' title='点击在新页面打开..'>" +
+                            "<img class='lookimg' src='" + url + "' /></a></li>");
+                        ul.append(li);
+                    }
+                };
+                tokenmanager.GetToken(fn);
+                return this;
+            },
+            Open: function (index) {
+                var len = this.images.length;
+                if (index >= 0 && index < len) {
+                    this.imageIndex = index;
+                    this.imageBox.css({"transition": "opacity 0.3s ease"});
+                    this.backer.css({display: "block"});
+                    this.window.css({display: "block"});
+                    var self = this;
+
+                    // 100ms开启0到1的淡显
+                    function show() {
+                        self.backer.addClass("common_imagelook_backeropacity");
+                        self.imageBox.addClass("lookopacity");
+                        show = null;
+                    }
+
+                    setTimeout(show, 100);
+
+                    // 500ms后开启滚动，去掉淡显
+                    function leftFn() {
+                        // 切换图片动态效果：时间
+                        self.imageBox.css({"transition": "left 0.2s ease"});
+                        leftFn = null;
+                    }
+
+                    setTimeout(leftFn, 500);
+
+                    this.imagePageTip.text((index + 1) + "/" + len);
+
+                    // 开启首页和末页不启用左右按钮
+                    /*if (index + 1 < len) {
+                     this.rightPageBtn.css({display: "block"});
+                     }
+                     else {
+                     this.rightPageBtn.css({display: ""});
+                     }
+                     if (index > 0) {
+                     this.leftPageBtn.css({display: "block"});
+                     }
+                     else {
+                     this.leftPageBtn.css({display: ""});
+                     }*/
+                    // 左右按钮全开
+                    this.rightPageBtn.css({display: "block"});
+                    this.leftPageBtn.css({display: "block"});
+
+                    this.imageBoxLeft = -index * 100;
+                    this.imageBox.css({"left": this.imageBoxLeft.toString() + "%"});
+                }
+                return this;
+            },
+            ChangePage: function (index) {
+                var len = this.images.length;
+                if (index > len - 1) {
+                    // 无右图
+                    this.imageBox.css({});
+                    this.imageBoxLeft = -(this.imageIndex * 100 - 10);
+                    this.imageBox.css({"transition": "left 0.2s ease", "left": this.imageBoxLeft.toString() + "%"});
+                    var self = this;
+
+                    function back() {
+                        self.imageBoxLeft = -self.imageIndex * 100;
+                        self.imageBox.css({"transition": "left 0.2s ease", "left": self.imageBoxLeft.toString() + "%"});
+                        self = null;
+                        back = null;
+                    }
+
+                    setTimeout(back, 200);
+                } else if (index < 0) {
+                    // 无左图
+                    this.imageBoxLeft = 10;
+                    this.imageBox.css({"transition": "left 0.2s ease", "left": "10%"});
+                    var self = this;
+
+                    function back() {
+                        self.imageBoxLeft = 0;
+                        self.imageBox.css({"transition": "left 0.2s ease", "left": "0%"});
+                        self = null;
+                        back = null;
+                    }
+
+                    setTimeout(back, 200);
+                }
+                else {
+                    this.imageIndex = index;
+                    this.imageBoxLeft = -this.imageIndex * 100;
+                    this.imageBox.css({"left": this.imageBoxLeft.toString() + "%"});
+
+                    this.imagePageTip.text((index + 1) + "/" + len);
+
+                    /*开启首页和末页不启用左右按钮
+                     if (index + 1 < len) {
+                     this.rightPageBtn.css({display: "block"});
+                     }
+                     else {
+                     this.rightPageBtn.css({display: ""});
+                     }
+                     if (index > 0) {
+                     this.leftPageBtn.css({display: "block"});
+                     }
+                     else {
+                     this.leftPageBtn.css({display: ""});
+                     }*/
+                }
+                return this;
+            },
+            Close: function () {
+                var ul = this.window.find("ul");
+                ul.empty();
+                this.backer.removeClass("common_imagelook_backeropacity");
+                this.imageBox.removeClass("lookopacity");
+                this.imageBox.css({"transition": "", left: ""});
+                this.imageBoxLeft = 0;
+                var self = this;
+                // 300秒后清理所有
+                function hide() {
+                    self.backer.css({display: ""});
+                    self.window.css({display: ""});
+                    self = null;
+                    hide = null;
+                }
+
+                setTimeout(hide, 300);
+            },
+            AddTo: function (obj) {
+                this.backer.appendTo(obj);
+                this.window.appendTo(obj);
+                return this;
+            }
+        };
+        // 图片上传
+        var _imageup = function (config) {
+            config = config || {};
+            var self = this;
+            this.preview = config.preview || true;
+            this.url = config.url || WEB_INFO.FILE_WEB + "Upload/";
+            this.mode = config.mode || "up";
+            this.viewurl = config.viewurl || WEB_INFO.FILE_WEB + "GetImage/";
+            this.maxnum = config.maxnum || 300;
+            this.filenum = 0;
+            this.selectfilenum = 0;
+            this.addfilenum = 0;
+            this.errtypefilenum = 0;
+            this.errsizefilenum = 0;
+            this.errmaxfilenum = 0;
+            this.tokenmanager = tokenmanager;
+            this.images = [];
+            this.window = $("<div class='common_upimgctrl'><ul class='line_block'></ul><div style='display: none;' class='add_img_btn2'></div></div>");
+            if (this.preview) {
+                this.window.on("click", "a.img_btn", function (evt) {
+                    self.OpenView(parseInt($(this).attr("image_index")));
+                });
+            }
+            if (this.mode === "up") {
+                this.input = null;
+                this.OnFilesQueued = config.OnFilesQueued || this.OnFilesQueued;
+                this.OnBegin = config.OnBegin || this.OnBegin;
+                this.OnEnd = config.OnEnd || this.OnEnd;
+                // 判断浏览器是否支持图片的base64
+                this.isSupportBase64 = (function () {
+                    var data = new Image();
+                    var support = true;
+                    data.onload = data.onerror = function () {
+                        if (this.width != 1 || this.height != 1) {
+                            support = false;
+                        }
+                    };
+                    data.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+                    return support;
+                })();
+                this.window.find("ul").append($("<li class='line_block img_box'><a href='javascript:void(0);' class='add_img_btn' title='上传图片'></a></li>"));
+                this.addimgbtn = this.window.find(".add_img_btn");
+                this.addimgbtn2 = this.window.find(".add_img_btn2");
+                this.window.on("click", ".remove_img", function (evt) {
+                    var t = $(this), image_index = parseInt(t.attr("image_index"))
+                    self.RemoveImage(image_index);
+                    return this;
+                });
+                this.addimgbtn.on("click", function () {
+                    self.DoSelect();
+                });
+                this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: '../images/Uploader.swf',
+                    // 开起分片上传。
+                    chunked: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'Images',
+                        extensions: 'gif,jpg,jpeg,bmp,png',
+                        mimeTypes: 'image/*'
+                    }
+                });
+                this.uploader.addButton({id: this.addimgbtn2});
+                // 当文件被加入队列之前触发，此事件的handler返回值为false，则此文件不会被添加进入队列。
+                this.uploader.onBeforeFileQueued = function (file) {
+                    self.selectfilenum++;
+                    if (self.filenum >= self.maxnum) {
+                        self.errmaxfilenum++;
+                        return false;
+                    }
+                };
+                // 当文件加入队列出现错误时触发 type {String}错误类型
+                this.uploader.onError = function (type) {
+                    switch (type) {
+                        case "Q_EXCEED_NUM_LIMIT":
+                            break;
+                        case "Q_EXCEED_SIZE_LIMIT":
+                            self.errsizefilenum++;
+                            break;
+                        case "Q_TYPE_DENIED":
+                            self.errtypefilenum++;
+                            break;
+                    }
+                };
+                // 当文件成功加入队列时
+                this.uploader.onFileQueued = function (file) {
+                    self.addfilenum++;
+                    self.AddImageBox(file);
+                };
+                // 队列添加成功，立即上传
+                this.uploader.onFilesQueued = function (files) {
+                    if (self.OnFilesQueued) {
+                        self.OnFilesQueued({
+                            files: files, selectnum: self.selectfilenum, addnum: self.addfilenum, typeerrnum: self.errtypefilenum,
+                            sizeerrnum: self.errsizefilenum, errmaxnum: self.errmaxfilenum
+                        });
+                    }
+                    if (self.filenum >= self.maxnum) {
+                        self.EndAdd();
+                    }
+                    self.addfilenum = 0;
+                    self.errtypefilenum = 0;
+                    self.errsizefilenum = 0;
+                    self.selectfilenum = 0;
+                    self.errmaxfilenum = 0;
+                };
+                // 当文件开始上传时触发
+                this.uploader.onStartUpload = function () {
+                    if (self.OnBegin) {
+                        self.OnBegin();
+                    }
+                };
+                // 当文件上传过程中时触发
+                this.uploader.onUploadProgress = function (file, number) {
+                    self.UploadProgress(file, number);
+                };
+                // 当文件上传成功时触发
+                this.uploader.onUploadSuccess = function (file, back) {
+                    if (back["stateCode"] === 200) {
+                        self.UploadSuccess(file, back);
+                    }
+                };
+                // 当文件上传结束时触发
+                this.uploader.onUploadFinished = function () {
+                    if (self.OnEnd) {
+                        self.OnEnd();
+                    }
+                    self.uploader.reset();
+                };
+            }
+        };
+        // 图片上传
+        _imageup.prototype = {
+            OpenView: function (index) {
+                var imgs = [], imgindex = 0, i, imagelen = this.images.length;
+                for (i = 0; i < imagelen; ++i) {
+                    if (this.images[i].id && !this.images[i].remove) {
+                        if (i === index) {
+                            imgindex = imgs.length;
+                        }
+                        imgs.push(this.images[i].id);
+                    }
+                }
+                if (imgs.length > 0) {
+                    var lookbox = new _imagelookbox({
+                        show: true
+                    });
+                    lookbox.AddTo($(document.body));
+                    lookbox.SetImages(imgs);
+                    lookbox.Open(imgindex);
+                }
+                return this;
+            },
+            AddImageBox: function (file) {
+                this.filenum++;
+                var li = $("<li class='line_block img_box file_" + file.id + "'><a href='javascript:void(0);' class='img_btn' image_index='" + this.images.length + "'><div class='loadtip_backer'></div><div class='loadtip'>等待上传..</div></a></li>");
+                var self = this;
+                this.uploader.makeThumb(file, function (error, src) {
+                    var img;
+                    if (error) {
+                        li.find(".img_btn").text("不能预览");
+                    } else {
+                        if (self.isSupportBase64) {
+                            img = $('<img src="' + src + '">');
+                            li.find(".img_btn").append(img);
+                        }
+                    }
+                }, 160, 140);
+                var img = {id: null, li: li, remove: false};
+                this.window.find("ul li").last().before(li);
+                this.images.push(img);
+                return this;
+            },
+            UploadSuccess: function (file, back) {
+                var id = back.data.objectId, li = this.window.find("li.file_" + file.id), img_btn = li.find(".img_btn"), image_index = parseInt(img_btn.attr("image_index")),
+                    img = this.images[image_index];
+                if (!this.isSupportBase64) {
+                    var self = this;
+                    var fn = function (token) {
+                        var img = $('<img src="' + self.viewurl + "?encodeStr=" + token + "&objectID=" + id + '">');
+                        img_btn.empty().append(img);
+                        self = null;
+                    };
+                    this.tokenmanager.GetToken(fn);
+                }
+                img.id = id;
+                var img_btn = li.find(".img_btn");
+                img_btn.find(".loadtip_backer").remove();
+                img_btn.find(".loadtip").remove();
+                li.append($("<a href='javascript:void(0)' class='remove_img' image_index='" + image_index + "' title='删除图片'></a>"));
+                return this;
+            },
+            UploadProgress: function (file, number) {
+                var li = this.window.find("li.file_" + file.id), file_btn = li.find(".img_btn"), loadtip = file_btn.find(".loadtip");
+                loadtip.text("正在上传(" + (number * 100).toFixed(2) + "%)..");
+                return this;
+            },
+            EndAdd: function () {
+                this.window.find("ul li").last().hide();
+                return this;
+            },
+            ReAdd: function () {
+                this.window.find("ul li").last().show();
+                return this;
+            },
+            AddImages: function (ids) {
+                var self = this;
+                var fn = function (token) {
+                    for (var i = 0; i < ids.length; ++i) {
+                        var url = self.viewurl + "?encodeStr=" + token + "&objectID=" + ids[i], li = $("<li class='line_block img_box'><a href='javascript:void(0);' " +
+                                "class='img_btn' image_index='" + self.images.length + "'>" +
+                                "<img class='upimg' src='" + url + "' title='点击查看大图..'/></a></li>"),
+                            img = {id: ids[i], li: li, remove: false};
+                        if (self.mode === "up") {
+                            li.append($("<a href='javascript:void(0)' class='remove_img' image_index='" + self.images.length + "' title='删除图片'></a>"));
+                            self.window.find("ul li").last().before(li);
+                        } else {
+                            self.window.find("ul").append(li);
+                        }
+                        self.images.push(img);
+                        self.filenum++;
+                        if (self.filenum + 1 > self.maxnum - 2) {
+                            self.EndAdd();
+                            break;
+                        }
+                    }
+                    self = null;
+                };
+                this.tokenmanager.GetToken(fn);
+                return this;
+            },
+            RemoveImage: function (index) {
+                var img = this.images[index];
+                if (img && img.id && !img.remove) {
+                    this.images[index].remove = true;
+                    this.images[index].li.remove();
+                    this.filenum--;
+                    if (this.filenum <= this.maxnum - 1) {
+                        this.ReAdd();
+                    }
+                }
+                return this;
+            },
+            GetImages: function () {
+                var hr = [], len = this.images.length, i;
+                for (i = 0; i < len; ++i) {
+                    if (this.images[i].id && !this.images[i].remove) {
+                        hr.push(this.images[i].id);
+                    }
+                }
+                return hr;
+            },
+            AddTo: function (obj) {
+                this.window.appendTo(obj);
+                return this;
+            },
+            DoSelect: function () {
+                this.addimgbtn2.find("input").click();
+                return this;
+            },
+            DoUp: function () {
+                var self = this;
+                // 取得token然后提交...
+                this.tokenmanager.GetToken(function (token) {
+                    self.uploader.option('server', self.url + "?encodeStr=" + token);
+                    self.uploader.upload();
+                    self = null;
+                });
+                return this;
+            },
+            // 当文件添加进上传队列时触发：{selectnum: 选择文件数量, addnum: 进入队列数, typeerrnum: 类型错误数量, sizeerrnum: 大小错误数量, errmaxnum: 超出数量}
+            OnFilesQueued: function (info) {
+                // 如果添加的数量为0且又有错，报错（你说你有好猪，1个都选不对）
+                if (info.addnum === 0 && (info.typeerrnum > 0 || info.sizeerrnum > 0 || info.errmaxnum > 0)) {
+                    if (confirm("您选择的文件不符合上传条件，是否重新选择？")) {
+                        this.DoSelect();
+                    }
+                }
+                else {
+                    this.DoUp();
+                }
+            },
+            OnBegin: function () {
+
+            },
+            OnEnd: function () {
+
+            }
+        };
+        // 文件上传
+        var _fileup = function (config) {
+            config = config || {};
+            var self = this;
+            this.down = config.down || true;
+            this.mode = config.mode || "up";
+            this.url = config.url || WEB_INFO.FILE_WEB + "Upload/";
+            this.downurl = config.downurl || WEB_INFO.FILE_WEB + "DownloadFile/";
+            this.maxnum = config.maxnum || 300;
+            this.filenum = 0;
+            this.selectfilenum = 0;
+            this.addfilenum = 0;
+            this.errtypefilenum = 0;
+            this.errsizefilenum = 0;
+            this.errmaxfilenum = 0;
+            this.tokenmanager = tokenmanager;
+            this.files = [];
+            this.window = $("<div class='common_upfilectrl'><ul class='line_block'></ul></div>");
+            if (this.down) {
+                this.window.on("click", "a.file_btn", function (evt) {
+                    self.DownFile(parseInt($(this).attr("file_index")));
+                });
+            }
+            if (this.mode === "up") {
+                this.input = null;
+                this.OnFilesQueued = config.OnFilesQueued || this.OnFilesQueued;
+                this.OnBegin = config.OnBegin || this.OnBegin;
+                this.OnEnd = config.OnEnd || this.OnEnd;
+                this.window.find("ul").append("<li class='line_block file_box'><a href='javascript:void(0);' class='add_file_btn' title='上传文件'></a></li>").append("<div style='display: none;' class='add_file_btn2'></div>");
+                this.addfilebtn = this.window.find(".add_file_btn");
+                this.addfilebtn2 = this.window.find(".add_file_btn2");
+                this.window.on("click", ".remove_file", function (evt) {
+                    var t = $(this), file_index = parseInt(t.attr("file_index"))
+                    self.RemoveFile(file_index);
+                    return this;
+                });
+                this.addfilebtn.on("click", function () {
+                    self.DoSelect();
+                });
+                this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: '../images/Uploader.swf',
+                    // 开起分片上传。
+                    chunked: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'Files',
+                        extensions: 'pdf,rar,doc,docx,xls,xlsx', /* 'pdf,rar,doc,docx,xls,xlsx',*/
+                        mimeTypes: '*/*'
+                    }
+                });
+                this.uploader.addButton({id: this.addfilebtn2});
+                // 当文件被加入队列之前触发，此事件的handler返回值为false，则此文件不会被添加进入队列。
+                this.uploader.onBeforeFileQueued = function (file) {
+                    self.selectfilenum++;
+                    if (self.filenum >= self.maxnum) {
+                        self.errmaxfilenum++;
+                        return false;
+                    }
+                };
+                // 当文件加入队列出现错误时触发 type {String}错误类型
+                this.uploader.onError = function (type) {
+                    switch (type) {
+                        case "Q_EXCEED_NUM_LIMIT":
+                            break;
+                        case "Q_EXCEED_SIZE_LIMIT":
+                            self.errsizefilenum++;
+                            break;
+                        case "Q_TYPE_DENIED":
+                            self.errtypefilenum++;
+                            break;
+                    }
+                };
+                // 当文件成功加入队列时
+                this.uploader.onFileQueued = function (file) {
+                    self.addfilenum++;
+                    self.AddFileBox(file);
+                };
+                // 队列添加成功，立即上传
+                this.uploader.onFilesQueued = function (files) {
+                    if (self.OnFilesQueued) {
+                        self.OnFilesQueued({
+                            files: files, selectnum: self.selectfilenum, addnum: self.addfilenum, typeerrnum: self.errtypefilenum,
+                            sizeerrnum: self.errsizefilenum, errmaxnum: self.errmaxfilenum
+                        });
+                    }
+                    if (self.filenum >= self.maxnum) {
+                        self.EndAdd();
+                    }
+                    self.addfilenum = 0;
+                    self.errtypefilenum = 0;
+                    self.errsizefilenum = 0;
+                    self.selectfilenum = 0;
+                    self.errmaxfilenum = 0;
+                };
+                // 当文件开始上传时触发
+                this.uploader.onStartUpload = function () {
+                    if (self.OnBegin) {
+                        self.OnBegin();
+                    }
+                };
+                // 当文件上传过程中时触发
+                this.uploader.onUploadProgress = function (file, number) {
+                    self.UploadProgress(file, number);
+                };
+                // 当文件上传成功时触发
+                this.uploader.onUploadSuccess = function (file, back) {
+                    if (back["stateCode"] === 200) {
+                        self.UploadSuccess(file, back);
+                    }
+                };
+                // 当文件上传结束时触发
+                this.uploader.onUploadFinished = function () {
+                    if (self.OnEnd) {
+                        self.OnEnd();
+                    }
+                    self.uploader.reset();
+                };
+            }
+        };
+        _fileup.prototype = {
+            AddFileBox: function (file) {
+                this.filenum++;
+                var li = $("<li class='line_block file_box file_" + file.id + "'><a href='javascript:void(0);' class='file_btn' file_index='" + this.files.length + "'><div class='loadtip_backer'></div><div class='loadtip'>等待上传..</div></a></li>");
+                var file = {id: null, li: li, remove: false};
+                this.window.find("ul li").last().before(li);
+                this.files.push(file);
+                return this;
+            },
+            UploadSuccess: function (file, back) {
+                var id = back.data.objectId, li = this.window.find("li.file_" + file.id), file_btn = li.find(".file_btn"), file_index = parseInt(file_btn.attr("file_index")),
+                    fl = this.files[file_index];
+                /*if (!this.isSupportBase64) {
+                 var self = this;
+                 var fn = function (token) {
+                 var file = $('<file src="' + self.downurl + "?encodeStr=" + token + "&objectID=" + id + '">');
+                 file_btn.empty().append(file);
+                 self = null;
+                 };
+                 this.tokenmanager.GetToken(fn);
+                 }*/
+                li.find(".file_btn").html("<div class='loadtip'>正在加载名称..</div>");
+                fl.id = id;
+                li.append($("<a href='javascript:void(0)' class='remove_file' file_index='" + file_index + "' title='删除文件'></a>"));
+                li.find(".file_btn").attr("title", "点击下载文件").html("<div class='file_infobox'><div class='file_name'>" + file.name + "</div><div class='file_down'><a href='javascript:void(0);'>点击下载文件</a></div></div>");
+                return this;
+            },
+            UploadProgress: function (file, number) {
+                var li = this.window.find("li.file_" + file.id), file_btn = li.find(".file_btn"), loadtip = file_btn.find(".loadtip");
+                loadtip.text("正在上传(" + (number * 100).toFixed(2) + "%)..");
+                return this;
+            },
+            EndAdd: function () {
+                this.window.find("ul li").last().hide();
+                return this;
+            },
+            ReAdd: function () {
+                this.window.find("ul li").last().show();
+                return this;
+            },
+            AddFiles: function (ids) {
+                for (var i = 0; i < ids.length; ++i) {
+                    var li = $("<li class='line_block file_box'><a href='javascript:void(0);' class='file_btn' file_index='" + this.files.length + "'><div class='loadtip'>正在加载名称..</div></a></li>"),
+                        file = {id: ids[i], li: li, remove: false};
+                    if (this.mode === "up") {
+                        li.append($("<a href='javascript:void(0)' class='remove_file' file_index='" + this.files.length + "' title='删除文件'></a>"));
+                        this.window.find("ul li").last().before(li);
+                    }
+                    else {
+                        this.window.find("ul").append(li);
+                    }
+                    this.files.push(file);
+                    this.GetFileName(ids[i], (function (li) {
+                        return function (back) {
+                            li.find(".file_btn").attr("title", "点击下载文件").html("<div class='file_infobox'><div class='file_name'>" + back.data.filename + "</div><div class='file_down'><a href='javascript:void(0);'>点击下载文件</a></div></div>");
+                            li = null;
+                        };
+                    })(li));
+                    this.filenum++;
+                    if (this.filenum + 1 > this.maxnum - 2) {
+                        this.EndAdd();
+                        break;
+                    }
+                }
+                return this;
+            },
+            GetFileName: function (id, fun) {
+                var fn = function (token) {
+                    $.ajax({
+                        url: WEB_INFO.FILE_WEB + "GetFileName?encodeStr=" + token + "&objectID=" + id,
+                        data: {},
+                        success: function (back) {
+                            if (back["stateCode"] === 200) {
+                                if (fun) {
+                                    fun(back);
+                                }
+                            }
+                        }
+                    });
+                };
+                tokenmanager.GetToken(fn);
+                return this;
+            },
+            RemoveFile: function (index) {
+                var file = this.files[index];
+                if (file && file.id && !file.remove) {
+                    this.files[index].remove = true;
+                    this.files[index].li.remove();
+                    this.filenum--;
+                    if (this.filenum <= this.maxnum - 1) {
+                        this.ReAdd();
+                    }
+                }
+                return this;
+            },
+            DownFile: function (index) {
+                var self = this, file = this.files[index];
+                var fn = function (token) {
+                    window.open(self.downurl + "?encodeStr=" + token + "&objectID=" + file.id, "_blank");
+                    file = null;
+                    self = null;
+                };
+                this.tokenmanager.GetToken(fn);
+                return this;
+            },
+            GetFiles: function () {
+                var hr = [], len = this.files.length, i;
+                for (i = 0; i < len; ++i) {
+                    if (this.files[i].id && !this.files[i].remove) {
+                        hr.push(this.files[i].id);
+                    }
+                }
+                return hr;
+            },
+            AddTo: function (obj) {
+                this.window.appendTo(obj);
+                return this;
+            },
+            DoSelect: function () {
+                this.addfilebtn2.find("input").click();
+                return this;
+            },
+            DoUp: function () {
+                var self = this;
+                // 取得token然后提交...
+                this.tokenmanager.GetToken(function (token) {
+                    self.uploader.option('server', self.url + "?encodeStr=" + token);
+                    self.uploader.upload();
+                    self = null;
+                });
+                return this;
+            },
+            // 当文件添加进上传队列时触发：{selectnum: 选择文件数量, addnum: 进入队列数, typeerrnum: 类型错误数量, sizeerrnum: 大小错误数量, errmaxnum: 超出数量}
+            OnFilesQueued: function (info) {
+                // 如果添加的数量为0且又有错，报错（你说你有好猪，1个都选不对）
+                if (info.addnum === 0 && (info.typeerrnum > 0 || info.sizeerrnum > 0 || info.errmaxnum > 0)) {
+                    if (confirm("您选择的文件不符合上传条件，是否重新选择？")) {
+                        this.DoSelect();
+                    }
+                }
+                else {
+                    this.DoUp();
+                }
+            },
+            // 文件上传开始时触发
+            OnBegin: function () {
+
+            },
+            // 文件上传成功时触发
+            OnEnd: function () {
+
+            }
+        };
+        return {
+            ImageUp: _imageup,
+            FileUp: _fileup
+        }
+    })();
+    window.NebFiles = nebfiles;
+})();

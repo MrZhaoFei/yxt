@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.ServicePackMapper" >
+	<!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.service.ServicePack">
+		insert into service_pack(name,price,create_date) values (#{name},#{price},#{createDate})
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.service.ServicePack">
+		update service_pack set id=#{id}
+		<if test="name!=null and name !=''">
+			,name=#{name}
+		</if>
+		<if test="price !=null">
+			,price=#{price}
+		</if>
+		where id=#{id}
+	</update>
+	
+	<!-- 查询列表 用户使用 -->
+	<select id="queryAll" parameterType="org.system.entity.service.ServicePack" resultType="map">
+		select spc.id,sp.name,spc.price,sp.create_date createDate,sp.acquisitive,a.name addressName,pt.name packageTypeName,sp.pkg_pic_url pkgPicUrl,sp.package_type_id packageTypeId from contract c
+		left join doctor_group dg on dg.id=c.doctor_group_id
+		left join hospital h on h.id=dg.hospital_id
+		left join address a on a.id=h.address_id
+		left join service_pack_condition spc on spc.address_id=a.id 
+		left join service_pack sp on sp.id=spc.service_pack_id
+		left join package_type pt on pt.id=sp.package_type_id
+		where c.creator_id is not null and c.state not in (0,1) <!-- and sp.package_type_id !=1 -->
+			<if test="name !=null and name !=''">
+				and sp.name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="packageTypeId !=null">
+				and sp.package_type_id=#{packageTypeId}
+			</if>
+			<if test="addressId !=null">
+				and spc.address_id=#{addressId}
+			</if>
+			<if test="userId!=null">
+				and c.user_id=#{userId}
+			</if>
+			<if test="packageSourceId!=null">
+				and spc.package_source_id=#{packageSourceId}
+			</if>
+	</select>
+	<!-- 查询列表 医生使用 -->
+	<select id="getServicePackListByDoctor" parameterType="org.system.entity.service.ServicePack"
+		resultType="map">
+		select spc.id,sp.name,spc.price,sp.create_date
+		createDate,sp.acquisitive,a.name addressName,
+		pt.name packageTypeName,sp.pkg_pic_url pkgPicUrl,sp.package_type_id
+		packageTypeId
+		from service_pack_condition spc
+		left join service_pack sp on sp.id=spc.service_pack_id
+		left join package_type pt on pt.id=sp.package_type_id
+		left join address a on a.id=spc.address_id
+		<where>
+			<if test="name !=null and name !=''">
+				and sp.name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="packageTypeId !=null">
+				and sp.package_type_id=#{packageTypeId}
+			</if>
+			<if test="addressId !=null">
+				and spc.address_id=#{addressId}
+			</if>
+			<if test="packageSourceId!=null">
+				and spc.package_source_id=#{packageSourceId}
+			</if>
+			<if test="doctorGroupId!=null">
+				and spc.address_id in(select a.id from doctor_group dg 
+				left join hospital h on h.id=dg.hospital_id
+				left join address a on a.id=h.address_id
+				where dg.id=#{doctorGroupId})
+			</if>
+		</where>
+	</select>
+	
+	<resultMap type="map" id="servicePackDetailMap">
+		 <result property="id" column="id" />
+		<collection property="productServiceDetail" column="id" javaType="list" select="getServicePackService"/>
+	</resultMap>
+	
+	<!-- 根据主键查询单个 级联服务内容 -->
+	<select id="queryOne" parameterType="org.system.entity.service.ServicePack" resultMap="servicePackDetailMap">
+		select spc.id,sp.name,spc.price,sp.create_date createDate,sp.acquisitive,a.name addressName,pt.name packageTypeName,
+		sp.pkg_pic_url pkgPicUrl,sp.pkg_pic_detail_url pkgPicDetailUrl,sp.package_type_id packageTypeId
+		from service_pack_condition spc
+		left join service_pack sp on sp.id=spc.service_pack_id
+		left join address a on a.id=spc.address_id
+		left join package_type pt on pt.id=sp.package_type_id
+        where spc.id=#{id}
+        <if test="packageTypeId !=null">
+        	and sp.package_type_id=#{packageTypeId}
+        </if>
+	</select>
+	<!-- 查询服务包的服务项 -->
+	<select id="getServicePackService" parameterType="org.system.entity.service.ServicePack" resultType="map">
+		select pds.id,pds.name,pds.price,st.name serviceTypeName,ps.times,pds.desc,pds.doctor_level_id doctorLevelId,
+		dl.doctor_level_name doctorLevelName,pds.doctor_type_id doctorTypeId,dt.name doctorTypeName from package_service ps
+		left join service_pack_condition spc on spc.id=ps.service_pack_condition_id
+		left join product_service pds on pds.id=ps.service_id
+		left join service_type st on st.id=pds.service_type_id 
+		left join doctor_level dl on dl.id=pds.doctor_level_id
+		left join doctor_type dt on dt.id=pds.doctor_type_id
+		where spc.id=#{id}
+	</select>
+	
+	<!-- 查询基公卫 服务包 -->
+	<select id="getServicePackDetailByBase" parameterType="org.system.entity.service.ServicePack" resultType="map">
+		SELECT spc.id,sp.`name`,sp.package_type_id packageTypeId,sp.acquisitive,sp.state  
+		FROM service_pack_condition spc
+		LEFT JOIN service_pack sp on sp.id=spc.service_pack_id
+		LEFT JOIN package_type pt on pt.id=sp.package_type_id
+		WHERE pt.id=1
+		<if test="id !=null">
+			and spc.id=#{id}
+		</if>
+	</select>
+	
+	
+	<!-- 根据约束键查询数据是否存在 -->
+	<select id="checkExists" parameterType="org.system.entity.service.ServicePack" resultType="map">
+		select id,name from service_pack where name=#{name} and address_id=#{addressId}
+	</select>
+</mapper>

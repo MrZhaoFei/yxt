@@ -1,0 +1,66 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.ServicePackCondition;
+
+public interface IServicePackConditionService {
+    
+	/**
+	 * 新增
+	 * @param servicePackCondition
+	 * @return int
+	 */
+	public int insertServicePackCondition(ServicePackCondition servicePackCondition);
+
+	/**
+	 * 修改
+	 * @param servicePackCondition
+	 * @return int
+	 */
+	public int updateServicePackCondition(ServicePackCondition servicePackCondition);
+
+	/**
+	 * 删除
+	 * @param servicePackCondition
+	 * @return int
+	 */
+	public int deleteServicePackCondition(ServicePackCondition servicePackCondition);
+
+	/**
+	 * 检查唯一性
+	 * @param servicePackCondition
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getServicePackConditionByFild(ServicePackCondition servicePackCondition);
+
+	/**
+	 * 单条数据详情
+	 * @param servicePackCondition
+	 * @return  Map<String, Object>
+	 */
+	public Map<String, Object> getServicePackConditionDetail(ServicePackCondition servicePackCondition);
+
+	/**
+	 * 数据列表
+	 * @param servicePackCondition
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getServicePackConditionList(ServicePackCondition servicePackCondition);
+
+	/**
+	 * 根据地址的code_value查询地址的id号
+	 * @param servicePackCondition
+	 * @return int
+	 */
+	public int queryCodeId(ServicePackCondition servicePackCondition);
+	
+	/**
+	 * 查询该优惠包是否被用户购买
+	 * @param servicePackCondition
+	 * @return int
+	 */
+    public int getConditionByBuy(ServicePackCondition servicePackCondition);
+
+}

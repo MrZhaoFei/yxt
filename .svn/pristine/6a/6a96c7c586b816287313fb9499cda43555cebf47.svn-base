@@ -1,0 +1,187 @@
+package org.system.controller.iface.service.transfer;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.transfer.TransTreatDetaily;
+import org.utils.spring.Groups;
+
+/**
+ * 转诊
+ * 
+ * @author MrLiu
+ *
+ */
+@RequestMapping()
+public interface ITransTreatDetailyController {
+
+	/**
+	 * 医生新增转诊
+	 * 
+	 * @param transTreatDetaily
+	 * @param resul
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/transTreatDetaily", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:insert:user")
+	public Map<String, Object> insertTransTreatDetaily(
+			@Validated({ Groups.Insert.class }) TransTreatDetaily transTreatDetaily, BindingResult resul,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 用户确认转诊
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/user/transTreatDetaily/sure/{transId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:update:sure")
+	public Map<String, Object> updateTransTreatSure(@PathVariable("transId") Integer transTreatDetailyId,
+			@Validated({ Groups.Update.class }) TransTreatDetaily transTreatDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 转回转诊
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/transTreatDetaily/switchBack/{transId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:update:switchBack")
+	public Map<String, Object> updateTransTreatSwitchBack(@PathVariable("transId") Integer transTreatDetailyId,
+			TransTreatDetaily transTreatDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 拒绝转诊
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/transTreatDetaily/refuse/{transId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:update:refuse")
+	public Map<String, Object> updateTransTreatRefuse(@PathVariable("transId") Integer transTreatDetailyId,
+			TransTreatDetaily transTreatDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 医生接受转诊
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/transTreatDetaily/accept/{transId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:update:accept")
+	public Map<String, Object> updateTransTreatAccept(@PathVariable("transId") Integer transTreatDetailyId,
+			TransTreatDetaily transTreatDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 医生接收转诊
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/transTreatDetaily/receive/{transId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:update:receive")
+	public Map<String, Object> updateTransTreatReceive(@PathVariable("transId") Integer transTreatDetailyId,
+			TransTreatDetaily transTreatDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 医生修改转诊信息
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/transTreatDetaily/{transId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:update")
+	public Map<String, Object> updateTransTreatDetaily(@PathVariable("transId") Integer transTreatDetailyId,
+			@Validated({ Groups.Update.class }) TransTreatDetaily transTreatDetaily, BindingResult result);
+
+	/**
+	 * 医生获取转诊记录详情
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/transTreatDetaily/{transId}" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:detail")
+	public Map<String, Object> getTransTreatDetailyDetail(@PathVariable("transId") Integer transTreatDetailyId,
+			TransTreatDetaily transTreatDetaily, BindingResult result,@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 用户获取转诊记录详情
+	 * 
+	 * @param transTreatDetailyId
+	 * @param transTreatDetaily
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/user/transTreatDetaily/{transId}" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:detail")
+	public Map<String, Object> getTransTreatDetailyDetailByUser(@PathVariable("transId") Integer transTreatDetailyId,
+			TransTreatDetaily transTreatDetaily, BindingResult result,@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 医生获取自己的转诊列表
+	 * 
+	 * @param transTreatDetaily
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/transTreatDetailys", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetaily:list")
+	public Map<String, Object> getTransTreatDetailyList(
+			@Validated({ Groups.Select.class }) TransTreatDetaily transTreatDetaily, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 后台医生查询用户服务响应的转诊记录列表
+	 * 
+	 * @param transTreatDetaily
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/transTreatDetailysByUser", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("transTreatDetailysByUser:list")
+	public Map<String, Object> getTransTreatDetailyByUserList(
+			@Validated({ TransTreatDetaily.getTransTreatDetailyByUserList.class }) TransTreatDetaily transTreatDetaily,
+			BindingResult result, @RequestHeader(value = "token", required = false) String token);
+
+}

@@ -1,0 +1,43 @@
+package org.system.service.impl.user.healthinfo;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.user.healthinfo.BloodTransHistory;
+import org.system.mapper.user.healthinfo.BloodTransHistoryMapper;
+import org.system.service.iface.user.healthinfo.IBloodTransHistoryService;
+@Service
+public class BloodTransHistoryService implements IBloodTransHistoryService{
+
+	@Resource
+	private BloodTransHistoryMapper mapper;
+	
+	@Override
+	public int insertBloodTransHistoryy(BloodTransHistory bloodTransHistory) {
+		return mapper.insert(bloodTransHistory);
+	}
+
+	@Override
+	public int updateBloodTransHistory(BloodTransHistory bloodTransHistory) {
+		return mapper.update(bloodTransHistory);
+	}
+
+	@Override
+	public Map<String, Object> getBloodTransHistoryDetail(BloodTransHistory bloodTransHistory) {
+		return mapper.queryOne(bloodTransHistory);
+	}
+
+	@Override
+	public List<Map<String, Object>> getBloodTransHistorys(BloodTransHistory bloodTransHistory) {
+		return mapper.queryAll(bloodTransHistory);
+	}
+
+	@Override
+	public int deleteBloodTransHistory(BloodTransHistory bloodTransHistory) {
+		return mapper.delete(bloodTransHistory);
+	}
+
+}

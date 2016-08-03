@@ -1,0 +1,94 @@
+package org.system.controller.iface.service;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.UserServicePack;
+import org.utils.spring.Groups;
+
+/**
+ * @ClassName IUserServicePackController
+ * @author <font color="red"><b>LiuMrLiu</b></font>
+ * @date 2016年3月21日 上午11:08:04
+ * @version 1.0
+ * @description 用户服务包
+ */
+@RequestMapping()
+public interface IUserServicePackController {
+
+	/**
+	 * @Title: insertUserServicePackByDoctor
+	 * @Description: 医生新增用户服务包
+	 * @param userServicePack
+	 * @param result
+	 * @param token
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping(value = "/doctor/userServicePack", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertUserServicePackByDoctor(
+			@Validated({ Groups.Insert.class }) UserServicePack userServicePack, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * @author <font color="green"><b>LiuGangQiang</b></font>
+	 * @param userServicePack
+	 * @return
+	 * @date 2016年3月18日 下午5:30:38
+	 * @version 1.0
+	 * @description 用户服务包列表
+	 */
+	@RequestMapping(value = "/user/userServicePacks", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("userServicePack:list")
+	public Map<String, Object> getUserServicePackList(
+			@Validated({ Groups.Select.class }) UserServicePack userServicePack, BindingResult result);
+
+	/**
+	 * @Title: getUserComboList
+	 * @Description: 用户服务套餐详情
+	 * @param userServicePack
+	 * @param result
+	 * @param token
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping(value = "/user/userCombo", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("userCombo:list")
+	public Map<String, Object> getUserComboList(@Validated({ Groups.Other.class }) UserServicePack userServicePack,
+			BindingResult result, @RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 用户查询未过期的包
+	 * 
+	 * @param userServicePack
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/user/getNoExpirePack", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getUserServicePackByUserAndNoExpire(
+			@Validated({ Groups.Select.class }) UserServicePack userServicePack, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	/**
+	 * 医生查询用户为过期的包
+	 * 
+	 * @param userServicePack
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/getNoExpirePack", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getUserServicePackByDoctorAndNoExpire(
+			@Validated({ Groups.Select.class, Groups.Other.class }) UserServicePack userServicePack,
+			BindingResult result, @RequestHeader(value = "token", required = false) String token);
+}

@@ -1,0 +1,7 @@
+package org.system.mapper.user;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.user.SysUserLogs;
+
+public interface SysUserLogsMapper extends IBaseMapper<SysUserLogs> {
+}

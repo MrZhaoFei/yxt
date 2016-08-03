@@ -1,0 +1,1049 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head> 
+  <base href="/yxt-admin/" /> 
+  <title>医生团队列表</title> 
+  <meta http-equiv="Access-Control-Allow-Origin" content="*">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />   
+  <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+  <META HTTP-EQUIV="expires" CONTENT="0">
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/js/easyui/themes/icon.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/js/easyui/themes/gray/easyui.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/jquery.flex-images.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/icon/font-awesome.min.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/upload/webuploader.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/upload/style.css" /> 
+  <link rel="stylesheet" type="text/css" href="/yxt-admin/css/web.css" /> 
+  <link rel="stylesheet" href="/yxt-admin/webuploader/styles/default.css?ver=v1.001">
+  <link rel="stylesheet" href="/yxt-admin/webuploader/styles/webuploader.css?ver=v1.001">
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/jquery-1.12.1.min.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/webuploader.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/uploader.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/js/jquery.min.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/easyui/jquery.easyui.min.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/easyui/locale/easyui-lang-zh_CN.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/easyui/extend.easyui.js"></script> 
+  <script type="text/javascript" src="/yxt-admin/js/jquery.flex-images.min.js"></script> 
+  <script type="text/javascript">
+ 
+  var groupId="";
+  var addgroupId="";
+  var roleId="";
+ 
+  $(function() {
+	 
+	  $('#dgtName').combobox('reload');
+	  $('#hospitalNameSelectWei').combobox('reload');
+	  $('#hospitalNameSelectYi').combobox('reload');
+	  $('#hospitalNameSelect').combobox('reload');
+	  $('#doctorName').combobox('reload');
+	  $('#roleName').combobox('reload');	
+	  $('#main_table').datagrid({
+	    method: 'get',
+	    url: '/yxt-admin/admin/doctorGroup?ran=' + Math.random(),
+	    toolbar: '#seach',
+	    pagination: true,
+	    pageSize:20,
+	    fit: true,
+	    cache:false, 
+	    fitColumns: true,
+	    border: false,
+	    rownumbers: true,
+	    singleSelect: true,
+	    frozenColumns:[[
+		                {field:'doctorGroupId',checkbox:true,hidden:true}
+		    		]],  
+	    loadFilter: function(data) {
+	    	if(data.stateCode=='205'){
+	    		top.location.href="/yxt-admin/adminLogin.html";
+	    		return;
+	    	}else if(data.stateCode=='203'){
+	    		return {total:0,rows:[]};
+	    	}
+	    	var rows = data.data.rows,rowslen = rows.length,i;
+	    	for(i = 0 ; i < rowslen; ++i){
+		    	rows[i].createDate = DateToString(rows[i].createDate);
+	    	}
+	      return data.data;
+	    }
+	  });
+	  
+	  $('#doctor_table').datagrid({
+		    method: 'get',
+		    url: '/yxt-admin/admin/doctor?ran=' + Math.random(),
+		   toolbar: '#look',
+		     width:400,
+		     
+		     cache:false, 
+		    rownumbers: true,
+		    singleSelect: true ,
+		    frozenColumns:[[
+			                {field:'id',checkbox:true}
+			    		]],
+		  loadFilter: function(data) {
+		    	if(data.stateCode=='205'){
+		    		top.location.href="/yxt-admin/adminLogin.html";
+		    		return;
+		    	}if(data.stateCode=='203'){
+		    		return {total:0,rows:[]};
+		    	}
+		      return data.data;
+		    } 
+		   
+	  }); 
+	  
+	  $('#role_table').datagrid({
+		    method: 'get',
+		    url: '/yxt-admin/admin/role?ran=' + Math.random(),
+		    width:400,
+		    cache:false, 
+		    rownumbers: true,
+		    singleSelect: true, 
+		    frozenColumns:[[
+			                {field:'id',checkbox:true}
+			    		]],
+			    		 loadFilter: function(data) {
+			    		    	if(data.stateCode=='205'){
+			    		    		top.location.href="/yxt-admin/adminLogin.html";
+			    		    		return;
+			    		    	}
+			    		      return data.data;
+			 },
+			 onClickRow:function(index, row){
+			         roleId=row.id;
+  
+			    }
+	  });
+	});
+  
+  
+  
+  
+	function query() {
+	  $('#main_table').datagrid('load', {
+	    name: $('#doctorGroupName').textbox('getValue')
+	  });
+	}
+	
+
+	function clear() {
+	  $('#doctorGroupName').textbox('clear'),
+	  $('#doctorTypeId').combobox('clear'),
+	  $('#doctorLevelName').combobox('clear'),
+	  $('#doctorRealName').textbox('clear')
+	 
+	}
+	 function re(){
+   	  history.go(0) 
+     }
+	
+	function _stateformatter(value, row, index) {
+	  if (value == 1) {
+	    return "启用";
+	  }if (value == 0){
+	  return "停用";
+		  
+	  }
+	}	
+	
+	// 地址
+	function findAllAddress(){
+		$.ajax({
+			  method: 'get',
+			  url:'/yxt-admin/admin/address',
+			  success: function(data){
+				  var rows = data.data.rows;rowslen = rows.length;
+				 for(var i = 0; i < rowslen; i++){	
+					 $('#addressName').append("<option value="+rows[i].id+">"+rows[i].name+"</option>");
+				 }
+				 $("#addressName").combobox({});
+			 }
+		})
+	}
+
+	function _opformatter(value, row, index) {
+	  var a = '&nbsp;<a href="javascript:edit(\'' + index + '\',' + row.id + ')" title="编辑"><i class="fa fa-pencil"></i></a>';
+	 var b = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<a href="javascript:del(\'' + row.id + '\')" title="删除"><i class="fa fa-trash"></i></a>';
+	  var c = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<a href="javascript:look(\'' + row.id + '\')">编辑团队成员</a>';
+	  return a+c+b;
+	}
+	
+	function _opformatter1(value, row, index) {
+		  var b = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<a href="javascript:deldoctor(\'' + row.id + '\')" title="删除"><i class="fa fa-trash"></i></a>';
+		  var c = '&nbsp;&nbsp;&nbsp;<a href="javascript:updatedoctor(\'' + index + '\',' + row.id + ')" title="修改"><i class="fa fa-pencil"></i></a>';
+		  return c+b;
+		}
+		
+	
+	
+	function add() {
+		$('#allHosp').css('display','none');
+		$('#hospitalName').combobox('clear');
+		 $('#createTime').hide();
+			 $('#groupPic').html("");
+			 var imgup = new NebFiles.ImageUp({
+	             show: true ,
+	             maxnum:1  
+	         });
+	         imgup.AddTo($('#groupPic'));
+	  $('#dgtName').combobox({
+		  onChange:function(newValue,oldValue){
+			if(newValue==1){
+				$('#hospitalNameweiSheng').css('display','block');
+				$('#hospitalNameyiYuan').css('display','none');
+				$('#hospitalNameSelectWei').combobox({
+					/* required:true  */
+					required:true,
+					editable:false,
+					panelHeight:'auto'
+				})
+			}else if(newValue==2||newValue==3){
+				$('#hospitalNameweiSheng').css('display','none');
+				$('#hospitalNameyiYuan').css('display','block');
+				$('#hospitalNameSelectYi').combobox({
+					required:true,
+					editable:false,
+					panelHeight:'auto'
+				})
+			}
+		  }
+	  })
+	  $('#dialog').dialog({
+	    title: '添加医生团队',
+	    width: 700,
+	    height: 425,
+	    closed: false,
+	    modal: true,
+	    buttons: [{
+	      text: '确定',
+	      handler: function() {
+	        var v = $('#form').form('validate');
+	      
+	        if (v) {      	
+	        	 $.ajax({
+	                  type: 'POST',
+	                  url: '/yxt-admin/admin/doctorGroup/insert',
+	                 data:{	                		              
+	                	name:$('#dgName').textbox('getValue'),
+	                	remark:$('#remark').textbox('getValue'),
+	                	state:$('#state').combobox('getValue'),
+	                	groupTel:$('#groupTel').textbox('getValue'),
+	                	hospitalId:$('#hospitalNameSelectYi').combobox('getValue')==0 ? $('#hospitalNameSelectWei').combobox('getValue'):$('#hospitalNameSelectYi').combobox('getValue'),
+	                	doctorGroupTypeId:$('#dgtName').combobox('getValue'),
+	                	groupPic:imgup.GetImages().length==0 ? null:imgup.GetImages().toString() 
+	                },
+	              
+	                  success: function(data) {
+	                    if (data.stateCode == 200) {
+	                      $('#dialog').dialog('close');
+	                      $('#main_table').datagrid('reload');
+	                      $.messager.show({
+	                        title: '提示消息',
+	                        msg: data.message,
+	                        timeout: 5000,
+	                        showType: 'slide'
+	                      });
+	                    } else {
+	                      $.messager.show({
+	                        title: '提示',
+	                        msg: data.message
+	                      });
+	                    }
+	                  },
+	                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                    $.messager.show({
+	                      title: '提示',
+	                      msg: '请求发生错误请联系开发者'
+	                    });
+	                  }
+	                });
+	          }
+	        }
+	      },
+	    {
+	      text: '取消',
+	      handler: function() {
+	        $('#dialog').dialog('close');
+	      }
+	    }]
+	  });
+	}
+
+	function edit(index, id) {
+		$('#hospitalNameweiSheng').css('display','none');
+		$('#hospitalNameyiYuan').css('display','none');
+		$('#allHosp').css('display','block');
+		 $('#createTime').show();
+		  $('#createDate').datetimebox('readonly',true);
+		  var imgup = new NebFiles.ImageUp({
+	             show: true ,
+	             maxnum: 1
+	         });
+	  $.get('/yxt-admin/admin/doctorGroup/' + id + '/detail',
+			  function(data) {
+		  $('#groupPic').html("");
+	         imgup.AddTo($('#groupPic'));
+			    data.data.createDate=DateToString(data.data.createDate);
+			    $('#form').form('load', data.data);
+			    var pic=data.data.groupPic;
+	  			  if(pic!=null && pic!=''){
+	  				  imgup.AddImages(data.data.groupPic.split(","));
+	  		          imgup.AddTo($('#groupPic'));
+	  			  }
+			  });	  
+	  $('#dialog').dialog({
+	    title: '编辑/查看信息',
+	    width: 700,
+	    height: 440,
+	    closed: false,
+	    modal: true,
+	    buttons: [{
+	      text: '确定修改',
+	      handler: function() {	    	 
+	        var v = $('#form').form('validate');
+	        if (v) {
+              //AJAX提交
+              $.ajax({
+                type: 'put',
+                url: '/yxt-admin/admin/doctorGroup/' + id + '/update',
+              data:{
+            	  name:$('#dgName').textbox('getValue'),
+            	  remark:$('#remark').textbox('getValue'),
+              	  state:$('#state').combobox('getValue'),
+              	  groupTel:$('#groupTel').textbox('getValue'),
+              	  hospitalId:$('#hospitalNameSelect').combobox('getValue'),
+              	  doctorGroupTypeId:$('#dgtName').combobox('getValue'),
+              	  groupPic:imgup.GetImages().length==0 ? null:imgup.GetImages().toString() 
+              },
+             
+                success: function(data) {
+                  if (data.stateCode == 200) {
+                    $('#dialog').dialog('close');
+                    $('#form').form('reset');
+                    $('#main_table').datagrid('reload');
+                    $.messager.show({
+                      title: '提示消息',
+                      msg: data.message,
+                      timeout: 5000,
+                      showType: 'slide'
+                    });
+                  } else {
+                    $.messager.show({
+                      title: '提示',
+                      msg: data.message
+                    });
+                  }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  $.messager.show({
+                    title: '提示',
+                    msg: '请求发生错误请联系开发者'
+                  });
+                }
+              });
+	        }
+	      }
+	    },
+	    {
+	      text: '取消关闭',
+	      handler: function() {
+	        $('#dialog').dialog('close');
+	      }
+	    }]
+	  });
+	
+	}
+	
+	
+	function  updatedoctor(index,idd){
+		$('#doctorName').combobox('readonly');
+		 $('#doctor_form').form('load', $('#_main_table').datagrid('getData').rows[index]);
+		  $('#doctor_dialog').dialog({
+			    title: '修改',
+			    width: 400,
+			    height: 220,
+			    closed: false,
+			    modal: true,
+			    buttons: [{
+			      text: '确定修改',
+			      handler: function() { 
+			        var v = $('#doctor_from').form('validate');
+			        if (v) {      	
+			        	 $.ajax({
+			                  type: 'put',
+			                 url: '/yxt-admin/admin/doctorDoctorGroup/'+idd+'/'+groupId, 
+			                 data:{	                	
+			                     roleId:$('#roleName').combobox('getValue'),
+			                     doctorId:idd,
+			                     doctorGroupId: groupId 
+			                }, 
+			                  success: function(data) {
+			                    if (data.stateCode == 200) {
+			                      $('#doctor_dialog').dialog('close');
+			                      $('#_main_table').datagrid('reload');
+			                      $.messager.show({
+			                        title: '提示消息',
+			                        msg: data.message,
+			                        timeout: 5000,
+			                        showType: 'slide'
+			                      });
+			                    } else {
+			                      $.messager.show({
+			                        title: '提示',
+			                        msg: data.message
+			                      });
+			                    }
+			                  },
+			                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+			                    $.messager.show({
+			                      title: '提示',
+			                      msg: '请求发生错误请联系开发者'
+			                    });
+			                  }
+			                });
+			          }
+			        }
+			      },
+			    {
+			      text: '取消关闭',
+			      handler: function() {
+			        $('#doctor_dialog').dialog('close');
+			      }
+			    }]
+			  });	
+	}
+
+	
+	
+	
+	
+	
+	
+	function del(id) {
+		  $.messager.confirm('确认', '您确认想要删除记录吗？',
+		  function(r) {
+		    if (r) {
+		      $.ajax({
+		        type: 'delete',
+		        url: '/yxt-admin/admin/doctorGroup/' + id + '/delete',
+		        success: function(data) {
+		          if (data.stateCode == 200) {
+		            $('#main_table').datagrid('reload');
+		            $.messager.show({
+		              title: '提示消息',
+		              msg: data.message,
+		              timeout: 5000,
+		              showType: 'slide'
+		            });
+		          } else {
+		            $.messager.show({
+		              title: '提示',
+		              msg: data.message
+		            });
+		          }
+		        },
+		        error: function(XMLHttpRequest, textStatus, errorThrown) {
+		          $.messager.show({
+		            title: '提示',
+		            msg: '请求发生错误请联系开发者'
+		          });
+		        }
+		      }); 
+		    }
+		  });
+		}
+
+	function look(id){
+		groupId=id;
+		$('#lookDoctor').dialog({
+			    title:'查看团队成员',
+			    width:800,	 
+			    height:400,
+			    cache:false,
+			    modal: true, 
+			    rownumbers: true,
+			    onOpen:function(){
+			    	$('#_main_table').datagrid({
+				    	method:'get',
+				 	    url: '/yxt-admin/admin/doctorGroup/doctorGroupDoctors/'+id,
+				 	    checkbox:true,
+				 	    pagination: true,
+				 	    fit: true,
+				 	   cache:false, 
+				 	    fitColumns: true,
+				 	    border: false,
+				 	    rownumbers: true,
+				 	  frozenColumns:[[
+						                {field:'id',checkbox:true,hidden:true}
+						    		]], 
+						    		
+				 	    loadFilter: function(data) { 
+				 	    	
+				 	    	if(data.stateCode=='205'){
+				 	    		top.location.href=document.getElementsByTagName("base")[0].getAttribute("href")+ "login.html";
+				 	    		return;
+				 	    	}else if(data.stateCode=='203'){
+					    		return {total:0,rows:[]};
+					    	}
+				 	    	
+				 	      return data.data;
+				 	    },
+				 	    
+						
+				    	});
+			    },
+			    toolbar:[{
+			    	text:'添加成员',
+			    	handler:function(){
+			    		addHos();
+			    		}
+			    	
+			    }]
+		});
+		
+	}
+	
+	
+	// 删除团队医生里的单个医生
+	function deldoctor(idd){
+		
+		  $.messager.confirm('确认', '您确认想要删除记录吗？',
+		  function(r) {
+		    if (r) {
+		      $.ajax({
+		        type: 'delete',
+		        url: '/yxt-admin/admin/doctorDoctorGroup/'+ idd+'/'+groupId+'/delete',
+		        success: function(data) {
+		          if (data.stateCode == 200) {
+		            $('#_main_table').datagrid('reload');
+		            $.messager.show({
+		              title: '提示消息',
+		              msg: data.message,
+		              timeout: 5000,
+		              showType: 'slide'
+		            });
+		          } else {
+		            $.messager.show({
+		              title: '提示',
+		              msg: data.message
+		            });
+		          }
+		        },
+		        error: function(XMLHttpRequest, textStatus, errorThrown) {
+		          $.messager.show({
+		            title: '提示',
+		            msg: '请求发生错误请联系开发者'
+		          });
+		        }
+		      });
+		    }
+		  });
+	
+	}
+
+	// 时间转化
+		function DateToString(date, format) {
+	        if (!date) return "";
+	        format = format || "yyyy-MM-dd HH:mm:ss";
+	        switch (typeof date) {
+	            case "string":
+	                date = new Date(date.replace(/-/, "/"));
+	                break;
+	            case "number":
+	                date = new Date(date);
+	                break;
+	        }
+	        if (!date instanceof Date) return "";
+	        var dict = {
+	            "yyyy": date.getFullYear(),
+	            "yy": (date.getFullYear() + "").substr(2),
+	            "M": date.getMonth() + 1,
+	            "d": date.getDate(),
+	            "H": date.getHours(),
+	            "m": date.getMinutes(),
+	            "s": date.getSeconds(),
+	            "MM": ("" + (date.getMonth() + 101)).substr(1),
+	            "dd": ("" + (date.getDate() + 100)).substr(1),
+	            "HH": ("" + (date.getHours() + 100)).substr(1),
+	            "mm": ("" + (date.getMinutes() + 100)).substr(1),
+	            "ss": ("" + (date.getSeconds() + 100)).substr(1)
+	        };
+	        return format.replace(/(yyyy|yy|MM?|dd?|HH?|ss?|mm?)/g, function () {
+	            return dict[arguments[0]];
+	        });
+	    }
+		  
+		function addHos(){
+			$('#hospdialog').show();
+			var id="";
+			$('#hospdialog').dialog({
+				title:'机构科室',
+				toolbar: '#look',
+				width:860,
+				height:480,
+				 closed: false,
+				 modal: true,			 
+				 buttons: [{
+				      text: '确定添加',
+				      handler:function(){
+				    	  
+				    	  
+				    	  
+				    	  
+				    	  
+				    	  
+				    	  
+				    	  
+				    	   //医生的id值   
+				    	  var temID="";
+				    	  var selRow = $("#doctor_table").datagrid('getSelections');				    	  
+				    		if(selRow.length >=1){
+								 for (var i = 0; i < selRow.length;i++) {  
+						                if (temID =="") {  
+						                    temID = selRow[i].id; 
+						                    $.ajax({
+						                    	type:'get',
+						                    	url:'/yxt-admin/admin/doctorDoctorGroup/doctorExistsGroup',
+						                    	data:{
+						                    	doctorId:temID	
+						                    	},
+						                    	success:function(back){
+						                    		if(back>=1){
+						                    			$.messager.confirm('提醒','该医生已存在其他团队，是否继续添加？',function(r){    
+						                    			    if (r){ 
+						                    			    	
+						                    			    	 $.ajax({
+										   			                  type: 'post',
+										   			                  url: '/yxt-admin/admin/doctorDoctorGroup/insert',
+										   			                 data:{	                	
+										   			                     roleId:roleId,
+										   			                     doctorId:temID,
+										   			                     doctorGroupId: groupId 
+										   			                },
+										   			               success:function(data){
+										   			            	 if (data.stateCode == 200) {
+										   			            		 $('#hospdialog').dialog('close');
+													                      $('#_main_table').datagrid('reload');
+													                      $.messager.show({
+													                        title: '提示消息',
+													                        msg: data.message,
+													                        
+													                        timeout: 5000,
+													                        showType: 'slide'
+													                      });
+													                    } else {
+													                      $.messager.show({
+													                        title: '提示',
+													                        msg: data.message
+													                      });
+													                    }
+										   			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+													                    $.messager.show({
+										  			                      title: '提示',
+										  			                      msg: '请求发生错误请联系开发者'
+										  			                    });
+										  			                  }
+										   			                }); 
+						                    			    	 
+						                    			    	 
+						                    			    	
+						                    			    }    
+						                    			});  
+
+						                    		}else{
+						                    		   	 $.ajax({
+								   			                  type: 'post',
+								   			                  url: '/yxt-admin/admin/doctorDoctorGroup/insert',
+								   			                 data:{	                	
+								   			                     roleId:roleId,
+								   			                     doctorId:temID,
+								   			                     doctorGroupId: groupId 
+								   			                },
+								   			               success:function(data){
+								   			            	 if (data.stateCode == 200) {
+								   			            		 $('#hospdialog').dialog('close');
+											                      $('#_main_table').datagrid('reload');
+											                      $.messager.show({
+											                        title: '提示消息',
+											                        msg: data.message,
+											                        
+											                        timeout: 5000,
+											                        showType: 'slide'
+											                      });
+											                    } else {
+											                      $.messager.show({
+											                        title: '提示',
+											                        msg: data.message
+											                      });
+											                    }
+								   			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+											                    $.messager.show({
+								  			                      title: '提示',
+								  			                      msg: '请求发生错误请联系开发者'
+								  			                    });
+								  			                  }
+								   			                }); 
+				                    			    	 
+						                    		}
+						                    		
+						                    	}		
+						                    })
+						                   
+						                    
+						                    
+						                    
+						           		/*  $.ajax({
+				   			                  type: 'post',
+				   			                  url: '/yxt-admin/admin/doctorDoctorGroup/insert',
+				   			                 data:{	                	
+				   			                     roleId:roleId,
+				   			                     doctorId:temID,
+				   			                     doctorGroupId: groupId 
+				   			                },
+				   			               success:function(data){
+				   			            	 if (data.stateCode == 200) {
+				   			            		 $('#hospdialog').dialog('close');
+							                      $('#_main_table').datagrid('reload');
+							                      $.messager.show({
+							                        title: '提示消息',
+							                        msg: data.message,
+							                        
+							                        timeout: 5000,
+							                        showType: 'slide'
+							                      });
+							                    } else {
+							                      $.messager.show({
+							                        title: '提示',
+							                        msg: data.message
+							                      });
+							                    }
+				   			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+							                    $.messager.show({
+				  			                      title: '提示',
+				  			                      msg: '请求发生错误请联系开发者'
+				  			                    });
+				  			                  }
+				   			                });  */
+						                    
+						                } /* else {  
+						                    temID = selRow[i].id + "," + temID; 
+				    		               var ss = temID.split(",");
+				    		               $.ajax({
+				    			                  type: 'post',
+				    			                  url: '/yxt-admin/admin/doctorDoctorGroup/insert',
+				    			                 data:{	                	
+				    			                     roleId:roleId,
+				    			                     doctorId:ss[i],
+				    			                     doctorGroupId: groupId 
+				    			                },
+				    			               success:function(data){
+				    			            	 if (data.stateCode == 200) {
+				    			            		 $('#hospdialog').dialog('close');
+				 			                      $('#_main_table').datagrid('reload');
+				 			                      $.messager.show({
+				 			                        title: '提示消息',
+				 			                        msg: data.message,
+				 			                        timeout: 5000,
+				 			                        showType: 'slide'
+				 			                      });
+				 			                    } else {
+				 			                      $.messager.show({
+				 			                        title: '提示',
+				 			                        msg: data.message
+				 			                      });
+				 			                    }
+				    			             },error: function(XMLHttpRequest, textStatus, errorThrown) {
+				 			                    $.messager.show({
+				   			                      title: '提示',
+				   			                      msg: '请求发生错误请联系开发者'
+				   			                    });
+				   			                  }
+				    			                });
+						                }  */                				            	
+						            }
+				    		}
+				    	
+				      }			 
+				 },{
+					 text:'取消关闭',
+					 handler: function() {
+					   $('#hospdialog').dialog('close');
+					      }
+				 }],
+			});
+		}
+		
+		function queryhos(){		
+			$('#doctor_table').datagrid('load', {				
+				doctorTypeId:$('#doctorTypeId').combobox('getValue'),
+			    doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+			    doctorRealName:$('#doctorRealName').textbox('getValue')
+			    
+			})
+			$('#doctor_table').datagrid('reload');		
+					
+			}
+</script> 
+ </head> 
+ <body class="easyui-layout" id="layout">
+ <div id="west" data-options="region:'west',collapsible:false,split:false">
+  <!-- 搜索栏 --> 
+  <div id="seach"> 
+   <label>医生团队名称:</label> &nbsp; 
+   <input id="doctorGroupName" class="easyui-textbox" style="width: 150px;" /> 
+
+   <a href="javascript:query()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+ <!--   <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-ban"></i> 清除</a>  -->
+   <a href="javascript:add()" class="easyui-linkbutton"><i class="fa fa-plus"></i> 新增</a>
+    <a href="javascript:re()" class="easyui-linkbutton"><i class="fa  fa-refresh"></i> 刷新当前页面</a>  
+  </div> 
+  
+  
+  
+  
+  
+  
+  
+  <!-- 内容表格 --> 
+  <table id="main_table"> 
+   <thead> 
+    <tr>
+       
+     <th data-options="field:'dgName',width:70">医生团队名称</th> 
+     <th data-options="field:'hospitalName',width:75">医院</th>     
+     <th data-options="field:'createDate',width:55">创建时间</th>
+     <th data-options="field:'dgtName',width:55">医生团队类型</th>  
+      <th data-options="field:'groupTel',width:75">团队电话</th>      
+     <th data-options="field:'state',width:25,formatter:_stateformatter">状态</th> 
+     <th data-options="field:'remark',width:75">医生团队描述</th>
+     <th data-options="field:'img',align:'center',width:100,formatter:_opformatter">操作</th> 
+    </tr> 
+   </thead> 
+  </table> 
+ 
+  
+  
+  
+  
+  
+  
+  
+  <!-- 添加 --> 
+  <div id="dialog"> 
+   <form id="form" method="post"> 
+    <table class="table-edit" width="100%" align="center"> 
+     <tbody> 
+      <tr> 
+       <td style="width: 100px;">医生团队名称</td> 
+       <td><input class="easyui-textbox" name="dgName" id="dgName" style="width: 200px" data-options="required:true,validType:'length[0,30]',missingMessage:'医生团队名称名称不能为空'"/>
+       </td>
+       <td style="width: 100px;">医生团队描述</td> 
+       <td><input class="easyui-textbox" type="text"  name="remark" id="remark" style="width: 200px;height:50px"  data-options="multiline:true" />
+       </td> 
+       </tr>
+       <tr>
+        <td style="width: 100px;">医生团队类型</td> 
+       <td>
+             <input  class="easyui-combobox"  name="dgtName" id="dgtName" style="width:200px;"
+              data-options=" url:'/yxt-admin/admin/doctorGroupType?page=1&rows=1000', 
+               editable:false,
+                required:true,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"
+             />
+
+       </td> 
+       <td style="width: 100px;">团队电话</td> 
+       <td><input class="easyui-textbox" type="text"  name="groupTel" id="groupTel" style="width: 200px" data-options="validType:'phoneRex'" />
+       </td> 
+      </tr>
+          <tr>
+          <td style="width: 100px;">医疗机构</td> 
+         <td >
+         <span id="hospitalNameweiSheng" style="display:none">
+             <input  class="easyui-combobox"  name="hospitalName" id="hospitalNameSelectWei" style="width:200px" 
+              data-options=" 
+                url:'/yxt-admin/admin/hospital?type=2',
+                 editable:false,
+                method:'get',
+                valueField:'id',    
+			    textField:'hospName',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"
+             /> </span>
+             <span id="hospitalNameyiYuan" >
+             <input  class="easyui-combobox"  name="hospitalName" id="hospitalNameSelectYi" style="width:200px" 
+              data-options=" 
+                url:'/yxt-admin/admin/hospitalWeiAndYi',
+                 editable:false,
+                method:'get',
+                valueField:'id',    
+			    textField:'hospName',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"
+             /> 
+             
+             </span>
+             <span id="allHosp">
+             <input  class="easyui-combobox"  name="hospitalName" id="hospitalNameSelect" style="width:200px" 
+              data-options=" 
+                url:'/yxt-admin/admin/hospital',
+                 editable:false,
+                method:'get',
+                valueField:'id',    
+			    textField:'hospName',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"
+             /> 
+             
+             </span> 
+       </td> 
+        <td style="width: 100px;">状态</td> 
+       <td>
+       <select class="easyui-combobox" name="state" id="state" style="width:200px;" data-options="required:true,editable:false,panelHeight:'auto'">   
+		    <option value="1">启用</option>   
+		    <option value="0">停用</option>   
+		</select> 
+       </td> 
+       </tr>   
+      <tr id="createTime">
+       <td style="width: 100px;">创建时间</td> 
+       <td><input class="easyui-datetimebox" name="createDate"  id="createDate"  style="width: 200px" />
+       </td> 
+      </tr> 
+       <tr>
+       <td colspan="4" align="left"> 医生团队封面 
+        <div id="groupPic" name="groupPic"></div>  <span style="color:red"> (提示: 推荐上传：640px*250px倍数的图片,支持图片格式 gif,jpg,jpeg,bmp,png)</span>
+        </td> 
+     </tr>
+     </tbody> 
+    </table> 
+   </form> 
+  </div>
+  </div>
+  
+  <div id="lookDoctor">
+   <table id="_main_table"> 
+   <thead> 
+    <tr> 
+      <th data-options="field:'id',width:20">id</th>  
+     <th data-options="field:'doctorName',width:50">医生姓名</th> 
+     <th data-options="field:'roleName',width:55">角色名称</th>     
+     <th data-options="field:'titleName',width:75">医生职称</th> 
+     <th data-options="field:'hospitalName',width:100">来自医院</th>  
+     <th data-options="field:'img',align:'center',width:50,formatter:_opformatter1">操作</th> 
+    </tr> 
+   </thead> 
+  </table> 
+  </div>
+  
+  <div>
+
+<div id="look">
+   <label>医生真实姓名</label>
+   <input class="easyui-textbox" name="doctorRealName" id="doctorRealName" style="width: 100px" />
+   <label>医生类型</label> 
+    <input  class="easyui-combobox" name="doctorTypeId" id="doctorTypeId" style="width:150px;"
+    data-options=" url:'/yxt-admin/admin/doctorType', 
+			    method:'get',
+			     editable:false,
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}" /> 
+					
+	<label>医生级别</label> 
+    <input class="easyui-combobox"  name="doctorLevelName" id="doctorLevelName" style="width:200px;"
+        data-options=" url:'/yxt-admin/admin/doctorLevel', 
+                editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'doctorLevelName',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"> 
+	<a href="javascript:queryhos()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+   <a href="javascript:clear()" class="easyui-linkbutton"><i class=""></i> 清除查询条件</a>
+  </div>   
+
+<div id="hospdialog" style=" display: none" class="dialog" > 
+     <form id="hospform" method="post"> 
+ 
+    <div id="left1" data-options="region:'north'" style="display:inline-block;height:321px;overflow-y:scroll;border:1px solid #ccc">
+     <table id="doctor_table" class="easyui-datagrid">   
+       <thead> 
+        <tr>     
+      <!--  <th data-options="field:'doctorName',width:335">医生(可多选)</th>  -->
+       <th data-options="field:'delName',width:335">医生(单选)</th> 
+       </tr>
+       </thead>
+       <tbody>   
+    	</tbody>   
+     </table>
+     </div>
+	            <div id="right1" data-options="region:'center'" style="display:inline-block;vertical-align:top;height:321px;overflow-y:scroll;border:1px solid #ccc;" >
+	         <table id="role_table" style="float:right">
+	           <thead> 
+	        <tr>     
+	       <th data-options="field:'name',width:335">角色(单选)</th> 
+	       </tr>
+	         </thead>
+	       
+	      </table>
+	      </div> 
+   </form>
+   </div> 
+  </div>
+  
+  
+  
+     <div id="doctor_dialog"> 
+   <form id="doctor_form" method="post"> 
+    <table class="table-edit" width="100%" align="center"> 
+     <tbody> 
+      <tr> 
+       <td style="width: 110px;">医生姓名</td> 
+       <td>
+      
+      <input class="easyui-combobox"  name="doctorName" id="doctorName" style="width:200px;" 
+      data-options="required:true,
+            url:'/yxt-admin/admin/doctor?ran=' + Math.random(),
+             editable:false,
+             method:'get', 
+             valueField:'id',    
+			 textField:'delName',
+			 loadFilter:function(data){		   
+			 return data.data.rows;},
+          "/>
+       </td> 
+       </tr>
+       <tr>
+        <td style="width: 110px;">医生角色</td> 
+       <td>
+     <input class="easyui-combobox"  name="roleName" id="roleName" style="width:200px;" data-options="required:true,
+             url:'/yxt-admin/admin/role?ran=' + Math.random(),
+              editable:false,
+             method:'get', 
+             valueField:'id',    
+			 textField:'name',
+			 loadFilter:function(data){			   
+			 return data.data.rows;},			
+     "/>
+    
+       </td> 
+       </tr>
+       </tbody>
+    </table>
+    </form>
+    </div>  
+ </body>
+</html>

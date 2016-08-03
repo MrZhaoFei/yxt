@@ -1,0 +1,81 @@
+package org.system.controller.iface.self;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.self.SelfTestQuestion;
+import org.utils.spring.Groups;
+
+@RequestMapping("/admin")
+public interface ISelfTestQuestionController {
+	
+	/**
+	 * 新增问题
+	 * 
+	 * @param selfTestQuestion
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/selfTestQuestion" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertSelfTestQuestion(
+			@Validated({ Groups.Insert.class }) SelfTestQuestion selfTestQuestion, BindingResult result);
+
+	
+	/**
+	 * 修改问题
+	 * 
+	 * @param selfTestQuestionId
+	 * @param selfTestQuestion
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = { "/selfTestQuestion/{selfId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updatetSelfTestQuestion(@PathVariable("selfId") Integer selfTestQuestionId,
+			@Validated({ Groups.Update.class }) SelfTestQuestion selfTestQuestion, BindingResult result);
+	
+	
+	/**
+	 * 查询问题列表
+	 * 
+	 * @param selfTestQuestion
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/selfTestQuestions", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getSelfTestQuestionList(@Validated({ Groups.Select.class }) SelfTestQuestion selfTestQuestion, BindingResult result,HttpServletRequest req);
+	
+	/**
+	 * 查询问题详情
+	 * 
+	 * @param selfTestQuestionId
+	 * @param selfTestQuestion
+	 * @param result
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/selfTestQuestion/{selfId}", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getSelfTestQuestionDetail(@PathVariable("selfId") Integer selfTestQuestionId,SelfTestQuestion selfTestQuestion, BindingResult result);
+	
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @param selfTestTitle
+	 * @return
+	 */
+	@RequestMapping(value = "/selfTestQuestion/{selfId}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public  Map<String, Object> deleteSelfTestQuestion(@PathVariable("selfId") Integer selfTestQuestionId,SelfTestQuestion selfTestQuestion, BindingResult result);
+	
+}

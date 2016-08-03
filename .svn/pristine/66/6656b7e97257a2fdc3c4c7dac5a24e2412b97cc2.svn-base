@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.user.healthinfo.BloodTransHistoryMapper" >
+  <delete id="delete" parameterType="org.system.entity.user.healthinfo.BloodTransHistory" >
+    delete from blood_trans_history
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="org.system.entity.user.healthinfo.BloodTransHistory" >
+    insert into blood_trans_history (sxsid,  sxyy, sxsj,bz, zfbz, update_time,health_info_id)
+    values (#{sxsid,jdbcType=VARCHAR},#{sxyy,jdbcType=VARCHAR}, #{sxsj,jdbcType=TIMESTAMP}, 
+      #{bz,jdbcType=VARCHAR}, #{zfbz,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{healthInfoId,jdbcType=BIGINT})
+  </insert>
+  <update id="update" parameterType="org.system.entity.user.healthinfo.BloodTransHistory" >
+    update blood_trans_history set id=#{id}
+    <if test=" sxsid !=null and sxsid !=''">
+     	,sxsid = #{sxsid}
+    </if>
+    <if test=" sxyy !=null and sxyy !=''">
+     	,sxyy = #{sxyy}
+    </if>
+    <if test=" sxsj !=null ">
+     	,sxsj = #{sxsj}
+    </if>
+    <if test=" bz !=null and bz !=''">
+     	,bz = #{bz}
+    </if>
+    <if test=" zfbz !=null and zfbz !=''">
+     	,zfbz = #{zfbz}
+    </if>
+    <if test=" updateTime !=null ">
+     	,update_time = #{updateTime}
+    </if>
+    <if test=" healthInfoId !=null">
+     	,health_info_id = #{healthInfoId}
+    </if>
+    where id = #{id}
+  </update>
+  <select id="queryOne" resultType="map" parameterType="org.system.entity.user.healthinfo.BloodTransHistory" >
+    select id, sxsid,  sxyy, sxsj, bz, zfbz, update_time updateTime, health_info_id healthInfoId
+    from blood_trans_history
+    where id = #{id}
+  </select>
+  <select id="queryAll" resultType="map"  parameterType="org.system.entity.user.healthinfo.BloodTransHistory" >
+    select id, sxsid, sxyy, sxsj, bz, zfbz, update_time updateTime, health_info_id healthInfoId
+    from blood_trans_history
+    <where>
+    	<if test="healthInfoId !=null">
+    		health_info_id=#{healthInfoId}
+    	</if>
+    </where>
+    
+  </select>
+</mapper>

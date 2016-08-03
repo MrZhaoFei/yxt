@@ -1,0 +1,53 @@
+package org.system.service.impl.self;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.self.SelfTestTitle;
+import org.system.mapper.self.SelfTestTitleMapper;
+import org.system.service.iface.self.ISelfTestTitleService;
+@Service
+public class SelfTestTitleService implements ISelfTestTitleService{
+
+	@Resource
+	private SelfTestTitleMapper mapper;
+	
+	@Override
+	public int insertSelfTestTitle(SelfTestTitle selfTestTitle) {
+		return mapper.insert(selfTestTitle);
+	}
+
+	@Override
+	public int deleteSelfTestTitle(SelfTestTitle selfTestTitle) {
+		return mapper.delete(selfTestTitle);
+	}
+
+	@Override
+	public int updateSelfTestTitle(SelfTestTitle selfTestTitle) {
+		return mapper.update(selfTestTitle);
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestTitleDetail(SelfTestTitle selfTestTitle) {
+		return mapper.queryOne(selfTestTitle);
+	}
+
+	@Override
+	public List<Map<String, Object>> getSelfTestTitles(SelfTestTitle selfTestTitle) {
+		return mapper.queryAll(selfTestTitle);
+	}
+
+	@Override
+	public Map<String, Object> getSelfTestTitleByFiled(SelfTestTitle selfTestTitle) {
+		return mapper.checkExists(selfTestTitle);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllInformation(SelfTestTitle selfTestTitle) {
+		return mapper.getAllInformation(selfTestTitle);
+	}
+
+}

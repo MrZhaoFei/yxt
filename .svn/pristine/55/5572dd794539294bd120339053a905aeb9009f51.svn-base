@@ -1,0 +1,147 @@
+package org.system.controller.impl.user.healthInfo;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.user.healthInfo.IFamilyHistoryController;
+import org.system.entity.user.healthinfo.FamilyHistory;
+import org.system.entity.user.healthinfo.HealthInfo;
+import org.system.message.Message;
+import org.system.service.iface.service.IGdNumberInfoService;
+import org.system.service.iface.user.healthinfo.IFamilyHistoryService;
+import org.system.service.iface.user.healthinfo.IHealthInfoService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class FamilyHistoryController implements IFamilyHistoryController {
+
+	Logger log = LoggerFactory.getLogger(FamilyHistoryController.class);
+
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IHealthInfoService healthInfoService;
+	@Resource
+	private IFamilyHistoryService familyHistoryService;
+	@Resource
+	private IGdNumberInfoService gdNumberInfoService;
+
+	@Override
+	public Map<String, Object> insertFamilyHistory(FamilyHistory familyHistory, BindingResult result, String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			// 判断健康档案是否存在
+			HealthInfo healthInfo = new HealthInfo();
+			healthInfo.setId(familyHistory.getHealthInfoId());
+			Map<String, Object> hiMap = healthInfoService.getHealthInfoDetail(healthInfo);
+			if (hiMap == null || hiMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("healthInfo.empty"));
+			}
+			// 设置默认值 作废标志 0 正常  作废
+			familyHistory.setZfbz("0");
+			// 设置默认值 数据更新时间
+			familyHistory.setUpdateTime(new Date());
+			// 执行新增操作
+			if (familyHistoryService.insertFamilyHistory(familyHistory) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updatetFamilyHistory(Integer familyHistoryId, FamilyHistory familyHistory,
+			BindingResult result, String token) {
+		familyHistory.setId(Long.valueOf(familyHistoryId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			// 设置默认值 数据更新时间
+			familyHistory.setUpdateTime(new Date());
+			// 执行修改操作
+			if (familyHistoryService.updateFamilyHistory(familyHistory) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getFamilyHistoryList(FamilyHistory familyHistory, BindingResult result, String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> fhList = familyHistoryService.getFamilyHistorys(familyHistory);
+			if (fhList != null && fhList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, familyHistory.getTotal());
+				resultMap.put(Global.DATA_ROWS, fhList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> deletetFamilyHistory(Integer familyHistoryId, FamilyHistory familyHistory,
+			BindingResult result, String token) {
+		familyHistory.setId(Long.valueOf(familyHistoryId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			// 设置默认值 数据更新时间
+			familyHistory.setUpdateTime(new Date());
+			// 执行修改操作
+			if (familyHistoryService.deleteFamilyHistory(familyHistory) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("delete.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getFamilyHistoryListByUser(FamilyHistory familyHistory, BindingResult result,
+			String token) {
+		// 缓存中获取用户数据
+				Element element = cache.getCache(Global.CACHE_USER).get(token);
+				if (element != null) {
+					// 定义返回对象
+					Map<String, Object> resultMap = new HashMap<>();
+					List<Map<String, Object>> fhList = familyHistoryService.getFamilyHistorys(familyHistory);
+					if (fhList != null && fhList.size() > 0) {
+						// 得到数据总数
+						resultMap.put(Global.DATA_TOTAL, familyHistory.getTotal());
+						resultMap.put(Global.DATA_ROWS, fhList);
+						return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+					}
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+				}
+	}
+
+}

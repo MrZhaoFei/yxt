@@ -1,0 +1,65 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.ProductService;
+import org.system.mapper.service.ProductServiceMapper;
+import org.system.service.iface.service.IProductServiceService;
+
+@Service
+public class ProductServiceService implements IProductServiceService{
+	
+	@Resource
+	private ProductServiceMapper productServiceMapper;
+
+	@Override
+	public int insertProductService(ProductService ProductService) {
+		return productServiceMapper.insert(ProductService);
+	}
+
+	@Override
+	public int updateProductService(ProductService ProductService) {
+		return productServiceMapper.update(ProductService);
+	}
+
+	@Override
+	public int deleteProductService(ProductService ProductService) {
+		return productServiceMapper.delete(ProductService);
+	}
+
+	@Override
+	public List<Map<String, Object>> getProductServiceList(ProductService ProductService) {
+		return productServiceMapper.queryAll(ProductService);
+	}
+
+	@Override
+	public Map<String, Object> getProductServiceDetail(ProductService ProductService) {
+		return productServiceMapper.queryOne(ProductService);
+	}
+
+	@Override
+	public Map<String, Object> getProductServiceByFiled(ProductService ProductService) {
+		return productServiceMapper.checkExists(ProductService);
+	}
+
+	@Override
+	public List<Map<String, Object>> getProductCondition(ProductService productService) {
+		return productServiceMapper.queryProductCondition(productService);
+	}
+
+	@Override
+	public int getProductByUservice(ProductService productService) {
+	
+		return productServiceMapper.queryProductByUservice(productService);
+	}
+
+	@Override
+	public List<Map<String, Object>> getProductNotIn(ProductService productService) {
+		return productServiceMapper.queryProductNotIn(productService);
+	}
+
+}

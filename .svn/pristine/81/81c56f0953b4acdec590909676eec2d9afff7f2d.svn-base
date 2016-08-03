@@ -1,0 +1,121 @@
+package org.system.controller.impl.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.service.IUserServiceController;
+import org.system.entity.service.UserService;
+import org.system.message.Message;
+import org.system.service.iface.service.IUserServiceService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class UserServiceController implements IUserServiceController {
+	Logger log = LoggerFactory.getLogger(UserServiceController.class);
+	@Resource
+	private IUserServiceService userServiceService;
+	@Resource
+	private CacheManager cache;
+
+	@Override
+	public Map<String, Object> getUserServiceList(UserService userService, BindingResult result, String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置用户id
+			userService.setUserId((Integer) userMap.get("id"));
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			// 根据用户id查询用户的服务项
+			List<Map<String, Object>> userServiceList = userServiceService.getUserServiceList(userService);
+			if (userServiceList != null && userServiceList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, userService.getTotal());
+				resultMap.put(Global.DATA_ROWS, userServiceList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getuserServicesByUserList(UserService userService, BindingResult result) {
+		// 定义返回对象
+		Map<String, Object> resultMap = new HashMap<>();
+		// 根据用户id查询用户的服务项
+		List<Map<String, Object>> userServiceList = userServiceService.getUserServiceList(userService);
+		if (userServiceList != null && userServiceList.size() > 0) {
+			// 得到数据总数
+			resultMap.put(Global.DATA_TOTAL, userService.getTotal());
+			resultMap.put(Global.DATA_ROWS, userServiceList);
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	public Map<String, Object> getuserServicesByUser(UserService userService, BindingResult result,String token) {
+		// 缓存中获取用户数据
+			Element element = cache.getCache(Global.CACHE_USER).get(token);
+			if (element != null) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+				// 设置用户id
+				userService.setUserId((Integer) userMap.get("id"));
+				// 定义返回对象
+				Map<String, Object> resultMap = new HashMap<>();
+				// 根据用户id查询用户的服务项
+				List<Map<String, Object>> userServiceList = userServiceService.getUserServicesByUserList(userService);
+				if (userServiceList != null && userServiceList.size() > 0) {
+					// 得到数据总数
+					resultMap.put(Global.DATA_TOTAL, userService.getTotal());
+					resultMap.put(Global.DATA_ROWS, userServiceList);
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+				}
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+			}
+	}
+
+	@Override
+	public Map<String, Object> getuserServicesByUserUsed(UserService userService, BindingResult result, String token) {
+			// 缓存中获取用户数据
+			Element element = cache.getCache(Global.CACHE_USER).get(token);
+			if (element != null) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+				// 设置用户id
+				userService.setUserId((Integer) userMap.get("id"));
+				// 定义返回对象
+				Map<String, Object> resultMap = new HashMap<>();
+				// 根据用户id查询用户的服务项
+				List<Map<String, Object>> userServiceList = userServiceService.getUserServicesByUserUsedList(userService);
+				if (userServiceList != null && userServiceList.size() > 0) {
+					// 得到数据总数
+					resultMap.put(Global.DATA_TOTAL, userService.getTotal());
+					resultMap.put(Global.DATA_ROWS, userServiceList);
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+				}
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+			}
+	}
+}

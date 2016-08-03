@@ -1,0 +1,31 @@
+package org.system.service.iface;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.Hospital;
+
+public interface IHospitalService {
+   
+	public int insertHospital (Hospital hospital);
+	
+    public int updateHospital(Hospital hospital);
+	
+	public int deleteHospital(Hospital hospital);
+	
+	public  List<Map<String, Object>> getHospitalList(Hospital hospital);
+	
+    public Map<String, Object> getHospitalDetail(Hospital hospital);
+	
+	public Map<String, Object> getHospitalByFiled(Hospital hospital);
+	
+	public int queryCodeId(Hospital hospital);
+	 
+	 public   List<Map<String, Object>>    getWeiAndYi(Hospital hospital);
+	 
+	public List<Map<String, Object>> getAllHospitalList(Hospital hospital);
+	 
+	 public int getHospitalContract(Hospital hospital);
+	 public int updateHospitalContract(Hospital hospital);
+}
+

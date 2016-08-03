@@ -1,0 +1,27 @@
+package org.system.mapper.user;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.user.User;
+
+public interface UserMapper extends IBaseMapper<User> {
+
+	List<Map<String, Object>> getPermission(Map<String, Object> userMap);
+
+	Map<String, Object> getUserByWechatId(User user);
+
+	int updateForPhone(User user);
+
+	List<Map<String, Object>> getUserByFiled(User user);
+
+	int updateUserWechatUnBind(User user);
+
+	Map<String, Object> getUserByDetailFiled(User user);
+
+	Map<String, Object> getUserDetail(User user);
+
+	List<Map<String, Object>> getUserListByMap(Map<String, Object> param);
+
+}

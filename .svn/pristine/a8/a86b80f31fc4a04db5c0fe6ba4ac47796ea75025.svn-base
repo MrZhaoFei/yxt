@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.self.SelfTestTitleMapper" >
+
+<!-- 删除  -->
+  <delete id="delete" parameterType="org.system.entity.self.SelfTestTitle" >
+    delete from self_test_title
+    where id = #{id}
+  </delete>
+  <!--新增 -->
+  <insert id="insert" parameterType="org.system.entity.self.SelfTestTitle" >
+    insert into self_test_title (name, `desc`,  pic_url) values ( #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR})
+  </insert>
+  
+  <!--修改  -->
+  <update id="update" parameterType="org.system.entity.self.SelfTestTitle" >
+    update self_test_title set id=#{id}
+    <if test="name !=null and name !=''">
+     	,name = #{name}
+    </if>
+    <if test="desc !=null and desc !=''">
+     	,`desc` = #{desc}
+    </if>
+    <if test="picUrl !=null and picUrl !=''">
+     	,pic_url = #{picUrl}
+    </if>
+    where id = #{id}
+  </update>
+  
+  <!-- 查询详情 -->
+  <select id="queryOne"  parameterType="org.system.entity.self.SelfTestTitle"  resultMap="getSelfTestQuestionMap">
+    select id, name, `desc` de, pic_url picUrl
+    from self_test_title
+    where id = #{id}
+  </select>
+  
+   <!-- 定义结果集 标题下的问题 -->
+ 	<resultMap type="map" id="getSelfTestQuestionMap">
+	<result property="id" column="id" />
+	 <collection property="selfTestQuestionDetail" column="id" javaType="list" select="getSelfTestQuestions"/> 
+	</resultMap>
+	
+	<!-- 查询问题 -->
+  <select id="getSelfTestQuestions"  parameterType="org.system.entity.self.SelfTestTitle"  resultType="map">
+    select id, title_id titleId, question, view_order viewOrder
+    from self_test_question
+    where title_id = #{id}
+  </select>
+  
+  <!--全部试卷列表  -->
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.self.SelfTestTitle">
+    select id, name, `desc` de, pic_url picUrl
+    from self_test_title
+    <where>
+    	<if test="id !=null ">
+    		id=#{id}
+    	</if>
+    	<if test="name !=null and name !=''">
+    		and name like CONCAT(CONCAT('%', #{name}), '%') 
+    	</if>
+    	<if test="desc !=null and desc !=''">
+    		and `desc`	like CONCAT(CONCAT('%', #{desc}), '%') 
+    	</if>
+    	<if test="picUrl !=null and picUrl !=''">
+    		and pic_url	like CONCAT(CONCAT('%', #{picUrl}), '%') 
+    	</if>
+    </where>
+  </select>
+  
+ 	<!-- 检查唯一性 -->
+  <select id="checkExists" parameterType="org.system.entity.self.SelfTestTitle" resultType="map">
+      select id, name, `desc`, pic_url picUrl
+    from self_test_title where name=#{name} and pic_url=#{picUrl}
+  </select>
+  
+  <!-- 通过试卷id值得到所有的试卷信息，问题，答案 -->
+  <select id="getAllInformation" parameterType="org.system.entity.self.SelfTestTitle" resultType="map">
+  select stt.id, stt.name sttName ,stt.desc,stq.id stqId ,stq.title_id titleId, sta.id staId ,sta.question_id questionId  from self_test_title stt  
+ left join self_test_question  stq on stt.id=stq.title_id 
+ left join  self_test_answer sta on stq.id=sta.question_id 
+ where stt.id=#{id}
+  </select>
+ 
+</mapper>

@@ -1,0 +1,526 @@
+package org.system.controller.impl.service.resp;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.store.wechat.WechatConfig;
+import org.system.Global;
+import org.system.controller.iface.service.resp.IServiceRespTaskController;
+import org.system.entity.doctor.Doctor;
+import org.system.entity.service.resp.ServiceRespTask;
+import org.system.entity.service.resp.TaskType;
+import org.system.entity.sys.SysHintMessage;
+import org.system.entity.user.User;
+import org.system.message.Message;
+import org.system.service.iface.doctor.IDoctorService;
+import org.system.service.iface.service.IGdNumberInfoService;
+import org.system.service.iface.service.resp.IServiceRespTaskService;
+import org.system.service.iface.service.resp.ITaskTypeService;
+import org.system.service.iface.service.resp.ITransRecordsInfoService;
+import org.system.service.iface.service.transfer.IFormNotExistDetailyService;
+import org.system.service.iface.sys.ISysHintMessageService;
+import org.system.service.iface.user.IUserService;
+import org.utils.service.ServiceEnum;
+import org.utils.spring.RESTClient;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class ServiceRespTaskController implements IServiceRespTaskController {
+	Logger log = LoggerFactory.getLogger(ServiceRespTaskController.class);
+	@Resource
+	private IServiceRespTaskService serviceRespTaskService;
+	@Resource
+	private IDoctorService doctorService;
+	@Resource
+	private ITaskTypeService taskTypeService;
+	@Resource
+	private IGdNumberInfoService gdNumberInfoService;
+	@Resource
+	private ITransRecordsInfoService transRecordsInfoService;
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IUserService userService;
+	@Resource
+	private ISysHintMessageService sysHintMessageService;
+	@Resource
+	private IFormNotExistDetailyService formNotExistDetailyService;
+
+	@Override
+	@Transactional
+	public Map<String, Object> insertServiceRespTask(ServiceRespTask serviceRespTask, BindingResult result,
+			String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 判断医生是否存在
+			Doctor doctor = new Doctor();
+			doctor.setId(serviceRespTask.getDoctorId());
+			Map<String, Object> doctorMap = doctorService.getDoctorDetil(doctor);
+			if (doctorMap == null || doctorMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("doctor.empty"));
+			}
+			// 判断类型是否存在
+			TaskType taskType = new TaskType();
+			taskType.setId(serviceRespTask.getTaskTypeId());
+			Map<String, Object> taskTypeMap = taskTypeService.getTaskTypeDetail(taskType);
+			if (taskTypeMap == null || taskTypeMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("taskType.empty"));
+			}
+			// 判断用户服务响应 是否评价完成4，没有完成 的 不能添加
+			// 缓存中获取登录用户id并设置
+			serviceRespTask.setUserId((Integer) userMap.get("id"));
+			List<Map<String, Object>> taskList = serviceRespTaskService.getTaskStatusByUnfinished(serviceRespTask);
+			if (taskList != null && taskList.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.unfinished.exists"));
+			}
+			// 生成工单号 服务类工单为“FW”开头
+			serviceRespTask.setTaskNumber(gdNumberInfoService.getGdnumberForDay(ServiceEnum.FWXY, new Date()));
+			// 设置状态
+			serviceRespTask.setTaskStatus(1);
+			// 设置日期
+			serviceRespTask.setAppliedDate(new Date());
+			// 设置发起人
+			serviceRespTask.setPromoterUserId((Integer) userMap.get("id"));
+			// 设置更新时间
+			serviceRespTask.setUpdateTime(new Date());
+
+			if (serviceRespTaskService.insertServiceRespTask(serviceRespTask) <= 0) {
+				throw new RuntimeException();
+			}
+
+			// 新增系统消息给医生
+			SysHintMessage sysHintMessage = new SysHintMessage();
+			sysHintMessage.setToDoctorId(doctorMap.get("id").toString());
+			sysHintMessage.setMsgType(3);
+			sysHintMessage.setPackageServiceId(serviceRespTask.getId());
+			sysHintMessage.setUserId(serviceRespTask.getUserId().toString());
+			sysHintMessage.setStartTime(new Date());
+			sysHintMessage.setEndTime(new Date());
+			sysHintMessage.setMsgContent(Message.bundle("serviceRespTask.insert.success.sms.content",
+					userMap.get("name"), serviceRespTask.getTaskNumber()));
+			if (sysHintMessageService.insertSysHintMessage(sysHintMessage) <= 0) {
+				throw new RuntimeException();
+			}
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updateServiceRespTaskByDoctor(Integer serviceRespTaskId, ServiceRespTask serviceRespTask,
+			BindingResult result, String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置ID
+			serviceRespTask.setId(serviceRespTaskId);
+			serviceRespTask.setDoctorId((Integer) userMap.get("id"));
+			serviceRespTask.setUpdateTime(new Date());
+			// 执行修改 判断状态
+			if (serviceRespTaskService.updateServiceRespTask(serviceRespTask) > 0) {
+				// 修改成功 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			} else {
+				// 修改失败 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+
+	}
+
+	@Override
+	public Map<String, Object> updateServiceRespTaskCanelByUser(Integer serviceRespTaskId,
+			ServiceRespTask serviceRespTask, BindingResult result, String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置ID
+			serviceRespTask.setId(serviceRespTaskId);
+			serviceRespTask.setUserId((Integer) userMap.get("id"));
+			Map<String, Object> taskMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+			if (taskMap != null && taskMap.size() > 0) {
+				if ((int) taskMap.get("taskStatus") != 1) {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.is.start"));
+				}
+				if (serviceRespTaskService.deleteServiceRespTask(serviceRespTask) > 0) {
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("delete.success"));
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+				}
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("query.empty"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getServiceRespTaskList(ServiceRespTask serviceRespTask, BindingResult result,
+			String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置用户id
+			serviceRespTask.setDoctorId((Integer) userMap.get("id"));
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> taskList = serviceRespTaskService.getServiceRespTaskList(serviceRespTask);
+			resultMap.put(Global.DATA_TOTAL, serviceRespTask.getTotal());
+			if (taskList != null && taskList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_ROWS, taskList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, resultMap, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getServiceRespTaskListByUser(ServiceRespTask serviceRespTask, BindingResult result,
+			String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置用户id
+			serviceRespTask.setUserId((Integer) userMap.get("id"));
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> taskList = serviceRespTaskService.getServiceRespTaskListByuser(serviceRespTask);
+			if (taskList != null && taskList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, serviceRespTask.getTotal());
+				resultMap.put(Global.DATA_ROWS, taskList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updateserviceRespTaskRemind(Integer serviceRespTaskId, ServiceRespTask serviceRespTask,
+			BindingResult result, String token) {
+		// 获取缓存中的医生
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 设置ID
+			serviceRespTask.setId(serviceRespTaskId);
+			// 修改 提醒时间
+			serviceRespTask.setLastRemindTime(new Date());
+			serviceRespTask.setUpdateTime(new Date());
+			// 判断 是否存在响应服务
+			Map<String, Object> srtMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+			if (srtMap == null || srtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 获取 患者微信号 和 申请时间
+			User user = new User();
+			user.setId((Integer) srtMap.get("userId"));
+			Map<String, Object> userMap = userService.getUserDetail(user);
+			Map<String, Object> param = new HashMap<>();
+
+			param.put("openId", userMap.get("wechatId"));
+			param.put("serviceTime", ((Date) srtMap.get("appliedDate")).getTime());
+			param.put("doctorName", doctorMap.get("name"));
+			param.put("serviceName", srtMap.get("taskName"));
+			RESTClient.post(WechatConfig.getServer(), Global.WECHAT_SERVICE_REMINDEVALUATE, param);
+			// 执行修改 判断状态
+			if (serviceRespTaskService.updateServiceRespTaskRemind(serviceRespTask) > 0) {
+				// 修改成功 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			} else {
+				// 修改失败 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+
+		}
+	}
+
+	@Override
+	public Map<String, Object> getServiceRespTaskListByUserDetail(Integer serviceRespTaskId,
+			ServiceRespTask serviceRespTask, BindingResult result, String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置用户id
+			serviceRespTask.setUserId((Integer) userMap.get("id"));
+			serviceRespTask.setId(serviceRespTaskId);
+			Map<String, Object> srtMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+
+			// 判断 服务响应是否存在 并且登录的用户是否与该服务响应内的用户ID是同一人
+			if (srtMap == null || srtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			} else {
+				// 判断 登录的用户是否与该服务响应内的用户ID是同一人
+				if ((int) srtMap.get("userId") != (int) userMap.get("id")) {
+					return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+							Message.bundle("record.is.outside.user"));
+				}
+			}
+			if (srtMap != null && srtMap.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, srtMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> insertDoctorServiceRespTask(ServiceRespTask serviceRespTask, BindingResult resul,
+			String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userElementMap = (Map<String, Object>) element.getObjectValue();
+			// 判断用户是否存在
+			User user = new User();
+			user.setId(serviceRespTask.getUserId());
+			Map<String, Object> userMap = userService.getUserDetail(user);
+			if (userMap == null || userMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("user.empty"));
+			}
+			// 判断类型是否存在
+			TaskType taskType = new TaskType();
+			taskType.setId(serviceRespTask.getTaskTypeId());
+			Map<String, Object> taskTypeMap = taskTypeService.getTaskTypeDetail(taskType);
+			if (taskTypeMap == null || taskTypeMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("taskType.empty"));
+			}
+			// 缓存中获取登录医生编号id并设置
+			serviceRespTask.setDoctorId((Integer) userElementMap.get("id"));
+			List<Map<String, Object>> taskList = serviceRespTaskService.getTaskStatusByUnfinished(serviceRespTask);
+			if (taskList != null && taskList.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.unfinished.exists"));
+			}
+			// 生成工单号 服务类工单为“FW”开头
+			serviceRespTask.setTaskNumber(gdNumberInfoService.getGdnumberForDay(ServiceEnum.FWXY, new Date()));
+			// 设置状态
+			serviceRespTask.setTaskStatus(1);
+			// 设置日期
+			serviceRespTask.setAppliedDate(new Date());
+			// 设置发起人
+			serviceRespTask.setPromoterDoctorId((Integer) userElementMap.get("id"));
+
+			if (serviceRespTaskService.insertServiceRespTask(serviceRespTask) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, serviceRespTask, Message.bundle("insert.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updateserviceRespTaskSeized(Integer serviceRespTaskId, ServiceRespTask serviceRespTask,
+			BindingResult result, String token) {
+		// 获取缓存中的医生
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 判断服务响应是否存在
+			serviceRespTask.setId(serviceRespTaskId);
+			Map<String, Object> taskMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+			if (taskMap == null || taskMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 判断该服务响应是否属于该医生
+			if ((int) doctorMap.get("id") != (int) taskMap.get("doctorId")) {
+				return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+						Message.bundle("record.is.outside.doctor"));
+			}
+			// 判断服务响应的状态是否为未受理
+			if ((int) taskMap.get("taskStatus") != 1) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.status.error"));
+			}
+			// 修改服务响应状态为服务中
+			serviceRespTask.setTaskStatus(2);
+			serviceRespTask.setAcceptDate(new Date());
+			serviceRespTask.setUpdateTime(new Date());
+			if (serviceRespTaskService.updateServiceRespTask(serviceRespTask) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updateserviceRespTaskSure(Integer serviceRespTaskId, ServiceRespTask serviceRespTask,
+			BindingResult result, String token) {
+		// 获取缓存中的医生
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 判断服务响应是否存在
+			serviceRespTask.setId(serviceRespTaskId);
+			Map<String, Object> taskMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+			if (taskMap == null || taskMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 判断该服务响应是否属于该医生
+			if ((int) doctorMap.get("id") != (int) taskMap.get("doctorId")) {
+				return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+						Message.bundle("record.is.outside.doctor"));
+			}
+			// 判断服务响应的状态是否为未受理
+			if ((int) taskMap.get("taskStatus") != 2) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.status.error"));
+			}
+
+			List<Map<String, Object>> unfinishedTransTreatDetailyList = serviceRespTaskService
+					.getUnfinishedTransTreatDetailyList(serviceRespTask);
+			if (unfinishedTransTreatDetailyList != null && unfinishedTransTreatDetailyList.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL,
+						Message.bundle("serviceRespTask.trans.server.unfinished"));
+			}
+
+			List<Map<String, Object>> unfinishedImageConsultationDetailyList = serviceRespTaskService
+					.getUnfinishedImageConsultationDetaily(serviceRespTask);
+			if (unfinishedImageConsultationDetailyList != null && unfinishedImageConsultationDetailyList.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL,
+						Message.bundle("serviceRespTask.image.server.unfinished"));
+			}
+
+			List<Map<String, Object>> unfinishedFormNotExistDetailyList = formNotExistDetailyService
+					.getUnfinishedFormNotExistDetailyList(serviceRespTask);
+			if (unfinishedFormNotExistDetailyList != null && unfinishedFormNotExistDetailyList.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL,
+						Message.bundle("formNotExistDetaily.server.unfinished"));
+			}
+
+			// 修改服务响应状态为服务中
+			serviceRespTask.setTaskStatus(3);
+			serviceRespTask.setUpdateTime(new Date());
+			serviceRespTask.setDoctorCompleteTime(new Date());
+			if (serviceRespTaskService.updateServiceRespTask(serviceRespTask) > 0) {
+				Map<String, Object> param = new HashMap<>();
+				// 获取用户微信号
+				User user = new User();
+				user.setId((Integer) taskMap.get("userId"));
+				Map<String, Object> uMap = this.userService.getUserDetail(user);
+				param.put("openId", uMap.get("wechatId"));
+				param.put("serviceTime", ((Date) taskMap.get("appliedDate")).getTime());
+				param.put("doctorName", doctorMap.get("name"));
+				param.put("serviceName", taskMap.get("taskName"));
+				RESTClient.post(WechatConfig.getServer(), Global.WECHAT_SERVICE_REMINDEVALUATE, param);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updateserviceRespTaskRated(Integer serviceRespTaskId, ServiceRespTask serviceRespTask,
+			BindingResult result, String token) {
+		// 缓存获取用户
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 判断服务响应是否存在
+			serviceRespTask.setId(serviceRespTaskId);
+			Map<String, Object> taskMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+			if (taskMap == null || taskMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 判断 有无服务响应的任务的任务 是否存在未完成
+
+			// 判读该服务响应是否属于该用户并且状态是否为3
+			if ((int) userMap.get("id") != (int) taskMap.get("userId")) {
+				return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR, Message.bundle("record.is.outside.user"));
+			} else {
+				if ((int) taskMap.get("taskStatus") != 3) {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.status.error"));
+				}
+			}
+			// 修改服务响应并提示
+			serviceRespTask.setTaskStatus(4);
+			serviceRespTask.setEstimationDate(new Date());
+			// 设置评价类型
+			serviceRespTask.setEstimationType(0);
+			if (serviceRespTaskService.updateServiceRespTask(serviceRespTask) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+
+	}
+
+	@Override
+	public Map<String, Object> getServiceRespTaskListByDoctorDetail(Integer serviceRespTaskId,
+			ServiceRespTask serviceRespTask, BindingResult result, String token) {
+		serviceRespTask.setId(serviceRespTaskId);
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+
+			Map<String, Object> srtMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+			// 判断 服务响应是否存在
+			if (srtMap == null || srtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			} else {
+				// 判断 登录的医生是否与该服务响应内的医生ID是同一人
+				if ((int) srtMap.get("doctorId") != (int) doctorMap.get("id")) {
+					return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+							Message.bundle("record.is.outside.doctor"));
+				}
+			}
+			if (srtMap != null && srtMap.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, srtMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+}

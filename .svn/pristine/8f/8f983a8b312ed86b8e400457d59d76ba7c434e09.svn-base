@@ -1,0 +1,128 @@
+package org.system.controller.impl.doctor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.doctor.IDoctorDoctorGroupController;
+import org.system.entity.doctor.DoctorDoctorGroup;
+import org.system.entity.doctor.Role;
+import org.system.message.Message;
+import org.system.service.iface.doctor.IDoctorDoctorGroupService;
+import org.system.service.iface.doctor.IRoleService;
+
+@Controller
+public class DoctorDoctorGroupController implements IDoctorDoctorGroupController {
+	Logger log = LoggerFactory.getLogger(DoctorDoctorGroupController.class);
+	
+	@Resource
+	private IDoctorDoctorGroupService doctorDoctorGroupService;
+	@Resource
+	private IRoleService roleService;
+	
+	@Override
+	public Map<String, Object> insertDoctorDoctorGroup(DoctorDoctorGroup doctorDoctorGroup, BindingResult result) {
+		int teamerId= (int)doctorDoctorGroup.getRoleId();
+		 if(teamerId==1){// 团队长只能添加一个
+			doctorDoctorGroup.setDoctorGroupId(doctorDoctorGroup.getDoctorGroupId());
+			int count=  doctorDoctorGroupService.getOneTeamer(doctorDoctorGroup);
+			if(count>=1){
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("doctorGroup.tearmer.exists")); 
+			}
+		}
+	//检查数据是否重复
+		Map<String, Object> dataMap = doctorDoctorGroupService.getDoctorDoctorGroupByFiled(doctorDoctorGroup);
+		if(dataMap != null && dataMap.size() > 0){
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+		 }
+		
+		int number=doctorDoctorGroupService.getOneDoctorGroup(doctorDoctorGroup);// doctor_group_id,doctor_id  unique	
+		if(number==1){
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("doctorGroup.exists"));
+		}		
+		//执行新增操作
+		if (doctorDoctorGroupService.insertDoctorDoctorGroup(doctorDoctorGroup)> 0) {
+			// 新增成功
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+		}
+		// 新增失败
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+	}
+
+	@Override
+	public Map<String, Object> deleteDoctorDoctorGroup(Integer doctorId, Integer doctorGroupId,
+			DoctorDoctorGroup doctorDoctorGroup) {
+		doctorDoctorGroup.setDoctorId(doctorId);
+		doctorDoctorGroup.setDoctorGroupId(doctorGroupId);
+		int count=	doctorDoctorGroupService.deleteDoctorDoctorGroup(doctorDoctorGroup);
+		if(count>0){
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS,  Message.bundle("delete.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+	}
+
+	@Override
+	public Map<String, Object> updateDoctorDoctorGroup(Integer doctorId, Integer doctorGroupId,
+			DoctorDoctorGroup doctorDoctorGroup) {
+		//设置医生id
+		doctorDoctorGroup.setDoctorId(doctorId);
+		//设置团队Id
+		doctorDoctorGroup.setDoctorGroupId(doctorGroupId);
+		//判断角色是否存在
+		Role role=new Role();
+		role.setId(doctorDoctorGroup.getRoleId());
+		Map<String, Object> roleMap = roleService.getRoleDetail(role);
+		if (roleMap == null || roleMap.size() <= 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("role.empty"));
+		}
+		// 执行修改操作
+		if (doctorDoctorGroupService.updateDoctorDoctorGroup(doctorDoctorGroup)> 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS,
+					Message.bundle("update.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+		
+	}
+
+	@Override
+	public Map<String, Object> getDoctorDoctorGroupList(DoctorDoctorGroup doctorDoctorGroup, BindingResult result,HttpServletRequest req) {
+		 HttpSession session=req.getSession();
+		 if(session.getAttribute("user")!=null){
+			 
+			 // 定义返回对象
+			 Map<String, Object> resultMap = new HashMap<>();
+			 List<Map<String, Object>> ddrList =doctorDoctorGroupService.getDoctorDoctorGroups(doctorDoctorGroup); 
+			 if (ddrList != null && ddrList.size() > 0) {
+				 // 得到数据总数
+				 resultMap.put(Global.DATA_TOTAL, doctorDoctorGroup.getTotal());
+				 resultMap.put(Global.DATA_ROWS, ddrList);
+				 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			 }
+			 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		 }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		 }
+	}
+
+	@Override
+	public int getOneDoctorExistsGroup(DoctorDoctorGroup doctorDoctorGroup) {
+		int doctorNum=doctorDoctorGroupService.getOneDoctorExistsGroup(doctorDoctorGroup);
+		if(doctorNum>=1){
+			System.out.println(doctorNum);
+			return doctorNum;
+		}else{
+			return 0;
+		}
+	}
+}

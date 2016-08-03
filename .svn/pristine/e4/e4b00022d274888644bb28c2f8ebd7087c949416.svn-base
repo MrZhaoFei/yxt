@@ -1,0 +1,42 @@
+package org.system.service.impl.user.healthtest;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.user.healthtest.UserSelfTestRecord;
+import org.system.mapper.user.healthtest.UserSelfTestRecordMapper;
+import org.system.service.iface.user.healthtest.IUserSelfTestRecordService;
+
+@Service
+public class UserSelfTestRecordService implements IUserSelfTestRecordService {
+	@Resource
+	private UserSelfTestRecordMapper mapper;
+
+	@Override
+	public Map<String, Object> getUserSelfTestRecordByFild(UserSelfTestRecord userSelfTestRecord) {
+		return mapper.checkExists(userSelfTestRecord);
+	}
+
+	@Override
+	public int insertUserSelfTestRecord(UserSelfTestRecord userSelfTestRecord) {
+		return mapper.insert(userSelfTestRecord);
+	}
+
+	@Override
+	public int updateUserSelfTestRecord(UserSelfTestRecord userSelfTestRecord) {
+		return mapper.update(userSelfTestRecord);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserSelfTestRecordList(UserSelfTestRecord userSelfTestRecord) {
+		return mapper.queryAll(userSelfTestRecord);
+	}
+
+	@Override
+	public Map<String, Object> getUserSelfTestRecordDetail(UserSelfTestRecord userSelfTestRecord) {
+		return mapper.queryOne(userSelfTestRecord);
+	}
+}

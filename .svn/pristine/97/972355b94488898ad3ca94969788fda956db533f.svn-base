@@ -1,0 +1,135 @@
+package org.system.entity.service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+public class ServicePack extends BaseEntity {
+	private Integer id;
+
+	private Integer doctorGroupId;
+
+	private Integer userId;
+
+	@NotNull(message = "{address.id.notnull.valid}", groups = { Groups.Insert.class })
+	private Integer addressId;
+
+	@NotNull(message = "{source.id.notnull.valid}", groups = { Groups.Select.class })
+	private Integer packageSourceId;
+
+	private String name;
+
+	private BigDecimal price;
+
+	private String desc;
+
+	private Integer packageTypeId;
+
+	private Date createDate;
+
+	private Integer acquisitive;
+
+	public Integer getPackageSourceId() {
+		return packageSourceId;
+	}
+
+	public void setPackageSourceId(Integer packageSourceId) {
+		this.packageSourceId = packageSourceId;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getDoctorGroupId() {
+		return doctorGroupId;
+	}
+
+	public void setDoctorGroupId(Integer doctorGroupId) {
+		this.doctorGroupId = doctorGroupId;
+	}
+
+	public Integer getAddressId() {
+		return addressId;
+	}
+
+	public void setAddressId(Integer addressId) {
+		this.addressId = addressId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public Integer getPackageTypeId() {
+		return packageTypeId;
+	}
+
+	public void setPackageTypeId(Integer packageTypeId) {
+		this.packageTypeId = packageTypeId;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Integer getAcquisitive() {
+		return acquisitive;
+	}
+
+	public void setAcquisitive(Integer acquisitive) {
+		this.acquisitive = acquisitive;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class, Groups.Other.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class, Groups.Other.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

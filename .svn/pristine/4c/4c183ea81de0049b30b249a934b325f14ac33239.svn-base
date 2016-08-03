@@ -1,0 +1,30 @@
+package org.system.service.iface.contract;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.contract.Contract;
+
+public interface IContractService {
+
+	public Map<String, Object> getContractByFild(Contract contract);
+
+	public int insertContract(Contract contract);
+
+	public int updateContract(Contract contract);
+
+	public List<Map<String, Object>> getContractList(Contract contract);
+
+	public Map<String, Object> getContractDetail(Contract contract);
+
+	public List<Map<String, Object>> getContractListByDoctor(Contract contract);
+
+	public Map<String, Object> getContractAgreement(Contract contract);
+
+	public int updateContractByMap(Map<String, Object> param);
+	
+	
+	public Map<String, Object> updateContractAddressById(Contract contract);
+	
+	
+}

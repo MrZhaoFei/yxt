@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.user.healthinfo.AllergicHistoryMapper" >
+  <delete id="delete" parameterType="org.system.entity.user.healthinfo.AllergicHistory" >
+    delete from allergic_history where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="org.system.entity.user.healthinfo.AllergicHistory" >
+    insert into allergic_history (gmsid,gmybm, gmymc,bz, zfbz, update_time,health_info_id)
+    values (#{gmsid,jdbcType=VARCHAR}, #{gmybm,jdbcType=VARCHAR}, #{gmymc,jdbcType=VARCHAR}, 
+      #{bz,jdbcType=VARCHAR}, #{zfbz,jdbcType=VARCHAR}, #{updateTime},#{healthInfoId})
+  </insert>
+  <update id="update" parameterType="org.system.entity.user.healthinfo.AllergicHistory" >
+    update allergic_history set id=#{id}
+    <if test="gmsid !=null and gmsid !=''">
+    	,gmsid=#{gmsid}
+    </if>
+    <if test="gmybm !=null and gmybm !=''">
+    	,gmybm=#{gmybm}
+    </if>
+    <if test="gmymc !=null and gmymc !=''">
+    	,gmymc=#{gmymc}
+    </if>
+    <if test="bz !=null and bz !=''">
+    	,bz=#{bz}
+    </if>
+    <if test="zfbz !=null and zfbz !=''">
+    	,zfbz=#{zfbz}
+    </if>
+    <if test="updateTime !=null">
+    	,update_time=#{updateTime}
+    </if>
+    <if test="healthInfoId !=null">
+    	,health_info_id=#{healthInfoId}
+    </if>
+    where id = #{id}
+  </update>
+  <select id="queryOne" resultType="map" parameterType="org.system.entity.user.healthinfo.AllergicHistory" >
+    select id, gmsid,  gmybm,fn_print_sys_code_result(gmybm,';','CV05.01.038') gmybmName, gmymc, bz, zfbz, update_time updateTime, health_info_id healthInfoId
+    from allergic_history
+    where id = #{id}
+  </select>
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.user.healthinfo.AllergicHistory" >
+    select id, gmsid, gmybm,fn_print_sys_code_result(gmybm,';','CV05.01.038') gmybmName, gmymc, bz, zfbz, update_time updateTime, health_info_id healthInfoId
+    from allergic_history
+    <where>
+    	<if test=" healthInfoId !=null">
+    		health_info_id=#{healthInfoId}
+    	</if>
+    </where>
+  </select>
+</mapper>

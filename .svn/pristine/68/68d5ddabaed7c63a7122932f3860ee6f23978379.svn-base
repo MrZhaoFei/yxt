@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.AddressMapper" >
+
+<insert id="insert"  parameterType="org.system.entity.service.Address" useGeneratedKeys="true" keyColumn="id">
+   insert into address (code_value,pid,name,remark) values (#{codeValue},#{pid},#{name},#{remark})
+</insert>
+
+
+
+<select id="queryAddress" parameterType="org.system.entity.service.Address" resultType="map">
+ select id,code_value,name,remark,pid  from address where pid=#{pid} 
+</select>
+
+<!--查询最大的id值  -->
+<select id="queryMaxId"  parameterType="org.system.entity.service.Address" resultType="map" >
+    select id ,code_value,name,remark,pid  from address where id = (select max(id) from address )
+</select>
+
+
+<!-- 查询所有记录 -->
+<select id="queryAll" parameterType="org.system.entity.service.Address" resultType="map">
+	select id keyid,pid pId,name,code_value id,remark from address
+		<if test="name!=null and name !=''">
+				where name like CONCAT(CONCAT('%', #{name}), '%')
+		</if>
+		order by id
+</select>
+
+<!-- 查询所有下级记录 -->
+ <select id="getAddressChildList" parameterType="org.system.entity.service.Address" resultType="map">
+	select  id keyid,pid pId,name,code_value id,remark from address where pid=#{pid}
+		<if test="name!=null and name !=''">
+			and name like CONCAT(CONCAT('%', #{name}), '%')
+		</if>
+</select> 
+
+
+
+<!-- 修改数据 -->
+<update id="update" parameterType="org.system.entity.service.Address">
+	update address set id=#{id}
+		<if test="name !=null and name !=''">
+			,name=#{name}
+		</if>
+		<if test="pid !=null and pid !=''">
+			,pid=#{pid}
+		</if>
+		<if test="remark !=null and remark !=''">
+			,remark=#{remark}
+		</if>
+		<if test="codeValue !=null and codeValue !=''">
+			,code_value=#{codeValue}
+		</if>
+	where id=#{id}
+</update>
+
+
+
+	<!-- 检查数据是否重复 -->
+	<select id="checkExists" parameterType="org.system.entity.service.Address" resultType="map">
+		 select  id keyid,pid pId,name,code_value id,remark from address where name=#{name} and pid=#{pid} and code_value=#{codeValue}	
+	</select>
+
+	<delete id="delete" parameterType="org.system.entity.service.Address" >
+	     delete from address where id=#{id}
+	</delete>
+
+
+   <select id="queryOne" parameterType="org.system.entity.service.Address" resultType="map">
+		select id keyid,pid pId,name,code_value id,remark from address  where id=#{id}
+	</select>
+	
+   <resultMap type="map" id="addressMap">
+		<result column="code_value" property="codeValue"/>
+	</resultMap>
+	<!-- 查询单条记录(code_value) -->
+	<select id="queryCodeValue" parameterType="org.system.entity.service.Address" statementType="CALLABLE" resultMap="addressMap">
+		<![CDATA[
+			{call sp_get_address_list(#{id})}
+		]]>
+	</select>	
+	
+<select id="getAddressListByPid" parameterType="string" resultType="map">
+		select SUBSTR(fn_getaddress_childlist(#{id}),3) text
+	</select>	
+
+</mapper>

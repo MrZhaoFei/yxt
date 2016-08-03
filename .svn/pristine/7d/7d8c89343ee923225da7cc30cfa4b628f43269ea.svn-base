@@ -1,0 +1,240 @@
+package org.system.controller.impl.service.visits;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.store.wechat.WechatConfig;
+import org.system.Global;
+import org.system.controller.iface.service.visits.IGxyFollowupRecordsController;
+import org.system.entity.service.UserService;
+import org.system.entity.service.resp.ServiceRespTask;
+import org.system.entity.service.visits.GxyFollowupRecords;
+import org.system.entity.sms.SmsSendTask;
+import org.system.message.Message;
+import org.system.service.iface.service.IGdNumberInfoService;
+import org.system.service.iface.service.IUserServiceService;
+import org.system.service.iface.service.resp.IServiceRespTaskService;
+import org.system.service.iface.service.visits.IGxyFollowupRecordsService;
+import org.system.service.iface.sms.ISmsSendTaskService;
+import org.utils.service.ServiceEnum;
+import org.utils.spring.RESTClient;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class GxyFollowupRecordsController implements IGxyFollowupRecordsController {
+	Logger log = LoggerFactory.getLogger(GxyFollowupRecordsController.class);
+
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IGxyFollowupRecordsService gxyFollowupRecordsService;
+	@Resource
+	private IServiceRespTaskService serviceRespTaskService;
+	@Resource
+	private IGdNumberInfoService gdNumberInfoService;
+	@Resource
+	private IUserServiceService userSeviceSevice;
+	@Resource
+	private ISmsSendTaskService smsSendTaskService;
+
+	@Override
+	@Transactional
+	public Map<String, Object> insertGxyFollowupRecords(GxyFollowupRecords gxyFollowupRecords, BindingResult result,
+			String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 判断服务响应是否存在
+			ServiceRespTask srt = new ServiceRespTask();
+			srt.setId(gxyFollowupRecords.getServiceRespTaskId());
+			Map<String, Object> srtMap = serviceRespTaskService.getServiceRespTaskDetail(srt);
+			if (srtMap == null || srtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 判断服务响应状态是否正确
+			if ((int) srtMap.get("taskStatus") != 2) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("serviceRespTask.status.error"));
+			}
+			// 判断用户服务是否存在且未锁定次数是否大于0 不存在提示用户购买 不大于0提示用户次数不足
+			UserService userService = new UserService();
+			userService.setId(gxyFollowupRecords.getUserServiceId());
+			Map<String, Object> userServiceMap = userSeviceSevice.getUserServiceDetail(userService);
+			if (userServiceMap == null || userServiceMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("userService.empty"));
+			} else {
+				if (((int) userServiceMap.get("times") - (int) userServiceMap.get("lockTimes")) <= 0) {
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("lockTimes.empty"));
+				}
+			}
+			// 设置患者ID
+			gxyFollowupRecords.setUserId((Integer) srtMap.get("userId"));
+			// 设置随访编号
+			gxyFollowupRecords.setSfjlbh(gdNumberInfoService.getGdnumberForDay(ServiceEnum.SF, new Date()));
+			// 设置随访时间
+			gxyFollowupRecords.setSfrq(new Date());
+			// 设置更新时间
+			gxyFollowupRecords.setUpdateTime(new Date());
+			// 执行新增操作
+			if (gxyFollowupRecordsService.insertGxyFollowupRecords(gxyFollowupRecords) > 0) {
+				// 获取转诊记录 用户服务 实际次数 实际次数 -1
+				Integer times = (Integer) userServiceMap.get("times") - 1;
+				userService.setTimes(times);
+				/* 新增成功扣除用户服务次数 */
+				if (userSeviceSevice.updateUserService(userService) <= 0) {
+					throw new RuntimeException();
+				}
+
+				/* 推送消息至微信 */
+				Map<String, Object> param = new HashMap<>();
+				// 设置服务名
+				param.put("serviceName", userServiceMap.get("serviceName"));
+				// 设置订单号
+				param.put("orderId", gxyFollowupRecords.getSfjlbh());
+				// 获取医生名
+				param.put("doctorName", doctorMap.get("name"));
+				// 设置服务时间
+				param.put("serviceTime", new Date().getTime());
+				// 设置下单时间
+				param.put("orderTime", gxyFollowupRecords.getSfrq().getTime());
+				// 设置下次随访时间
+				param.put("nextServiceTime", gxyFollowupRecords.getXcsfrq().getTime());
+				// 设置微信openId
+				param.put("openId", srtMap.get("wechatId"));
+				// 设置id
+				param.put("id", gxyFollowupRecords.getId());
+				// TODO 修改接口方法
+				RESTClient.post(WechatConfig.getServer(), Global.WECHAT_SERVICE_PAYSERVICEPACKAGE, param);
+
+				/* 发送短信 */
+				SmsSendTask sms = new SmsSendTask();
+				sms.setFromDoctorId((Integer) doctorMap.get("id"));
+				sms.setFrom((String) doctorMap.get("phone"));
+				sms.setToUserId((Integer) srtMap.get("userId"));
+				sms.setTo((String) srtMap.get("phone"));
+				sms.setCreateTime(new Date());
+				sms.setSmsType(0);
+				sms.setContent(Message.bundle("followup.sms.user.content", doctorMap.get("name"),
+						userServiceMap.get("serviceName"),
+						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+						new SimpleDateFormat("yyyy-MM-dd").format(gxyFollowupRecords.getXcsfrq()),
+						Message.bundle("platform.telephone")));
+				if (smsSendTaskService.insertSms(sms) <= 0) {
+					throw new RuntimeException();
+				}
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, gxyFollowupRecords,
+						Message.bundle("insert.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updateGxyFollowupRecords(Integer gxyFollowupRecordsId,
+			GxyFollowupRecords gxyFollowupRecords, BindingResult result, String token) {
+		gxyFollowupRecords.setId(Long.valueOf(gxyFollowupRecordsId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 查询高血压随访记录详情 获取服务响应ID
+			Map<String, Object> gxtMap = gxyFollowupRecordsService.getGxyFollowupRecordsDetail(gxyFollowupRecords);
+			if (gxtMap == null || gxtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("followupRecords.empty"));
+			}
+			Integer serviceRespTaskId = (Integer) gxtMap.get("serviceRespTaskId");
+			// 判断服务响应是否存在
+			ServiceRespTask srt = new ServiceRespTask();
+			srt.setId(serviceRespTaskId);
+			Map<String, Object> srtMap = serviceRespTaskService.getServiceRespTaskDetail(srt);
+			if (srtMap == null || srtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 判断记录是否属于该医生
+			if ((int) userMap.get("id") != (int) srtMap.get("doctorId")) {
+				return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+						Message.bundle("record.is.outside.doctor"));
+			}
+
+			// 设置数据更新时间
+			gxyFollowupRecords.setUpdateTime(new Date());
+			// 执行修改操作
+			if (gxyFollowupRecordsService.updateGxyFollowupRecords(gxyFollowupRecords) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getGxyFollowupRecordsList(GxyFollowupRecords gxyFollowupRecords, BindingResult result,
+			String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 设置服务响应信息中的 医生ID
+			ServiceRespTask serviceRespTask = new ServiceRespTask();
+			serviceRespTask.setDoctorId((Integer) userMap.get("id"));
+			gxyFollowupRecords.setServiceRespTask(serviceRespTask);
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> gxyList = gxyFollowupRecordsService.getGxyFollowupRecords(gxyFollowupRecords);
+			if (gxyList != null && gxyList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, gxyFollowupRecords.getTotal());
+				resultMap.put(Global.DATA_ROWS, gxyList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getGxyFollowupRecordsDetail(Integer gxyFollowupRecordsId,
+			GxyFollowupRecords gxyFollowupRecords, BindingResult result, String token) {
+		gxyFollowupRecords.setId(Long.valueOf(gxyFollowupRecordsId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			Integer doctorId = (Integer) userMap.get("id");
+			// 判断服务响应是否存在
+			ServiceRespTask srt = new ServiceRespTask();
+			srt.setDoctorId(doctorId);
+			gxyFollowupRecords.setServiceRespTask(srt);
+			// 定义返回对象
+			Map<String, Object> gxyMap = gxyFollowupRecordsService.getGxyFollowupRecordsDetail(gxyFollowupRecords);
+			if (gxyMap != null && gxyMap.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, gxyMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+}

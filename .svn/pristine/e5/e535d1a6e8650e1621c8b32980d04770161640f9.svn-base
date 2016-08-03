@@ -1,0 +1,8 @@
+package org.system.mapper.service.transfer;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.transfer.ImageConsultationDetaily;
+
+public interface ImageConsultationDetailyMapper extends IBaseMapper<ImageConsultationDetaily> {
+	int insertImageConsultationDetailyFiles(ImageConsultationDetaily imageConsultationDetaily);
+}

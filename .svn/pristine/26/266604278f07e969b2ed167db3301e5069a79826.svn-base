@@ -1,0 +1,50 @@
+package org.system.service.impl.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.doctor.DoctorDetail;
+import org.system.mapper.doctor.DoctorDetailMapper;
+import org.system.service.iface.doctor.IDoctorDetailService;
+
+@Service
+public class DoctorDetailService implements IDoctorDetailService{
+
+	@Resource
+	private DoctorDetailMapper ddoctorDetailMapper;
+	@Override
+	public int insertDoctorDetail(DoctorDetail doctorDetail) {
+		return ddoctorDetailMapper.insert(doctorDetail);
+	}
+
+	@Override
+	public int updateDoctorDetail(DoctorDetail doctorDetail) {
+		return ddoctorDetailMapper.update(doctorDetail);
+	}
+
+	@Override
+	public int deleteDoctorDetail(DoctorDetail doctorDetail) {
+		return ddoctorDetailMapper.delete(doctorDetail);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorDetailList(DoctorDetail doctorDetail) {
+		return ddoctorDetailMapper.queryAll(doctorDetail);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorDetailDetail(DoctorDetail doctorDetail) {
+		return ddoctorDetailMapper.queryOne(doctorDetail);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorDetailByFiled(DoctorDetail doctorDetail) {
+		return ddoctorDetailMapper.checkExists(doctorDetail);
+	}
+
+	
+
+}

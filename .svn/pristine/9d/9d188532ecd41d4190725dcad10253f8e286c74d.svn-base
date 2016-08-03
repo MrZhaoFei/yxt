@@ -1,0 +1,271 @@
+
+package org.system.controller.impl.service.resp;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.store.wechat.WechatConfig;
+import org.system.Global;
+import org.system.controller.iface.service.resp.IFormNotExistDetailyController;
+import org.system.entity.service.UserService;
+import org.system.entity.service.resp.FormNotExistDetaily;
+import org.system.entity.service.resp.ServiceRespTask;
+import org.system.entity.sms.SmsSendTask;
+import org.system.message.Message;
+import org.system.service.iface.service.IGdNumberInfoService;
+import org.system.service.iface.service.IUserServiceService;
+import org.system.service.iface.service.resp.IServiceRespTaskService;
+import org.system.service.iface.service.transfer.IFormNotExistDetailyService;
+import org.system.service.iface.sms.ISmsSendTaskService;
+import org.utils.service.ServiceEnum;
+import org.utils.spring.RESTClient;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class FormNotExistDetailyController implements IFormNotExistDetailyController {
+
+	Logger log = LoggerFactory.getLogger(FormNotExistDetailyController.class);
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IGdNumberInfoService gdNumberInfoService;
+	@Resource
+	private IServiceRespTaskService serviceRespTaskService;
+	@Resource
+	private IFormNotExistDetailyService formNotExistDetailyService;
+	@Resource
+	private IUserServiceService userServiceService;
+	@Resource
+	private ISmsSendTaskService smsSendTaskService;
+
+	@Override
+	@Transactional
+	public Map<String, Object> insertFormNotExistDetaily(FormNotExistDetaily formNotExistDetaily, BindingResult resul,
+			String token) {
+		/* 缓存中获取医生数据 */
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			/* 判断 是否存在响应服务 */
+			ServiceRespTask serviceRespTask = new ServiceRespTask();
+			serviceRespTask.setId(formNotExistDetaily.getServiceRespTaskId());
+			Map<String, Object> srtMap = serviceRespTaskService.getServiceRespTaskDetail(serviceRespTask);
+			if (srtMap == null || srtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			/* 判断用户服务是否存在且未锁定次数是否大于0 不存在提示用户购买 不大于0提示用户次数不足 */
+			UserService userService = new UserService();
+			userService.setId(formNotExistDetaily.getUserServiceId());
+			Map<String, Object> userServiceMap = userServiceService.getUserServiceDetail(userService);
+			if (userServiceMap == null || userServiceMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("userService.empty"));
+			} else {
+				if (((int) userServiceMap.get("times") - (int) userServiceMap.get("lockTimes")) <= 0) {
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("lockTimes.empty"));
+				}
+			}
+			// 设置医生ID
+			formNotExistDetaily.setFromDoctorId((Integer) (doctorMap.get("id")));
+			// 设置服务工单号
+			formNotExistDetaily.setFormNumber(gdNumberInfoService.getGdnumberForDay(ServiceEnum.QTFW, new Date()));
+			// 设置状态 1-待用户确认 2-已取消 3-已完成
+			formNotExistDetaily.setState(3);
+			// 设置服务来源 1-医生发起 2-ITV用户发起
+			formNotExistDetaily.setSourceTag(1);
+			// 设置创建时间
+			formNotExistDetaily.setCreateTime(new Date());
+			// 执行新增操作
+			if (formNotExistDetailyService.insertFormNotExistDetaily(formNotExistDetaily) > 0) {
+				// 扣除用户服务次数
+				Integer newTimes = (Integer) userServiceMap.get("lockTimes") - 1;
+				userService.setTimes(newTimes);
+				// 执行修改 判断状态
+				if (userServiceService.updateUserService(userService) <= 0) {
+					throw new RuntimeException();
+				}
+
+				/* 推送消息至微信 */
+				Map<String, Object> param = new HashMap<>();
+				// 获取医生名
+				param.put("doctorName", doctorMap.get("name"));
+				// 设置订单号
+				param.put("orderId", formNotExistDetaily.getFormNumber());
+				// 设置下单时间
+				param.put("orderTime", formNotExistDetaily.getCreateTime().getTime());
+				// 设置服务名
+				param.put("serviceName", userServiceMap.get("serviceName"));
+				// 设置服务时间
+				param.put("serviceTime", new Date().getTime());
+				// 设置微信openId
+				param.put("openId", srtMap.get("wechatId"));
+				// 设置id
+				param.put("id", formNotExistDetaily.getId());
+				RESTClient.post(WechatConfig.getServer(), Global.WECHAT_SERVICE_PAYSERVICEPACKAGE, param);
+
+				/* 发送短信 */
+				SmsSendTask sms = new SmsSendTask();
+				sms.setFromDoctorId((Integer) doctorMap.get("id"));
+				sms.setFrom((String) doctorMap.get("phone"));
+				sms.setToUserId((Integer) srtMap.get("userId"));
+				sms.setTo((String) srtMap.get("phone"));
+				sms.setCreateTime(new Date());
+				sms.setSmsType(0);
+				sms.setContent(Message.bundle("formNotExistDetaily.sms.user.content", doctorMap.get("name"),
+						userServiceMap.get("serviceName"), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+						Message.bundle("platform.telephone")));
+				if (smsSendTaskService.insertSms(sms) <= 0) {
+					throw new RuntimeException();
+				}
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	/*
+	 * @Override
+	 * 
+	 * @Transactional public Map<String, Object>
+	 * updateFormNotExistDetailySure(Integer serviceRespTaskId,
+	 * FormNotExistDetaily formNotExistDetaily, BindingResult result, String
+	 * token) { // 缓存中获取用户数据 Element element =
+	 * cache.getCache(Global.CACHE_USER).get(token); if (element != null) {
+	 * 
+	 * @SuppressWarnings("unchecked") Map<String, Object> doctorMap =
+	 * (Map<String, Object>) element.getObjectValue(); // 判断 无表单（流程）服务记录 是否存在
+	 * formNotExistDetaily.setId(serviceRespTaskId); // 只允许用户确认或者取消 // 1-待用户确认
+	 * 2-已取消 3-已完成 if (formNotExistDetaily.getState() != 2 &&
+	 * formNotExistDetaily.getState() != 3) { return
+	 * ResultMap.convertMap(ResultCode.CODE_PARAMETER_ERROR,
+	 * Message.bundle("formNotExistDetaily.sure.state.error")); } // 获取 次数 和
+	 * 锁定次数 Map<String, Object> notFromMap = formNotExistDetailyService
+	 * .getFormNotExistDetailyDetail(formNotExistDetaily); if (notFromMap ==
+	 * null || notFromMap.size() <= 0) { return
+	 * ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY,
+	 * Message.bundle("formNotExistDetaily.empty")); } else { // 判断状态是否等于1
+	 * 不等于return if ((int) notFromMap.get("state") != 1) { return
+	 * ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY,
+	 * Message.bundle("formNotExistDetaily.state.error")); } } // 判断记录是否属于该用户 if
+	 * ((int) notFromMap.get("userId") != (int) doctorMap.get("id")) { return
+	 * ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+	 * Message.bundle("record.is.outside.user")); } // 执行修改操作 if
+	 * (formNotExistDetailyService.updateFormNotExistDetaily(
+	 * formNotExistDetaily) > 0) { UserService userService = new UserService();
+	 * // 获取用户服务编号 Integer userServiceId = (Integer)
+	 * notFromMap.get("userServiceId"); Integer lockTimes = (Integer)
+	 * notFromMap.get("lockTimes") - 1; userService.setLockTimes(lockTimes);
+	 * userService.setId(userServiceId); if (formNotExistDetaily.getState() ==
+	 * 3) { // 获取无服务响应流程 记录 用户服务 实际次数 实际次数 -1 Integer times = (Integer)
+	 * notFromMap.get("times") - 1; userService.setTimes(times); } // 执行修改 判断状态
+	 * if (userServiceService.updateUserService(userService) <= 0) { throw new
+	 * RuntimeException(); } return
+	 * ResultMap.convertMap(ResultCode.CODE_SUCCESS,
+	 * Message.bundle("update.success")); } else { return
+	 * ResultMap.convertMap(ResultCode.CODE_FAIL,
+	 * Message.bundle("update.fail")); } } else { return
+	 * ResultMap.convertMap(ResultCode.CODE_NO_LOGIN,
+	 * Message.bundle("permission.no.login")); } }
+	 */
+
+	@Override
+	public Map<String, Object> getFormNotExistDetailyList(FormNotExistDetaily formNotExistDetaily, BindingResult result,
+			String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			formNotExistDetaily.setFromDoctorId((int) doctorMap.get("id"));
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> notFormList = formNotExistDetailyService
+					.getFormNotExistDetailyList(formNotExistDetaily);
+			if (notFormList != null && notFormList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, formNotExistDetaily.getTotal());
+				resultMap.put(Global.DATA_ROWS, notFormList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, resultMap, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getFormNotExistDetailyDetail(Integer formNotExistDetailyId,
+			FormNotExistDetaily formNotExistDetaily, BindingResult result, String token) {
+		formNotExistDetaily.setId(formNotExistDetailyId);
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			/*
+			 * @SuppressWarnings("unchecked") Map<String, Object> doctorMap =
+			 * (Map<String, Object>) element.getObjectValue();
+			 */
+			// 定义返回对象
+			Map<String, Object> notFormMap = formNotExistDetailyService
+					.getFormNotExistDetailyDetail(formNotExistDetaily);
+			if (notFormMap != null && notFormMap.size() > 0) {
+				/*
+				 * if ((int) doctorMap.get("id") != (int)
+				 * notFormMap.get("fromDoctorId")) { return
+				 * ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+				 * Message.bundle("record.is.outside.doctor")); }
+				 */
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, notFormMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getFormNotExistDetailyDetailByUser(Integer formNotExistDetailyId,
+			FormNotExistDetaily formNotExistDetaily, BindingResult result, String token) {
+		formNotExistDetaily.setId(formNotExistDetailyId);
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			/*
+			 * @SuppressWarnings("unchecked") Map<String, Object> userMap =
+			 * (Map<String, Object>) element.getObjectValue();
+			 */
+			// 定义返回对象
+			Map<String, Object> notFormMap = formNotExistDetailyService
+					.getFormNotExistDetailyDetail(formNotExistDetaily);
+			if (notFormMap != null && notFormMap.size() > 0) {
+				/*
+				 * if ((int) userMap.get("id") != (int)
+				 * notFormMap.get("userId")) { return
+				 * ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR,
+				 * Message.bundle("record.is.outside.user")); }
+				 */
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, notFormMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+}

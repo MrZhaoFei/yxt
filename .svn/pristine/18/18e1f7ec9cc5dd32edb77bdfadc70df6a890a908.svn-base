@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/yxt-admin/" />
+  <meta charset="UTF-8" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+  <title>易迅通家庭医生后台登录</title> 
+   <link rel="stylesheet" type="text/css" href="css/adminLogin.css" /> 
+     <script type="text/javascript" src="js/jquery.min.js"></script> 
+  <script type="text/javascript" src="js/jquery.flex-images.min.js"></script>
+  <script type="text/javascript" src="js/jquery.thooClock.js"></script> 
+      <script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script> 
+  <script type="text/javascript" src="js/easyui/extend.easyui.js"></script> 
+   <script type="text/javascript">
+   $(function() {
+		 $('#password').html(""); 
+	  }) 
+	
+	  
+	  // 实现回车键登录
+	  function keyLogin(){  
+        if (event.keyCode==13)   //回车键的键值为13  
+        	loginUser(); //调用登录按钮的登录事件  
+        }  
+  
+   // 鼠标点击登录按钮
+   function loginUser(){
+		var username =$('#username').val();
+		var password =$('#password').val();
+		if(username=='' ||password==''){
+			  $("#prompt").css("display","block");
+			  $("#prompt1").css("display","none");
+			  return ;
+		}
+		if(username!='admin'){
+			 $("#prompt2").css("display","block");
+			 $("#prompt1").css("display","none");
+			 $("#prompt").css("display","none");
+			 return ;
+		}
+		// 登录
+		$.ajax({
+		   type: "GET",
+		   url: "/yxt-admin/admin/adminUser/login",
+		   data:{
+	          username: username,
+	          password: password
+		   }, 		  
+		   success: function(data){
+			   if(data.stateCode==200){
+				  window.location.href= "html/index.html";				  
+				   return true;
+			   } else if(data.stateCode==201){
+				   $("#prompt").css("display","none");
+				   $("#prompt1").css("display","block");
+				   
+			   }
+		   }
+		});
+	}
+   </script>   
+</head>
+<body onkeydown="keyLogin()">
+<div id="login" >
+       <p style="display:none;" id="prompt">&nbsp;&nbsp;&nbsp;请正确填写账号和密码</p> 
+       <p style="display:none;" id="prompt1">&nbsp;&nbsp;&nbsp;账号或者密码错误</p>
+       <p style="display:none;" id="prompt2">&nbsp;&nbsp;&nbsp;请使用管理员账号登录</p>
+  <div id="content">
+  <form  id="form" method="get">
+    <label>账号</label>&nbsp;&nbsp;&nbsp;<input type="text" name="username" id="username"  required /> <br/>
+    <label>密码</label>&nbsp;&nbsp;&nbsp;<input type="password" name="password" id="password"  required minLength="6" maxlength="12" />  
+    </form>
+     <input value="登录" id="button" onclick="loginUser()" type="button"/>
+  </div>
+</div>
+</body>
+</html>

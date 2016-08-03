@@ -1,0 +1,37 @@
+package org.system.service.impl.service.transfer;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.transfer.TransTreatPhoneRecordHistoryInfo;
+import org.system.mapper.service.transfer.TransTreatPhoneRecordHistoryInfoMapper;
+import org.system.service.iface.service.transfer.ITransTreatPhoneRecordHistoryInfoService;
+
+@Service
+public class TransTreatPhoneRecordHistoryInfoService implements ITransTreatPhoneRecordHistoryInfoService {
+
+	@Resource
+	private TransTreatPhoneRecordHistoryInfoMapper mapper;
+
+	@Override
+	public int insertTransTreatPhoneRecordHistoryInfo(
+			TransTreatPhoneRecordHistoryInfo transTreatPhoneRecordHistoryInfo) {
+		return mapper.insert(transTreatPhoneRecordHistoryInfo);
+	}
+
+	@Override
+	public int updateTransTreatPhoneRecordHistoryInfo(
+			TransTreatPhoneRecordHistoryInfo transTreatPhoneRecordHistoryInfo) {
+		return mapper.update(transTreatPhoneRecordHistoryInfo);
+	}
+
+	@Override
+	public List<Map<String, Object>> getTransTreatPhoneRecordHistoryInfo(
+			TransTreatPhoneRecordHistoryInfo transTreatPhoneRecordHistoryInfo) {
+		return mapper.queryAll(transTreatPhoneRecordHistoryInfo);
+	}
+
+}

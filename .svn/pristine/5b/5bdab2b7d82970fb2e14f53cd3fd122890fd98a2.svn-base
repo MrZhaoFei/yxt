@@ -1,0 +1,44 @@
+package org.system.service.impl.user.healthinfo;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.user.healthinfo.JwwsHistory;
+import org.system.mapper.user.healthinfo.JwwsHistoryMapper;
+import org.system.service.iface.user.healthinfo.IJwwsHistoryService;
+
+@Service
+public class JwwsHistoryService implements IJwwsHistoryService{
+	
+	@Resource
+	private JwwsHistoryMapper mapper;
+
+	@Override
+	public int insertJwwsHistory(JwwsHistory jwwsHistory) {
+		return mapper.insert(jwwsHistory);
+	}
+
+	@Override
+	public int updateJwwsHistory(JwwsHistory jwwsHistory) {
+		return mapper.update(jwwsHistory);
+	}
+
+	@Override
+	public Map<String, Object> getJwwsHistoryDetail(JwwsHistory jwwsHistory) {
+		return mapper.queryOne(jwwsHistory);
+	}
+
+	@Override
+	public List<Map<String, Object>> getJwwsHistory(JwwsHistory jwwsHistory) {
+		return mapper.queryAll(jwwsHistory);
+	}
+
+	@Override
+	public int deleteJwwsHistory(JwwsHistory jwwsHistory) {
+		return mapper.delete(jwwsHistory);
+	}
+
+}

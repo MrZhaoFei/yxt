@@ -1,0 +1,71 @@
+package org.system.entity.service;
+
+
+import org.core.entity.BaseEntity;
+
+public class Address extends BaseEntity {
+	
+	private Integer id;
+	private String codeValue;
+	private String pid;
+	private String name;
+	private Float longitude;
+	private Float latitude;
+	private String remark;
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Float getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(Float longitude) {
+		this.longitude = longitude;
+	}
+	public Float getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(Float latitude) {
+		this.latitude = latitude;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	
+	public String getCodeValue() {
+		return codeValue;
+	}
+	public void setCodeValue(String codeValue) {
+		this.codeValue = codeValue;
+	}
+	public String getPid() {
+		return pid;
+	}
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+	
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+
+}

@@ -1,0 +1,10 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.RegisterSource;
+
+public interface IRegisterSourceService {
+	public List<Map<String, Object>> getRegisterSourceList(RegisterSource registerSource);
+}

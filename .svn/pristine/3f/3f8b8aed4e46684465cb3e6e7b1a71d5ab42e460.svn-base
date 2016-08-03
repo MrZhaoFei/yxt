@@ -1,0 +1,30 @@
+package org.system.service.iface.user;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.user.User;
+
+public interface IUserService {
+	public List<Map<String, Object>> getPermission(Map<String, Object> userMap);
+
+	public Map<String, Object> getUserByWechatId(User user);
+
+	public Map<String, Object> checkUserExists(User user);
+
+	public int updateUserWechat(User user);
+
+	public List<Map<String, Object>> getUserByFiled(User user);
+
+	public int updateUserWechatUnBind(User user);
+
+	public int insertUser(User user);
+
+	public Map<String, Object> getUserByDetailFiled(User user);
+
+	public Map<String, Object> getUserDetail(User user);
+
+	public int updateUser(User user);
+
+	public List<Map<String, Object>> getUserList(Map<String, Object> param);
+}

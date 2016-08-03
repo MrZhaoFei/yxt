@@ -1,0 +1,22 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.DoctorGroupRely;
+
+public interface IDoctorGroupRelyService {
+	
+	int insertDoctorGroupRely(DoctorGroupRely doctorGroupRely);
+
+	int updateDoctorGroupRely(DoctorGroupRely doctorGroupRely);
+
+	int deleteDoctorGroupRely(DoctorGroupRely doctorGroupRely);
+	
+	Map<String, Object> getDoctorGroupRelyByFiled(DoctorGroupRely doctorGroupRely);
+
+	Map<String, Object> getDoctorGroupRelyDetail(DoctorGroupRely doctorGroupRely);
+
+	List<Map<String, Object>> getDoctorGroupRelyList(DoctorGroupRely doctorGroupRely);
+
+}

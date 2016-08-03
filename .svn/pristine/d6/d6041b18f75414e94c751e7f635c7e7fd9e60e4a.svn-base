@@ -1,0 +1,49 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.ProductService;
+import org.system.mapper.service.ProductServiceMapper;
+import org.system.service.iface.service.IProductServiceService;
+@Service
+public class ProductServiceService implements IProductServiceService{
+
+	@Resource
+	private ProductServiceMapper mapper;
+	
+	
+	@Override 
+	public int insertProductService(ProductService productService) {
+		return mapper.insert(productService);
+	}
+
+	@Override
+	public int updateProductService(ProductService productService) {
+		return mapper.update(productService);
+	}
+
+	@Override
+	public int deleteProductService(ProductService productService) {
+		return mapper.delete(productService);
+	}
+
+	@Override
+	public List<Map<String, Object>> getProductServiceList(ProductService productService) {
+		return mapper.queryAll(productService);
+	}
+
+	@Override
+	public Map<String, Object> getProductServiceDetail(ProductService productService) {
+		return mapper.queryOne(productService);
+	}
+
+	@Override
+	public Map<String, Object> getProductServiceByFiled(ProductService productService) {
+		return mapper.checkExists(productService);
+	}
+
+}

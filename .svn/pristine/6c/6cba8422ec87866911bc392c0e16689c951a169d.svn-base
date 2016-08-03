@@ -1,0 +1,23 @@
+package org.system.service.iface.service.transfer;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.resp.FormNotExistDetaily;
+import org.system.entity.service.resp.ServiceRespTask;
+
+public interface IFormNotExistDetailyService {
+
+	Map<String, Object> getFormNotExistDetailyByFild(FormNotExistDetaily formNotExistDetaily);
+
+	int insertFormNotExistDetaily(FormNotExistDetaily formNotExistDetaily);
+
+	int updateFormNotExistDetaily(FormNotExistDetaily formNotExistDetaily);
+
+	List<Map<String, Object>> getFormNotExistDetailyList(FormNotExistDetaily formNotExistDetaily);
+
+	Map<String, Object> getFormNotExistDetailyDetail(FormNotExistDetaily formNotExistDetaily);
+	
+	List<Map<String, Object>> getUnfinishedFormNotExistDetailyList(ServiceRespTask serviceRespTask);
+	
+}

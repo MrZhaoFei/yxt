@@ -1,0 +1,15 @@
+package org.system.mapper.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.doctor.DoctorGroup;
+
+public interface DoctorGroupMapper extends IBaseMapper<DoctorGroup> {
+	List<Map<String, Object>> getDoctorGroupDoctorList(DoctorGroup doctorGroup);
+	
+	List<Map<String, Object>> getExpertGroupDoctorList(DoctorGroup doctorGroup);
+
+	Map<String, Object> getDoctorGroupManager(DoctorGroup doctorGroup);
+}

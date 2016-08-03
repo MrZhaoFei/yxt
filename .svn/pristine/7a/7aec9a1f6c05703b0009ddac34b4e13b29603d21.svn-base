@@ -1,0 +1,23 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.DoctorGroup;
+
+public interface IDoctorGroupService {
+	  public int insertDoctorGroup(DoctorGroup doctorGroup);
+		
+		public int updateDoctorGroup(DoctorGroup doctorGroup);
+		
+		public int deleteDoctorGroup(DoctorGroup doctorGroup);
+		
+		public List<Map<String, Object>> getDoctorGroupList(DoctorGroup doctorGroup);
+		
+		public Map<String, Object> getDoctorGroupDetail(DoctorGroup doctorGroup);
+		
+		public Map<String, Object> getDoctorGroupByFiled(DoctorGroup doctorGroup);
+		
+        public List<Map<String, Object>> getDoctorGroupDoctorList(DoctorGroup doctorGroup);
+        List<Map<String, Object>> getDoctorGroupDoctorListNotIn(DoctorGroup doctorGroup);
+}

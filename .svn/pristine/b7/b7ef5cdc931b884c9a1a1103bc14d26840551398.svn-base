@@ -1,0 +1,63 @@
+package org.system.controller.impl.service.resp;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.service.resp.ITaskTypeController;
+import org.system.entity.service.resp.TaskType;
+import org.system.message.Message;
+import org.system.service.iface.service.resp.ITaskTypeService;
+
+@Controller
+public class TaskTypeController implements ITaskTypeController {
+	Logger log = LoggerFactory.getLogger(TaskTypeController.class);
+	@Resource
+	private ITaskTypeService taskTypeService;
+
+	@Override
+	public Map<String, Object> insertTaskType(TaskType taskType, BindingResult result) {
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> updateTaskType(Integer taskTypeId, TaskType taskType, BindingResult result) {
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getTaskTypeList(TaskType taskType, BindingResult result) {
+		// 定义返回对象
+		Map<String, Object> resultMap = new HashMap<>();
+		// 得到返回数据
+		List<Map<String, Object>> dataList = taskTypeService.getTaskTypeList(taskType);
+		if (dataList != null && dataList.size() > 0) {
+			// 得到数据总数
+			resultMap.put(Global.DATA_TOTAL, taskType.getTotal());
+			resultMap.put(Global.DATA_ROWS, dataList);
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	public Map<String, Object> getTaskTypeDetail(Integer taskTypeId, TaskType taskType) {
+		// 设置主键
+		taskType.setId(taskTypeId);
+		// 查询详情
+		Map<String, Object> resultMap = taskTypeService.getTaskTypeDetail(taskType);
+		if (resultMap != null && resultMap.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+}

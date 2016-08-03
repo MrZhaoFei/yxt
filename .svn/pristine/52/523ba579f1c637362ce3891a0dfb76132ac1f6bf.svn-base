@@ -1,0 +1,22 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.Title;
+
+public interface ITitleService {
+	
+public int insertTitle(Title title);
+	
+	public int updateTitle(Title title);
+	
+	public int deleteTitle(Title title);
+	
+	public List<Map<String, Object>> getTitleList(Title title);
+	
+	public Map<String, Object> getTitleDetail(Title title);
+	
+	public Map<String, Object> getTitleByFiled(Title title);
+
+}

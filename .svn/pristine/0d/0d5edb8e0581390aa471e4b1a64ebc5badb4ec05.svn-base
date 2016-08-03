@@ -1,0 +1,55 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.ServicePackCondition;
+import org.system.mapper.service.ServicePackConditionMapper;
+import org.system.service.iface.service.IServicePackConditionService;
+@Service
+public class ServicePackConditionService implements IServicePackConditionService {
+     
+	
+	@Resource
+	private ServicePackConditionMapper servicePackConditionMapper;
+	@Override
+	public int insertServicePackCondition(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.insert(servicePackCondition);
+	}
+	
+	@Override
+	public int updateServicePackCondition(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.update(servicePackCondition);
+	}
+	@Override
+	public int deleteServicePackCondition(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.delete(servicePackCondition);
+	}
+	@Override
+	public Map<String, Object> getServicePackConditionByFild(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.checkExists(servicePackCondition);
+	}
+	@Override
+	public Map<String, Object> getServicePackConditionDetail(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.queryOne(servicePackCondition);
+	}
+	@Override
+	public List<Map<String, Object>> getServicePackConditionList(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.queryAll(servicePackCondition);
+	}
+
+	@Override
+	public int queryCodeId(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.queryCodeId(servicePackCondition);
+	}
+
+	@Override
+	public int getConditionByBuy(ServicePackCondition servicePackCondition) {
+		return servicePackConditionMapper.queryConditionByBuy(servicePackCondition);
+	}
+
+
+}

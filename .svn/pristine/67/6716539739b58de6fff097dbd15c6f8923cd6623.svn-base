@@ -1,0 +1,124 @@
+package org.system.controller.impl.contract;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.contract.IContractFeedbackController;
+import org.system.entity.contract.Contract;
+import org.system.entity.contract.ContractFeedback;
+import org.system.message.Message;
+import org.system.service.iface.contract.IContractFeedbackService;
+import org.system.service.iface.contract.IContractService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class ContractFeedbackController implements IContractFeedbackController {
+	Logger log = LoggerFactory.getLogger(ContractFeedbackController.class);
+	@Resource
+	private IContractFeedbackService contractFeedbackService;
+	@Resource
+	private IContractService contractService;
+	@Resource
+	private CacheManager cache;
+
+	@Override
+	public Map<String, Object> insertContractFeedback(ContractFeedback contractFeedback, BindingResult result,
+			String token) {
+
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			contractFeedback.setDoctorId((Integer) userMap.get("id"));
+			// 检查签约是否存在
+			Contract contract = new Contract();
+			contract.setId(contractFeedback.getContractId());
+			Map<String, Object> contractMap = contractService.getContractDetail(contract);
+			if (contractMap == null || contractMap.size() <= 0) {
+				// 数据不存在 返回提示结束流程 return
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("contract.empty"));
+			}
+			contractFeedback.setCreateDate(new Date());
+			// 执行新增 判断状态
+			contract.setState(1);
+			if (contractFeedbackService.insertContractFeedback(contractFeedback) > 0
+					&& contractService.updateContract(contract) > 0) {
+				// 新增成功 修改签约状态
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+			} else {
+				// 新增失败 返回提示结束流程
+				throw new RuntimeException();
+				// return ResultMap.convertMap(ResultCode.CODE_FAIL,
+				// Message.bundle("insert.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+
+	}
+
+	@Override
+	public Map<String, Object> updateContractFeedback(Integer contractFeedbackId, ContractFeedback contractFeedback,
+			BindingResult result) {
+		// 设置主键
+		contractFeedback.setId(contractFeedbackId);
+		/*
+		 * // 检查数据是否重复 Map<String, Object> contractFeedbackMap =
+		 * contractFeedbackService.getContractFeedbackByFild(contractFeedback);
+		 * if (contractFeedbackMap != null && contractFeedbackMap.size() > 0) {
+		 * // 数据已存在 返回提示结束流程 return
+		 * ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS,
+		 * Message.bundle("data.exists")); }
+		 */
+		// 执行修改 判断状态
+		if (contractFeedbackService.updateContractFeedback(contractFeedback) > 0) {
+			// 修改成功 返回提示结束流程
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+		} else {
+			// 修改失败 返回提示结束流程
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getContractFeedbackList(ContractFeedback contractFeedback, BindingResult result) {
+		// 定义返回对象
+		Map<String, Object> resultMap = new HashMap<>();
+		// 得到返回数据
+		List<Map<String, Object>> dataList = contractFeedbackService.getContractFeedbackList(contractFeedback);
+		if (dataList != null && dataList.size() > 0) {
+			// 得到数据总数
+			resultMap.put(Global.DATA_TOTAL, contractFeedback.getTotal());
+			resultMap.put(Global.DATA_ROWS, dataList);
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	public Map<String, Object> getContractFeedbackDetail(Integer contractFeedbackId,
+			ContractFeedback contractFeedback) {
+		// 设置主键
+		contractFeedback.setId(contractFeedbackId);
+		// 查询详情
+		Map<String, Object> resultMap = contractFeedbackService.getContractFeedbackDetail(contractFeedback);
+		if (resultMap != null && resultMap.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+}

@@ -1,0 +1,49 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.ServiceType;
+import org.system.mapper.service.ServiceTypeMapper;
+import org.system.service.iface.service.IServiceTypeService;
+
+@Service
+public class ServiceTypeService implements IServiceTypeService{
+	
+	@Resource
+	private ServiceTypeMapper serviceTypeMapper;
+
+	@Override
+	public int insertServiceType(ServiceType serviceType) {
+		return serviceTypeMapper.insert(serviceType);
+	}
+
+	@Override
+	public int updateServiceType(ServiceType serviceType) {
+		return serviceTypeMapper.update(serviceType);
+	}
+
+	@Override
+	public int deleteServiceType(ServiceType serviceType) {
+		return serviceTypeMapper.delete(serviceType);
+	}
+
+	@Override
+	public List<Map<String, Object>> getServiceTypeList(ServiceType serviceType) {
+		return serviceTypeMapper.queryAll(serviceType);
+	}
+
+	@Override
+	public Map<String, Object> getServiceTypeDetail(ServiceType serviceType) {
+		return serviceTypeMapper.queryOne(serviceType);
+	}
+
+	@Override
+	public Map<String, Object> getServiceTypeByFiled(ServiceType serviceType) {
+		return serviceTypeMapper.checkExists(serviceType);
+	}
+
+}

@@ -1,0 +1,93 @@
+package org.system.controller.iface.user.healthInfo;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.user.healthinfo.OperateHistory;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IOperateHistoryController {
+	
+	/**
+	 * 新增 既往手术史
+	 * 
+	 * @param operateHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/operateHistory" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertOperateHistory(
+			@Validated({ Groups.Insert.class }) OperateHistory operateHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	
+	/**
+	 * 修改 既往手术史
+	 * 
+	 * @param operateHistoryyId
+	 * @param operateHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/operateHistory/{archivesId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updatetOperateHistory(@PathVariable("archivesId") Integer operateHistoryyId,
+			@Validated({ Groups.Update.class }) OperateHistory operateHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 查询 既往手术史列表
+	 * 
+	 * @param operateHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/operateHistorys", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("healthInfo1:list")
+	public Map<String, Object> getOperateHistoryList(@Validated({ Groups.Select.class }) OperateHistory operateHistory,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	/**
+	 * 删除 既往手术史
+	 * 
+	 * @param operateHistoryId
+	 * @param operateHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/operateHistory/{archivesId}" }, method = RequestMethod.DELETE)
+	@ResponseBody
+	public Map<String, Object> deletetOperateHistory(@PathVariable("archivesId") Integer operateHistoryId,
+			@Validated({ Groups.Delete.class }) OperateHistory operateHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	/**
+	 * 查询 既往手术史列表
+	 * 
+	 * @param operateHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/user/operateHistorys", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getOperateHistoryListByUser(@Validated({ Groups.Select.class }) OperateHistory operateHistory,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	
+}

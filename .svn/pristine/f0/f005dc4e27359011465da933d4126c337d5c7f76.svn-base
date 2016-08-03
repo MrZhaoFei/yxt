@@ -1,0 +1,21 @@
+package org.system.service.impl.sys;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.sys.SysUserFeedback;
+import org.system.mapper.sys.SysUserFeedbackMapper;
+import org.system.service.iface.sys.ISysUserFeedbackService;
+
+@Service
+public class SysUserFeedbackService implements ISysUserFeedbackService {
+
+	@Resource
+	private SysUserFeedbackMapper mapper;
+
+	@Override
+	public int insertSysUserFeedback(SysUserFeedback sysUserFeedback) {
+		return mapper.insert(sysUserFeedback);
+	}
+
+}

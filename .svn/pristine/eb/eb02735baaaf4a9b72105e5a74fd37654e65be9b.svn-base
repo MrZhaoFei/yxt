@@ -1,0 +1,29 @@
+package org.system.service.impl.sys;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.sys.SysAbout;
+import org.system.mapper.sys.SysAboutMapper;
+import org.system.service.iface.sys.ISysAboutService;
+
+@Service
+public class SysAboutService implements ISysAboutService {
+
+	@Resource
+	private SysAboutMapper mapper;
+
+	@Override
+	public Map<String, Object> getSysAboutDetail(SysAbout sysAbout) {
+		return mapper.queryOne(sysAbout);
+	}
+
+	@Override
+	public List<Map<String, Object>> getSysAboutList(SysAbout sysAbout) {
+		return mapper.queryAll(sysAbout);
+	}
+
+}

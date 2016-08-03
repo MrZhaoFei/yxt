@@ -1,0 +1,164 @@
+package org.system.controller.impl.user;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.user.IUserFollowController;
+import org.system.entity.user.User;
+import org.system.entity.user.UserFollow;
+import org.system.message.Message;
+import org.system.service.iface.user.IUserFollowService;
+import org.system.service.iface.user.IUserService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class UserFollowController implements IUserFollowController {
+	Logger log = LoggerFactory.getLogger(UserFollowController.class);
+	@Resource
+	private IUserFollowService userFollowService;
+	@Resource
+	private IUserService userService;
+	@Resource
+	private CacheManager cache;
+
+	@Override
+	public Map<String, Object> insertUserFollow(UserFollow userFollow, BindingResult result) {
+
+		User u = new User();
+		u.setId(userFollow.getUserId());
+		Map<String, Object> userMap = userService.getUserDetail(u);
+		if (userMap == null || userMap.size() <= 0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("user.empty"));
+		}
+
+		// 检查数据是否重复
+		List<Map<String, Object>> followList = userFollowService.getUserFollowByFild(userFollow);
+		if (followList != null && followList.size() > 0) {
+			// 数据已存在 返回提示结束流程
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+		}
+		// 执行新增 判断状态
+		if (userFollowService.insertUserFollow(userFollow) > 0) {
+			// 新增成功 返回提示结束流程
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+		} else {
+			// 新增失败 返回提示结束流程
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getUserFollowList(Integer userId, UserFollow userFollow, BindingResult result) {
+		// 设置主键
+		userFollow.setUserId(userId);
+		// 定义返回对象
+		Map<String, Object> resultMap = new HashMap<>();
+		// 得到返回数据
+		List<Map<String, Object>> dataList = userFollowService.getUserFollowList(userFollow);
+		if (dataList != null && dataList.size() > 0) {
+			// 得到数据总数
+			resultMap.put(Global.DATA_TOTAL, userFollow.getTotal());
+			resultMap.put(Global.DATA_ROWS, dataList);
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	public Map<String, Object> deleteUserFollow(UserFollow userFollow, BindingResult result) {
+		// 执行删除 判断状态
+		if (userFollowService.deleteUserFollow(userFollow) > 0) {
+			// 删除成功 返回提示结束流程
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("delete.success"));
+		} else {
+			// 删除失败 返回提示结束流程
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getUserFollowList(UserFollow userFollow, BindingResult result, String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			userFollow.setUserId((Integer) userMap.get("id"));
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			// 得到返回数据
+			List<Map<String, Object>> dataList = userFollowService.getUserFollowList(userFollow);
+			if (dataList != null && dataList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, userFollow.getTotal());
+				resultMap.put(Global.DATA_ROWS, dataList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> insertUserFollowByUser(UserFollow userFollow, BindingResult result,String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			userFollow.setUserId((Integer) userMap.get("id"));
+
+			// 检查数据是否重复
+			List<Map<String, Object>> followList = userFollowService.getUserFollowByFild(userFollow);
+			if (followList != null && followList.size() > 0) {
+				// 数据已存在 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+			}
+			// 执行新增 判断状态
+			if (userFollowService.insertUserFollow(userFollow) > 0) {
+				// 新增成功 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+			} else {
+				// 新增失败 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+		
+	}
+
+	@Override
+	public Map<String, Object> deleteUserFollowByUser(UserFollow userFollow, BindingResult result,String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_USER).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			userFollow.setUserId((Integer) userMap.get("id"));
+			// 执行删除 判断状态
+			if (userFollowService.deleteUserFollow(userFollow) > 0) {
+				// 删除成功 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("delete.success"));
+			} else {
+				// 删除失败 返回提示结束流程
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+}

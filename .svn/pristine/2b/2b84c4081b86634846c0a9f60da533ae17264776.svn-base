@@ -1,0 +1,30 @@
+package org.system.controller.iface.sys;
+
+import java.util.Map;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.sys.SysCodeRecords;
+import org.utils.spring.Groups;
+
+@RequestMapping(value = { "/sysCode" })
+public interface ISysCodeRecordsController {
+
+	/**
+	 * 系统编码列表
+	 * 
+	 * @param sysCodeRecords
+	 * @param result
+	 * @return {@link Map}
+	 */
+	@RequestMapping(value = { "/sysCodeRecords" }, method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("sysCodeRecords:list")
+	public Map<String, Object> getSysCodeRecordsList(@Validated({ Groups.Select.class }) SysCodeRecords sysCodeRecords,
+			BindingResult result);
+
+}

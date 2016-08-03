@@ -1,0 +1,6 @@
+package org.system.mapper.chat;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.chat.WeixinRecordsHistoryInfo;
+
+public interface WeixinRecordsHistoryInfoMapper extends IBaseMapper<WeixinRecordsHistoryInfo> {}

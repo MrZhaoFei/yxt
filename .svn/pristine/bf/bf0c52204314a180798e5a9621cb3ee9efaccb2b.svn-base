@@ -1,0 +1,51 @@
+package org.system.controller.impl.service.transfer;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.service.transfer.IYuyueCountInfoController;
+import org.system.entity.service.transfer.YuyueCountInfo;
+import org.system.message.Message;
+import org.system.service.iface.service.transfer.IYuyueCountInfoService;
+
+import net.sf.ehcache.CacheManager;
+@Controller
+public class YuyueCountInfoController implements IYuyueCountInfoController{
+	Logger log = LoggerFactory.getLogger(YuyueCountInfoController.class);
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IYuyueCountInfoService yuyueCountInfoService;
+	
+	@Override
+	public Map<String, Object> getYuyueCountInfos(YuyueCountInfo yuyueCountInfo, BindingResult result, String token) {
+		
+			
+			yuyueCountInfo.setDoctorId(yuyueCountInfo.getDoctorId());
+			yuyueCountInfo.setYuyueDate(new Date());
+			// 定义返回对象
+			Map<String, Object> resultMap = new HashMap<>();
+			List<Map<String, Object>> yuyueList = yuyueCountInfoService.getYuyueCountInfos(yuyueCountInfo);
+			if (yuyueList != null && yuyueList.size() > 0) {
+				// 得到数据总数
+				resultMap.put(Global.DATA_TOTAL, yuyueCountInfo.getTotal());
+				resultMap.put(Global.DATA_ROWS, yuyueList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		
+	}
+
+	
+}

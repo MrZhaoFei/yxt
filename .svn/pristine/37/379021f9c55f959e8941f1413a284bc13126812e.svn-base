@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.visits.TnbFollowupRecordsMapper" >
+ <!-- 新增糖尿病随访记录  -->
+  <insert id="insert" parameterType="org.system.entity.service.visits.TnbFollowupRecords" useGeneratedKeys="true" keyProperty="id">
+    insert into tnb_followup_records (user_id, yljgbm, 
+      sfjlbh, tnbglkbh, jkdabh, 
+      sffsdm, sfzgztbm, sfyybm, 
+      sfjgpj, mqzzbm, ssy, 
+      szy, sg, tz, mbtz, 
+      qtyxtz, zbdmbd, rxyl, 
+      mbrxyl, ryjl, mbryjl, 
+      glhd, ydpldm, mbydpldm, 
+      ydsc, mbydsc, rzsl, 
+      mbrzsl, xltzpjjg, sfzyxwpjjg, 
+      kfxt, chxt, tnl, sjxt, 
+      fyycx, ywblfy, ywblfyms, 
+      dxtfy, sfjy, zzyy, 
+      zryljgmc, zryljgks, xcsfrq, 
+      sfysbh, sfysxm, sftdbh, 
+      sftdmc, sfrq, zfbz, update_time, 
+      service_resp_task_id,doc_state,user_service_id)
+    values (#{userId}, #{yljgbm}, 
+      #{sfjlbh}, #{tnbglkbh}, #{jkdabh}, 
+      #{sffsdm}, #{sfzgztbm}, #{sfyybm}, 
+      #{sfjgpj}, #{mqzzbm}, #{ssy}, 
+      #{szy}, #{sg}, #{tz}, #{mbtz}, 
+      #{qtyxtz}, #{zbdmbd}, #{rxyl}, 
+      #{mbrxyl}, #{ryjl}, #{mbryjl}, 
+      #{glhd}, #{ydpldm}, #{mbydpldm}, 
+      #{ydsc}, #{mbydsc}, #{rzsl}, 
+      #{mbrzsl}, #{xltzpjjg}, #{sfzyxwpjjg}, 
+      #{kfxt}, #{chxt}, #{tnl}, #{sjxt}, 
+      #{fyycx}, #{ywblfy}, #{ywblfyms}, 
+      #{dxtfy}, #{sfjy}, #{zzyy}, 
+      #{zryljgmc}, #{zryljgks}, #{xcsfrq}, 
+      #{sfysbh}, #{sfysxm}, #{sftdbh}, 
+      #{sftdmc}, #{sfrq}, #{zfbz}, #{updateTime}, 
+      #{serviceRespTaskId},#{docState},#{userServiceId})
+  </insert>
+  <update id="update" parameterType="org.system.entity.service.visits.TnbFollowupRecords" >
+    update tnb_followup_records set id=#{id}
+    <if test="userId !=null">
+    	,user_id = #{userId}
+    </if>
+    <if test="yljgbm !=null and yljgbm !=''">
+    	,yljgbm = #{yljgbm}
+    </if>
+    <if test="sfjlbh !=null and sfjlbh !=''">
+    	,sfjlbh = #{sfjlbh}
+    </if>
+    <if test="tnbglkbh !=null and tnbglkbh !=''">
+    	,tnbglkbh = #{tnbglkbh}
+    </if>
+    <if test="jkdabh !=null and jkdabh !=''">
+    	,jkdabh = #{jkdabh}
+    </if>
+    <if test="sffsdm !=null and sffsdm !=''">
+    	,sffsdm = #{sffsdm}
+    </if>
+    <if test="sfzgztbm !=null and sfzgztbm !=''">
+    	,sfzgztbm = #{sfzgztbm}
+    </if>
+    <if test="sfyybm !=null and sfyybm !=''">
+    	,sfyybm = #{sfyybm}
+    </if>
+    <if test="sfjgpj !=null and sfjgpj !=''">
+    	,sfjgpj = #{sfjgpj}
+    </if>
+    <if test="mqzzbm !=null and mqzzbm !=''">
+    	,mqzzbm = #{mqzzbm}
+    </if>
+    <if test="ssy !=null">
+    	,ssy = #{ssy}
+    </if>
+    <if test="szy !=null">
+    	,szy = #{szy}
+    </if>
+    <if test="sg !=null">
+      	,sg = #{sg}
+    </if>
+    <if test="tz !=null">
+      	,tz = #{tz}
+    </if>
+    <if test="mbtz !=null">
+      	,mbtz = #{mbtz}
+    </if>
+    <if test="qtyxtz !=null and qtyxtz !=''">
+    	,qtyxtz = #{qtyxtz}
+    </if>
+    <if test="zbdmbd !=null and zbdmbd !=''">
+    	,zbdmbd = #{zbdmbd}
+    </if>
+    <if test="rxyl !=null">
+      	,rxyl = #{rxyl}
+    </if>
+    <if test="mbrxyl !=null">
+      	,mbrxyl = #{mbrxyl}
+    </if>
+    <if test="ryjl !=null">
+      	,ryjl = #{ryjl}
+    </if>
+    <if test="mbryjl !=null">
+      	,mbryjl = #{mbryjl}
+    </if>
+    <if test="glhd !=null and glhd !=''">
+    	,glhd = #{glhd}
+    </if>
+    <if test="ydpldm !=null and ydpldm !=''">
+    	,ydpldm = #{ydpldm}
+    </if>
+    <if test="mbydpldm !=null and mbydpldm !=''">
+    	,mbydpldm = #{mbydpldm}
+    </if>
+    <if test="ydsc !=null">
+    	,ydsc = #{ydsc}
+    </if>
+    <if test="mbydsc !=null">
+    	,mbydsc = #{mbydsc}
+    </if>
+    <if test="rzsl !=null">
+    	,rzsl = #{rzsl}
+    </if>
+    <if test="mbrzsl !=null">
+    	,mbrzsl = #{mbrzsl}
+    </if>
+    <if test="xltzpjjg !=null and xltzpjjg !=''">
+    	,xltzpjjg = #{xltzpjjg}
+    </if>
+    <if test="sfzyxwpjjg !=null and sfzyxwpjjg !=''">
+    	,sfzyxwpjjg = #{sfzyxwpjjg}
+    </if>
+    <if test="kfxt !=null and kfxt !=''">
+    	,kfxt = #{kfxt}
+    </if>
+    <if test="chxt !=null and chxt !=''">
+    	,chxt = #{chxt}
+    </if>
+    <if test="tnl !=null and tnl !=''">
+    	,tnl = #{chxt}
+    </if>
+    <if test="sjxt !=null and sjxt !=''">
+    	,sjxt = #{sjxt}
+    </if>
+    <if test="fyycx !=null and fyycx !=''">
+    	,fyycx = #{fyycx}
+    </if>
+    <if test="ywblfy !=null and ywblfy !=''">
+    	,ywblfy = #{ywblfy}
+    </if>
+    <if test="ywblfyms !=null and ywblfyms !=''">
+    	,ywblfyms = #{ywblfyms}
+    </if>
+    <if test="dxtfy !=null and dxtfy !=''">
+    	,dxtfy = #{dxtfy}
+    </if>
+    <if test="sfjy !=null and sfjy !=''">
+    	,sfjy = #{sfjy}
+    </if>
+    <if test="zzyy !=null and zzyy !=''">
+    	,zzyy = #{zzyy}
+    </if>
+    <if test="zryljgmc !=null and zryljgmc !=''">
+    	,zryljgmc = #{zryljgmc}
+    </if>
+    <if test="zryljgks !=null and zryljgks !=''">
+    	,zryljgks = #{zryljgks}
+    </if>
+    <if test="xcsfrq !=null ">
+    	,xcsfrq = #{xcsfrq}
+    </if>
+    <if test="sfysbh !=null and sfysbh !=''">
+    	,sfysbh = #{sfysbh}
+    </if>
+    <if test="sfysxm !=null and sfysxm !=''">
+    	,sfysxm = #{sfysxm}
+    </if>
+    <if test="sftdbh !=null and sftdbh !=''">
+    	,sftdbh = #{sftdbh}
+    </if>
+    <if test="sftdmc !=null and sftdmc !=''">
+    	,sftdmc = #{sftdmc}
+    </if>
+    <if test="sfrq !=null">
+    	,sfrq = #{sfrq}
+    </if>
+    <if test="zfbz !=null and zfbz !=''">
+    	,zfbz = #{zfbz}
+    </if>
+    <if test="docState !=null ">
+      	,doc_state = #{docState}
+    </if>
+    <if test="updateTime !=null">
+    	,update_time = #{updateTime}
+    </if>
+    <if test="serviceRespTaskId !=null">
+    	,service_resp_task_id = #{serviceRespTaskId}
+    </if>
+    where id = #{id}
+  </update>
+  
+  <!--查询糖尿病随访记录详情  -->
+  <select id="queryOne" parameterType="org.system.entity.service.visits.TnbFollowupRecords"  resultMap="tnbFollowupDragRecordsMap" >
+    select tfr.id, tfr.user_id userId,tfr.yljgbm,fn_print_hospital_name_result(tfr.yljgbm) yljgbmName,tfr.sfjlbh,tfr.tnbglkbh, hi.jkdabh, hi.yxt_jkdabh yxtJkdabh,tfr.sffsdm,fn_print_sys_code_result(tfr.sffsdm,';','CV06.00.207') sffsdmName,
+		tfr.sfzgztbm,fn_print_sys_code_result(tfr.sfzgztbm,';','sfzgztbm') sfzgztbmName,tfr.sfyybm,fn_print_sys_code_result(tfr.sfyybm,';','sfyybm') sfyybmName,
+		tfr.sfjgpj, fn_print_sys_code_result(tfr.sfjgpj,';','CV05.10.012') sfjgpjName,tfr.mqzzbm,fn_print_sys_code_result(tfr.mqzzbm,';','mqzzbm') mqzzbmName,
+		tfr.ssy,tfr.szy,tfr.sg, tfr.tz,tfr.mbtz,tfr.qtyxtz,tfr.zbdmbd,fn_print_sys_code_result(tfr.zbdmbd,';','CV04.10.015') zbdmbdName,tfr.rxyl, tfr.mbrxyl, 
+		tfr.ryjl,tfr.mbryjl, tfr.glhd, tfr.ydpldm,fn_print_sys_code_result(tfr.ydpldm,';','CV03.00.111') ydpldmName,tfr.mbydpldm,fn_print_sys_code_result(tfr.mbydpldm,';','CV03.00.111') mbydpldmName,
+		tfr.ydsc, tfr.mbydsc, tfr.rzsl, tfr.mbrzsl,tfr.xltzpjjg,tfr.sfzyxwpjjg,tfr.kfxt, tfr.chxt,tfr.tnl, tfr.sjxt,tfr.fyycx,fn_print_sys_code_result(tfr.fyycx,';','fyycx') fyycxName,
+		tfr.ywblfy,tfr.ywblfyms,tfr.dxtfy,tfr.sfjy, fn_print_sys_code_result(tfr.sfjy,';','sfjy_tnb') sfjyName,tfr.zzyy, tfr.zryljgmc,tfr.zryljgks, tfr.xcsfrq, 
+		tfr.sfysbh, tfr.sfysxm,tfr.sftdbh,tfr.sftdmc,tfr.sfrq,tfr.zfbz,tfr.update_time updateTime, tfr.service_resp_task_id serviceRespTaskId,tfr.doc_state docState
+	from tnb_followup_records tfr
+	left join service_resp_task srt on srt.id=tfr.service_resp_task_id
+	left join health_info hi on hi.user_id=tfr.user_id
+	where tfr.id = #{id}
+    <if test="serviceRespTask !=null ">
+    	<if test="serviceRespTask.doctorId !=null ">
+    			and srt.doctor_id=#{serviceRespTask.doctorId}
+    	</if>
+	</if>
+  </select>
+  
+  <!-- 定义查询详情 返回结果集 -->
+    <resultMap type="map" id="tnbFollowupDragRecordsMap">
+		<result property="id" column="id" />
+		<collection property="tnbFollowupDragRecordsDetail" column="id" javaType="list" select="getTnbFollowupDragRecords"/>
+		 <collection property="tnbFollowupFzcheckRecordsDetail" column="id" javaType="list" select="getTnbFollowupFzcheckRecords"/> 
+	</resultMap>
+  
+    	<!-- 查询高血压随访用药情况 -->
+	<select id="getTnbFollowupDragRecords" parameterType="org.system.entity.service.visits.TnbFollowupRecords" resultType="map">
+		select tfdr.id tnbFollowupDragRecordsId,tfdr.tnb_followup_records_id tnbFollowupRecordsId, tfdr.yljgbm ,fn_print_hospital_name_result(tfdr.yljgbm) yljgbmName, tfdr.sfjlbh ,tfdr.jkdabh,
+		tfdr.yybh,tfdr.ypbm,tfdr.ypmc,tfdr.yplb, tfdr.mcyl, tfdr.yldw, tfdr.zl, tfdr.zldw,tfdr.yytjdm, fn_print_sys_code_result(tfdr.yytjdm,';','CV06.00.102') yytjdmName,
+		tfdr.yypc,tfdr.zylbdm,fn_print_sys_code_result(tfdr.zylbdm,';','CV06.00.101') zylbdmName, tfdr.klrq,tfdr.zfbz, tfdr.update_time updateTime
+		from tnb_followup_drag_records	 tfdr
+		where tfdr.tnb_followup_records_id=#{id}
+	</select>
+	
+    	<!-- 查询糖尿病随访辅助检查-->
+	<select id="getTnbFollowupFzcheckRecords" parameterType="org.system.entity.service.visits.TnbFollowupRecords" resultType="map">
+		select tffr.id tnbFollowupFzcheckRecordsId, tffr.tnb_followup_records_id tnbFollowupRecordsId, tffr.yljgbm,fn_print_hospital_name_result(tffr.yljgbm) yljgbmName, tffr.sfjlbh, tffr.jkdabh, tffr.jcbh, tffr.fzjcxm, tffr.fzjcjg, 
+	    tffr.jcrybh, tffr.jcryxm, tffr.jcrq, tffr.jcjgdm, tffr.jcjgmc, tffr.zfbz, tffr.update_time updateTime
+	    from tnb_followup_fzcheck_records tffr
+	    where tffr.tnb_followup_records_id=#{id}
+	</select>
+  
+    <!--查询糖尿病随访记录列表  -->
+  <select id="queryAll" parameterType="org.system.entity.service.visits.TnbFollowupRecords" resultType="map" >
+    select tfr.id, tfr.user_id userId,tfr.yljgbm,fn_print_hospital_name_result(tfr.yljgbm) yljgbmName,tfr.sfjlbh,tfr.tnbglkbh,hi.jkdabh, hi.yxt_jkdabh yxtJkdabh,tfr.sffsdm,fn_print_sys_code_result(tfr.sffsdm,';','CV06.00.207') sffsdmName,
+	tfr.sfzgztbm,fn_print_sys_code_result(tfr.sfzgztbm,';','sfzgztbm') sfzgztbmName,tfr.sfyybm,fn_print_sys_code_result(tfr.sfyybm,';','sfyybm') sfyybmName,
+	tfr.sfjgpj,fn_print_sys_code_result(tfr.sfjgpj,';','CV05.10.012') sfjgpjName,tfr.mqzzbm,fn_print_sys_code_result(tfr.mqzzbm,';','mqzzbm') mqzzbmName,
+	tfr.ssy,tfr.szy,tfr.sg,tfr.tz,tfr.mbtz,tfr.qtyxtz,tfr.zbdmbd,fn_print_sys_code_result(tfr.zbdmbd,';','CV04.10.015') zbdmbdName,
+	tfr.rxyl,tfr.mbrxyl,tfr.ryjl,tfr.mbryjl,tfr.glhd,tfr.ydpldm,fn_print_sys_code_result(tfr.ydpldm,';','CV03.00.111') ydpldmName,tfr.mbydpldm,fn_print_sys_code_result(tfr.mbydpldm,';','CV03.00.111') mbydpldmName,
+	tfr.ydsc,tfr.mbydsc,tfr.rzsl,tfr.mbrzsl,tfr.xltzpjjg,tfr.sfzyxwpjjg,tfr.kfxt,tfr.chxt,tfr.tnl,tfr.sjxt,tfr.fyycx,fn_print_sys_code_result(tfr.fyycx,';','fyycx') fyycxName,
+	tfr.ywblfy,tfr.ywblfyms,tfr.dxtfy,tfr.sfjy,fn_print_sys_code_result(tfr.sfjy,';','sfjy_tnb') sfjyName,tfr.zzyy,tfr.zryljgmc,tfr.zryljgks, 
+	tfr.xcsfrq,tfr.sfysbh,tfr.sfysxm,tfr.sftdbh,tfr.sftdmc,tfr.sfrq,tfr.zfbz,tfr.update_time updateTime,tfr.doc_state docState, tfr.service_resp_task_id serviceRespTaskId,
+	srt.task_number taskNumber,ud.`name` userName,ud.contact,ud.id_card idCard,ud.sex,u.phone
+    from tnb_followup_records tfr
+    left join service_resp_task srt on srt.id=tfr.service_resp_task_id
+	left join user_detail ud on ud.user_id=tfr.user_id 
+	left join user u on u.id=ud.user_id
+	left join health_info hi on hi.user_id=tfr.user_id
+	<where>
+	    	<if test="serviceRespTask !=null ">
+		    	<if test="serviceRespTask.doctorId !=null ">
+		    			srt.doctor_id=#{serviceRespTask.doctorId}
+		    	</if>
+	    	</if>
+	    	<if test="serviceRespTaskId!=null ">
+	    		and tfr.service_resp_task_id=#{serviceRespTaskId}
+	    	</if>
+	    	<if test="user !=null ">
+		    	<if test="user.phone !=null and  user.phone !=''">
+		    			and u.phone like CONCAT(CONCAT('%', #{user.phone}), '%')
+		    	</if>
+	    	</if>
+	    	<if test="userDetail !=null ">
+		    	<if test="userDetail.name !=null and  userDetail.name !=''">
+		    			and ud.name like CONCAT(CONCAT('%', #{userDetail.name}), '%')
+		    	</if>
+		    	<if test="userDetail.contact !=null and userDetail.contact !=''">
+		    			and ud.contact like CONCAT(CONCAT('%', #{userDetail.contact}), '%')
+		    	</if>
+		    	<if test="userDetail.idcard !=null and userDetail.idcard !=''">
+		    			and ud.id_card like CONCAT(CONCAT('%', #{userDetail.idcard}), '%')
+		    	</if>
+	    	</if>
+	    	<if test="userId !=null ">
+	    			and tfr.user_id =#{userId}
+	    	</if>
+	    	<choose>
+				<when test="sfrq !=null and endSfrq !=null">
+	    			and tfr.sfrq BETWEEN #{sfrq} and #{endSfrq}
+				</when>
+				<otherwise>
+					<if test="sfrq !=null">
+						and tfr.sfrq &gt; #{sfrq}
+					</if>
+					<if test="endSfrq !=null">
+						and tfr.sfrq &lt; #{endSfrq}
+					</if>
+				</otherwise>
+			</choose>
+	    </where>
+  </select>
+</mapper>

@@ -1,0 +1,14 @@
+package org.system.mapper.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.ServicePack;
+
+public interface ServicePackMapper extends IBaseMapper<ServicePack> {
+
+	List<Map<String, Object>> getServicePackListByDoctor(ServicePack servicePack);
+	
+	List<Map<String, Object>>  getServicePackDetailByBase(ServicePack servicePack);
+}

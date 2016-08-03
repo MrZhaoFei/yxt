@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.visits.TnbFollowupFzcheckRecordsMapper" >
+
+  <delete id="delete" parameterType="map" >
+    delete from tnb_followup_fzcheck_records
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="org.system.entity.service.visits.TnbFollowupFzcheckRecords" >
+    insert into tnb_followup_fzcheck_records (id, tnb_followup_records_id, yljgbm, 
+      sfjlbh, jkdabh, jcbh, 
+      fzjcxm, fzjcjg, jcrybh, 
+      jcryxm, jcrq, jcjgdm, 
+      jcjgmc, zfbz, update_time
+      )
+    values (#{id}, #{tnbFollowupRecordsId}, #{yljgbm}, 
+      #{sfjlbh}, #{jkdabh}, #{jcbh}, 
+      #{fzjcxm}, #{fzjcjg}, #{jcrybh}, 
+      #{jcryxm}, #{jcrq}, #{jcjgdm}, 
+      #{jcjgmc}, #{zfbz}, #{updateTime}
+      )
+  </insert>
+  <update id="update" parameterType="org.system.entity.service.visits.TnbFollowupFzcheckRecords" >
+    update tnb_followup_fzcheck_records set id=#{id} 
+    <if test="yljgbm !=null and yljgbm !=''">
+     	,yljgbm = #{yljgbm}
+    </if>
+    <if test="sfjlbh !=null and sfjlbh !=''">
+     	,sfjlbh = #{sfjlbh}
+    </if>
+    <if test="jkdabh !=null and jkdabh !=''">
+     	,jkdabh = #{jkdabh}
+    </if>
+    <if test="jcbh !=null and jcbh !=''">
+     	,jcbh = #{jcbh}
+    </if>
+    <if test="fzjcxm !=null and fzjcxm !=''">
+     	,fzjcxm = #{fzjcxm}
+    </if>
+    <if test="fzjcjg !=null and fzjcjg !=''">
+     	,fzjcjg = #{fzjcjg}
+    </if>
+    <if test="jcrybh !=null and jcrybh !=''">
+     	,jcrybh = #{jcrybh}
+    </if>
+    <if test="jcryxm !=null and jcryxm !=''">
+     	,jcryxm = #{jcryxm}
+    </if>
+    <if test="jcrq !=null ">
+     	,jcrq = #{jcrq}
+    </if>
+    <if test="jcjgdm !=null and jcjgdm !=''">
+     	,jcjgdm = #{jcjgdm}
+    </if>
+    <if test="jcjgmc !=null and jcjgmc !=''">
+     	,jcjgmc = #{jcjgmc}
+    </if>
+    <if test="zfbz !=null and zfbz !=''">
+     	,zfbz = #{zfbz}
+    </if>
+    <if test="updateTime !=null and updateTime !=''">
+      	,update_time = #{updateTime }
+    </if>
+    where id = #{id}
+  </update>
+  <select id="queryOne"  parameterType="org.system.entity.service.visits.TnbFollowupFzcheckRecords"  resultType="map">
+        select tffr.id, tffr.tnb_followup_records_id tnbFollowupRecordsId, tffr.yljgbm,fn_print_hospital_name_result(tffr.yljgbm) yljgbmName, tffr.sfjlbh, tffr.jkdabh, tffr.jcbh, tffr.fzjcxm, tffr.fzjcjg, 
+    	tffr.jcrybh, tffr.jcryxm, tffr.jcrq, tffr.jcjgdm, tffr.jcjgmc, tffr.zfbz, tffr.update_time updateTime
+    	,tfr.service_resp_task_id serviceRespTaskId,srt.doctor_id doctorId
+		from tnb_followup_fzcheck_records tffr
+		left join tnb_followup_records tfr on tfr.id=tffr.tnb_followup_records_id
+		left join service_resp_task srt on srt.id=tfr.service_resp_task_id
+    where tffr.id = #{id}
+  </select>
+</mapper>

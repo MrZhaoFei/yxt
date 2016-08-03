@@ -1,0 +1,51 @@
+package org.system.entity.doctor;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+public class DoctorDoctorGroup extends BaseEntity {
+	
+	@NotNull(message = "{doctor.id.notnull.valid}", groups = { Groups.Delete.class,Groups.Update.class })
+    private Integer doctorId;
+
+    private Integer doctorGroupId;
+
+    private Integer roleId;
+
+    public Integer getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(Integer doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public Integer getDoctorGroupId() {
+        return doctorGroupId;
+    }
+
+    public void setDoctorGroupId(Integer doctorGroupId) {
+        this.doctorGroupId = doctorGroupId;
+    }
+
+    public Integer getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
+    }
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

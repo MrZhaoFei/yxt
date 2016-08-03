@@ -1,0 +1,49 @@
+package org.system.service.impl.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.doctor.Title;
+import org.system.mapper.doctor.TitleMapper;
+import org.system.service.iface.doctor.ITitleService;
+
+@Service
+public class TitleService implements ITitleService {
+	
+	@Resource
+	private TitleMapper titleMapper;
+
+	@Override
+	public int insertTitle(Title title) {
+		return titleMapper.insert(title);
+	}
+
+	@Override
+	public int updateTitle(Title title) {
+		return titleMapper.update(title);
+	}
+
+	@Override
+	public int deleteTitle(Title title) {
+		return titleMapper.delete(title);
+	}
+
+	@Override
+	public List<Map<String, Object>> getTitleList(Title title) {
+		return titleMapper.queryAll(title);
+	}
+
+	@Override
+	public Map<String, Object> getTitleDetail(Title title) {
+		return titleMapper.queryOne(title);
+	}
+
+	@Override
+	public Map<String, Object> getTitleByFiled(Title title) {
+		return titleMapper.checkExists(title);
+	}
+
+}

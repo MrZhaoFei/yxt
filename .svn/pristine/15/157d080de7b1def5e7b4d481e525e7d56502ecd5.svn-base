@@ -1,0 +1,20 @@
+package org.system.service.iface.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.ServiceType;
+
+public interface IServiceTypeService {
+    public int insertServiceType(ServiceType serviceType);
+	
+	public int updateServiceType(ServiceType serviceType);
+	
+	public int deleteServiceType(ServiceType serviceType);
+	
+	public List<Map<String, Object>> getServiceTypeList(ServiceType serviceType);
+	
+	public Map<String, Object> getServiceTypeDetail(ServiceType serviceType);
+	
+	public Map<String, Object> getServiceTypeByFiled(ServiceType serviceType);
+}

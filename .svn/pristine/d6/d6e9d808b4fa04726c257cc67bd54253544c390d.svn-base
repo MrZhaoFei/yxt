@@ -1,0 +1,57 @@
+package org.system.service.iface.content;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.content.ContentType;
+
+public interface IContentTypeService {
+	/**
+	 * 新增
+	 * 
+	 * @param contentType
+	 * @return int
+	 */
+
+	public int insertContentType(ContentType contentType);
+
+	/**
+	 * 删除
+	 * 
+	 * @param contentType
+	 * @return int
+	 */
+	public int deleteContentType(ContentType contentType);
+
+	/**
+	 * 修改
+	 * 
+	 * @param contentType
+	 * @return int
+	 */
+	public int updateContentType(ContentType contentType);
+
+	/**
+	 * 模板类型细节
+	 * 
+	 * @param contentType
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getContentTypeDetail(ContentType contentType);
+
+	/**
+	 * 检查模板类型唯一性
+	 * 
+	 * @param contentType
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getContentTypeByFiled(ContentType contentType);
+
+	/**
+	 * 所有的模板类型列表
+	 * 
+	 * @param contentType
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getContentTypes(ContentType contentType);
+}

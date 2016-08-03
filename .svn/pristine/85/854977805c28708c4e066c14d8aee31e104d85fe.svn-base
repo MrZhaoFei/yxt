@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.service.transfer.ImageConsultationRecordsInfoMapper" >
+  	<insert id="insert" parameterType="org.system.entity.service.transfer.ImageConsultationRecordsInfo">
+		INSERT INTO image_consultation_records_info(image_consultation_detaily_id,src_doctor_id,desc_doctor_id,trans_treat_date)
+		VALUES(#{imageConsultationDetailyId},#{srcDoctorId},#{descDoctorId},#{transTreatDate})
+	</insert>
+	
+	<select id="queryAll" parameterType="org.system.entity.service.transfer.ImageConsultationRecordsInfo" resultType="map">
+	SELECT icri.id,icri.src_doctor_id srcDoctorId,dd.`name` srcDoctorName,icri.desc_doctor_id descDoctorId,ps.`name` serviceName,
+			dtd.`name` descDoctorName,icri.trans_treat_date transTreatDate,icri.image_consultation_detaily_id imageConsultationDetailyId,
+			icd.trans_treat_number transTreatNumber,icd.service_resp_task_id serviceRespTaskId,icd.used_count usedCount,icd.user_service_id userServiceId,
+			icd.sick_time sickTime,icd.first_diagnosis_desc firstDiagnosisDesc,icd.jws_desc jwsDesc,icd.zljg_desc zljgDesc,icd.trans_reason transReason,
+			icd.hm_zdjg hmZdjg,icd.hm_zljg hmZljg,icd.hm_kfjy hmKfjy,icd.hm_gjtysjy hmGjtysjy,icd.status,icd.snapshot,ud.`name` userName,ud.contact,srt.user_id userId,
+			st.`name` serviceTypeName,u.phone,ps.common_field commonField,d.doctor_type_id srcDoctorTypeId,dtr.`name` srcDoctorTypeName,
+			dr.doctor_type_id descDoctorTypeId,dt.`name` descDoctorTypeName,dl.doctor_level_name srcDoctorLevelName,dlr.doctor_level_name descDoctorLevelName
+		FROM image_consultation_records_info icri
+		LEFT JOIN doctor_detail dd on dd.doctor_id=icri.src_doctor_id
+		LEFT JOIN doctor d on d.id=dd.doctor_id 
+		LEFT JOIN doctor_detail dtd on dtd.doctor_id=icri.desc_doctor_id
+		LEFT JOIN doctor dr on dr.id=dtd.doctor_id 
+		LEFT JOIN image_consultation_detaily icd on icri.image_consultation_detaily_id=icd.id
+		LEFT JOIN service_resp_task srt on srt.id=icd.service_resp_task_id
+		LEFT JOIN user_detail ud on ud.user_id=srt.user_id
+		LEFT JOIN user u on u.id=ud.user_id
+		left join user_service us on us.id=icd.user_service_id
+		left join product_service ps on ps.id=us.product_service_id
+		left join service_type st on st.id=ps.service_type_id
+		LEFT JOIN doctor_type dtr on dtr.id=d.doctor_type_id
+		LEFT JOIN doctor_type dt on dt.id=dr.doctor_type_id
+		LEFT JOIN doctor_level dl on dl.id=d.doctor_level_id
+		LEFT JOIN doctor_level dlr on dlr.id=dr.doctor_level_id
+		where icd.status in(2,4,6)
+			<if test="srcDoctorId !=null ">
+				and icri.src_doctor_id=#{srcDoctorId}
+			</if>
+			<if test="descDoctorId !=null ">
+				and icri.desc_doctor_id=#{descDoctorId}
+			</if>
+			<if test="imageConsultationDetailyId !=null">
+				and icri.image_consultation_detaily_id=#{imageConsultationDetailyId}
+			</if>
+			<if test="status !=null">
+				and icd.status=#{status}
+			</if>
+			<choose>
+				<when test="transTreatDate !=null and endDate !=null">
+					and icri.trans_treat_date BETWEEN #{transTreatDate} and #{endDate}
+				</when>
+				<otherwise>
+					<if test="transTreatDate !=null ">
+						and icri.trans_treat_date &gt; #{transTreatDate}
+					</if>
+					<if test="endDate !=null ">
+						and icri.trans_treat_date &lt; #{endDate}
+					</if>
+				</otherwise>
+		</choose>
+		order by icri.trans_treat_date desc
+	</select>
+	<select id="queryOne" parameterType="org.system.entity.service.transfer.ImageConsultationRecordsInfo" resultType="map">
+	SELECT icri.id,icri.src_doctor_id srcDoctorId,dd.`name` srcDoctorName,icri.desc_doctor_id descDoctorId,
+			dtd.`name` descDoctorName,icri.trans_treat_date transTreatDate,icri.image_consultation_detaily_id imageConsultationDetailyId,
+			icd.trans_treat_number transTreatNumber,icd.service_resp_task_id serviceRespTaskId,icd.used_count usedCount,icd.user_service_id userServiceId,
+			icd.sick_time sickTime,icd.first_diagnosis_desc firstDiagnosisDesc,icd.jws_desc jwsDesc,icd.zljg_desc zljgDesc,icd.trans_reason transReason,
+			icd.hm_zdjg hmZdjg,icd.hm_zljg hmZljg,icd.hm_kfjy hmKfjy,icd.hm_gjtysjy hmGjtysjy,icd.status,icd.snapshot,ud.`name` userName,ud.contact,srt.user_id userId,
+			st.`name` serviceTypeName,u.phone,ps.common_field commonField,d.doctor_type_id srcDoctorTypeId,dtr.`name` srcDoctorTypeName,
+			dr.doctor_type_id descDoctorTypeId,dt.`name` descDoctorTypeName,dl.doctor_level_name srcDoctorLevelName,dlr.doctor_level_name descDoctorLevelName
+		FROM image_consultation_records_info icri
+		LEFT JOIN doctor_detail dd on dd.doctor_id=icri.src_doctor_id
+		LEFT JOIN doctor d on d.id=dd.doctor_id 
+		LEFT JOIN doctor_detail dtd on dtd.doctor_id=icri.desc_doctor_id
+		LEFT JOIN doctor dr on dr.id=dtd.doctor_id 
+		LEFT JOIN image_consultation_detaily icd on icri.image_consultation_detaily_id=icd.id
+		LEFT JOIN service_resp_task srt on srt.id=icd.service_resp_task_id
+		LEFT JOIN user_detail ud on ud.user_id=srt.user_id
+		LEFT JOIN user u on u.id=ud.user_id
+		left join user_service us on us.id=icd.user_service_id
+		left join product_service ps on ps.id=us.product_service_id
+		left join service_type st on st.id=ps.service_type_id
+		LEFT JOIN doctor_type dtr on dtr.id=d.doctor_type_id
+		LEFT JOIN doctor_type dt on dt.id=dr.doctor_type_id
+		LEFT JOIN doctor_level dl on dl.id=d.doctor_level_id
+		LEFT JOIN doctor_level dlr on dlr.id=dr.doctor_level_id
+		where icri.id=#{id}
+	</select>
+	
+</mapper>

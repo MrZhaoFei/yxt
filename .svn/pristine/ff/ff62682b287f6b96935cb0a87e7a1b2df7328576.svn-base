@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ <mapper namespace="org.system.mapper.service.ProductServiceMapper" >
+
+ 
+   <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.service.ProductService" useGeneratedKeys="true" keyColumn="id">
+	insert into product_service (name,price,service_type_id,`desc`,doctor_type_id,doctor_level_id,common_field) values (#{name},#{price},#{serviceTypeId},#{desc},#{doctorTypeId},#{doctorLevelId},#{commonField})	
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.service.ProductService">
+                 delete from product_service where  id=#{id} 
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.service.ProductService">
+	 update product_service set id=#{id}
+	    <if test="name !=null and name !=''">
+			,name=#{name}
+		</if>
+		<if test="price !=null and price !=''">
+			,price=#{price}
+		</if>
+		<if test="desc !=null and desc !=''">
+			,`desc`=#{desc}
+		</if>
+			,doctor_type_id=#{doctorTypeId}
+			,doctor_level_id=#{doctorLevelId}
+		<if test="commonField !=null">
+			,common_field=#{commonField}
+		</if> 
+		<if test="serviceTypeId !=null">
+			,service_type_id=#{serviceTypeId}
+		</if>
+		 WHERE id=#{id}	
+	</update>
+	<select id="queryAll" parameterType="org.system.entity.service.ProductService" resultType="map">	
+		 select ps.id id,ps.name productServiceName,price,ps.`desc` de,ps.common_field commonField,ps.service_type_id serviceTypeId ,dl.doctor_level_name doctorLevelName,dt.name doctorTypeName,st.name servicetypeName from product_service ps left join doctor_type dt on  dt.id=ps.doctor_type_id 
+                                  left join doctor_level dl on dl.id=ps.doctor_level_id
+                                  left join service_type st on st.id=ps.service_type_id 
+			 <where>
+			<if test="name!=null and name!=''">
+			ps.name  like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="serviceTypeId!=null">
+			ps.service_type_id =#{serviceTypeId}
+			</if>
+		</where> 
+		order by ps.id
+	</select>
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.service.ProductService" resultType="map">
+			select ps.id,ps.name productServiceName,ps.`desc` de,ps.common_field commonField,price,service_type_id serviceTypeId,
+	    st.id,st.id servicetypeName,
+	    dt.id doctorTypeName,
+	    dl.id  doctorLevelName from
+	    product_service  ps 
+		left join service_type  st  on st.id=ps.service_type_id 
+	    left join doctor_type dt on dt.id=ps.doctor_type_id
+	    left join doctor_level dl on dl.id=ps.doctor_level_id where ps.id=#{id}
+	</select>
+	
+	<!-- 根据约束键查询数据是否存在 -->
+	<select id="checkExists" parameterType="org.system.entity.service.ServiceType" resultType="map">
+	select  id,name,price,service_type_id,`desc`,common_field  from product_service 
+	<where>
+	  <if test="name!=null and name!='' ">
+	   name=#{name} 
+	  </if>
+	  <if test="id!=null ">
+	  and id=#{id}
+	  </if>
+	   <if test="price!=null and price!=''">
+	  and price=#{price}
+	  </if>
+	   <if test="serviceTypeId!=null">
+	  and service_type_id=#{serviceTypeId}
+	  </if>
+	   <if test="desc!=null and desc!=''">
+	  and `desc`=#{desc}
+	  </if>
+	   <if test="commonField!=null">
+	  and common_field=#{commonField}
+	  </if>	
+	  <if test="doctorTypeId !=null">
+	  and doctor_type_id=#{doctorTypeId}
+		</if>
+		<if test="doctorLevelId !=null ">
+		and doctor_level_id=#{doctorLevelId}
+		</if>
+	</where>
+	</select>
+
+	<select id="queryProductCondition" parameterType="org.system.entity.service.ProductService" resultType="map">
+			select ps.id,ps.name,ps.price,ps.service_type_id,ps.common_field from product_service ps 
+			left join package_service  pas on  ps.id =pas.service_id   where pas.service_id = #{id}  group by pas.id
+	</select>
+	
+	  <!-- 查询该基础服务是否被用户购买 -->
+		<select id="queryProductByUservice" parameterType="org.system.entity.service.ProductService" resultType="int" >
+			 select count(tbs.num) from (select count(us.product_service_id) num from  product_service ps left join user_service us on ps.id=us.product_service_id
+		     where ps.id= #{id} limit 1) tbs
+		</select>
+	
+	<!-- 查询基础服务不在优惠包中其他的基础服务 -->
+	<select id="queryProductNotIn" parameterType="org.system.mapper.service.PackageServiceMapper" resultType="map">
+         select id ,name productServiceName,price  from product_service  ps where  ps.id not in (select psv.id from package_service ps left join service_pack_condition spc on ps.service_pack_condition_id=spc.id
+		 left join product_service psv on psv.id=ps.service_id  
+		 where spc.id=#{id})
+   </select>	
+	
+</mapper>

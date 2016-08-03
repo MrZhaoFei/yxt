@@ -1,0 +1,6 @@
+package org.system.mapper.service.resp;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.resp.TransRecordsInfo;
+
+public interface TransRecordsInfoMapper extends IBaseMapper<TransRecordsInfo> {}

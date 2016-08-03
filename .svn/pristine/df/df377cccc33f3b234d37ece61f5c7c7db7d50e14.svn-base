@@ -1,0 +1,19 @@
+package org.system.mapper.doctor;
+
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.doctor.Doctor;
+
+public interface DoctorMapper extends IBaseMapper<Doctor> {
+	
+	
+	/*public Map<String, Object> queryByDoctorId(Doctor doctor);
+	
+	/**
+	 * 查询最大的医生id值
+	 * @param doctor
+	 * @return
+	 */
+	public int queryMaxId(Doctor doctor);
+	
+}

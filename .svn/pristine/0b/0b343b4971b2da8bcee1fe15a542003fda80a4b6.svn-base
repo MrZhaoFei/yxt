@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.doctor.DoctorGroupMapper">
+
+<!-- 查询详情 -->
+<select id="queryOne" parameterType="org.system.entity.doctor.DoctorGroup" resultType="map">
+	SELECT dg.id,a.id addressId,dg.name,dg.state,dg.create_date createDate,a.name addressName,dg.group_tel groupTel,
+	h.contract_num_prefix prefix,h.id hospitalId,dgt.id doctorGroupTypeId,dgt.name doctorGroupTypeName
+	FROM doctor_group dg
+	left join hospital h on h.id=dg.hospital_id
+	left join address a on a.id=h.address_id
+	left join doctor_group_type dgt on dgt.id=dg.doctor_group_type_id
+    where dg.id=#{id}
+</select>
+<!-- 查询团队长 -->
+<select id="getDoctorGroupManager" parameterType="org.system.entity.doctor.DoctorGroup" resultType="map">
+	select ddg.doctor_id doctorId from doctor_doctor_group ddg 
+	left join doctor_detail dd on dd.doctor_id=ddg.doctor_id
+	where ddg.role_id=1 and ddg.doctor_group_id=#{id} limit 0,1
+</select>
+
+<!--  -->
+<select id="queryAll" parameterType="org.system.entity.doctor.DoctorGroup" resultType="map">
+	SELECT dg.id,a.id addressId,dg.name,dg.state,dg.create_date createDate,dg.group_tel groupTel,a.name addressName,dgt.id doctorGroupTypeId,
+	dgt.`name` doctorGroupTypeName,dgt.remark
+	FROM doctor_group dg
+	left join hospital h on h.id=dg.hospital_id
+	left join address a on a.id=h.address_id
+	left join doctor_group_type dgt on dgt.id=dg.doctor_group_type_id 
+		<if test="doctorId !=null and doctorId!=''">
+			left join doctor_doctor_group ddg on ddg.doctor_group_id=dg.id 
+		</if>
+		<where>
+			<if test="name!=null and name !=''">
+				 dg.name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="doctorId !=null ">
+				and ddg.doctor_id=#{doctorId}
+			</if>
+			<if test="hospitalId!=null">
+				and dg.hospital_id=#{hospitalId}
+			</if>
+			<if test="doctorGroupTypeId!=null">
+				and dg.doctor_group_type_id=#{doctorGroupTypeId}
+			</if>
+			<if test="address !=null">
+				<if test="address.id!=null">
+					and h.address_id=#{address.id}
+				</if>
+			</if>
+			<if test="geography!=null">
+				and h.longitude between #{geography.minLng} and #{geography.maxLng} and
+				h.latitude between #{geography.minLat} and #{geography.maxLat}
+			</if>
+		</where>
+</select>
+
+<select id="getExpertGroupDoctorList" parameterType="org.system.entity.doctor.DoctorGroup" resultType="map">
+SELECT dg.id,a.id addressId,dg.name,dg.state,dg.create_date createDate,dg.group_tel groupTel,a.name addressName FROM doctor_group dg
+	left join hospital h on h.id=dg.hospital_id
+	left join address a on a.id=h.address_id
+where dg.id not in (select zc_doctor_group_id from doctor_group_rely where doctor_group_id=#{id})
+
+		<if test="name!=null and name !=''">
+				 and dg.name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="hospitalId!=null">
+				and dg.hospital_id=#{hospitalId}
+			</if>
+			<if test="doctorGroupTypeId!=null">
+				and dg.doctor_group_type_id=#{doctorGroupTypeId}
+			</if>
+			<if test="address !=null">
+				<if test="address.id!=null">
+					h.address_id=#{address.id}
+				</if>
+			</if>
+</select>
+<!--  -->
+<select id="getDoctorGroupDoctorList" parameterType="org.system.entity.doctor.DoctorGroup" resultType="map">
+	select dg.id doctorGroupId,dg.`name` doctorGroupName,ddg.role_id roleId,r.`name` roleName,
+	d.id doctorId,d.`name` doctorAccount,dd.`name` doctorName,dd.gootat,dd.IDCard,d.phone,dd.birthday,dgt.id doctorGroupTypeId,
+	dgt.`name` doctorGroupTypeName,dgt.remark 
+	from doctor_doctor_group ddg 
+	left join doctor_group dg on dg.id=ddg.doctor_group_id
+	left join doctor_group_type dgt on dgt.id=dg.doctor_group_type_id 
+  	left join doctor d on d.id=ddg.doctor_id
+  	left join doctor_detail dd on dd.doctor_id=d.id
+	left join role r on r.id=ddg.role_id
+	where ddg.doctor_group_id=#{id}
+	<if test="doctorId!=null">
+		and ddg.doctor_id=#{doctorId}
+	</if>
+	<if test="doctor !=null">
+		<if test="doctor.phone !=null and doctor.phone !='' ">
+			and d.phone like CONCAT(CONCAT('%', #{doctor.phone}), '%')
+		</if>
+	</if>
+	<if test="doctorDetail !=null">
+		<if test="doctorDetail.name !=null and doctorDetail.name !='' ">
+			and dd.`name` like CONCAT(CONCAT('%', #{doctorDetail.name}), '%')
+		</if>
+		<if test="doctorDetail.gootat !=null and doctorDetail.gootat !='' ">
+			and dd.gootat like CONCAT(CONCAT('%', #{doctorDetail.gootat}), '%')
+		</if>
+	</if>
+</select>
+
+<!-- 修改 团队 -->
+<update id="update" parameterType="org.system.entity.doctor.DoctorGroup" >
+update doctor_group set id=#{id} 
+		<if test="state !=null">
+			,state=#{state}
+		</if>
+		<if test="name !=null and name!=''">
+			,name=#{name}
+		</if>
+		<if test="remark !=null and remark!=''">
+			,remark=#{remark}
+		</if>
+		<if test="hospitalId !=null">
+			,hospital_id=#{hospitalId}
+		</if>
+		<if test="groupTel !=null and groupTel!=''">
+			,group_tel=#{groupTel}
+		</if>
+	where id=#{id}
+</update>
+</mapper> 

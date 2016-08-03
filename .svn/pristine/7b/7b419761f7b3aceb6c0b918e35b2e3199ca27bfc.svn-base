@@ -1,0 +1,16 @@
+package org.system.mapper.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.ProductService;
+
+public interface ProductServiceMapper extends IBaseMapper<ProductService> {
+	
+   public List<Map<String, Object>> queryProductCondition(ProductService productService);
+   
+   public int queryProductByUservice(ProductService productService);
+   
+   public List<Map<String, Object>> queryProductNotIn(ProductService productService);
+}

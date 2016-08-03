@@ -1,0 +1,138 @@
+package org.system.controller.impl.service.visits;
+
+import java.util.Date;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.service.visits.IGxyFollowupFzcheckRecordsController;
+import org.system.entity.service.visits.GxyFollowupFzcheckRecords;
+import org.system.entity.service.visits.GxyFollowupRecords;
+import org.system.message.Message;
+import org.system.service.iface.service.visits.IGxyFollowupFzcheckRecordsService;
+import org.system.service.iface.service.visits.IGxyFollowupRecordsService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+@Controller
+public class GxyFollowupFzcheckRecordsController implements IGxyFollowupFzcheckRecordsController{
+	Logger log = LoggerFactory.getLogger(GxyFollowupFzcheckRecordsController.class);
+	
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IGxyFollowupRecordsService gxyFollowupRecordsService;
+	
+	@Resource
+	private IGxyFollowupFzcheckRecordsService gxyFollowupFzcheckRecordsService;
+
+	@Override
+	public Map<String, Object> insertGxyFollowupFzcheckRecords(GxyFollowupFzcheckRecords gxyFollowupFzcheckRecords,
+			BindingResult result, String token) {
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			// 判断高血压随访记录是否存在
+			GxyFollowupRecords gfr=new GxyFollowupRecords();
+			gfr.setId(gxyFollowupFzcheckRecords.getGxyFollowupRecordsId());
+			Map<String, Object> gfdrMap =gxyFollowupRecordsService.getGxyFollowupRecordsDetail(gfr);
+			if (gfdrMap == null || gfdrMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("followupRecords.empty"));
+			}
+		/*	//设置医疗机构编码
+			gxyFollowupFzcheckRecords.setYljgbm((String)gfdrMap.get("yljgbm"));
+			//设置健康档案编号
+			gxyFollowupFzcheckRecords.setJkdabh((String)gfdrMap.get("jkdabh"));
+			//设置随访记录编号
+			gxyFollowupFzcheckRecords.setSfjlbh((String)gfdrMap.get("sfjlbh"));*/
+			//设置默认值 作废标志 0正常，1作废
+			gxyFollowupFzcheckRecords.setZfbz("0");
+			//设置默认值 数据更新时间 为当前时间
+			gxyFollowupFzcheckRecords.setUpdateTime(new Date());
+			//执行新增操作
+			if (gxyFollowupFzcheckRecordsService.insertGxyFollowupFzcheckRecords(gxyFollowupFzcheckRecords)>0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+		}else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> updateGxyFollowupFzcheckRecords(Integer gxyFollowupFzcheckRecordsId,
+			GxyFollowupFzcheckRecords gxyFollowupFzcheckRecords, BindingResult result, String token) {
+		gxyFollowupFzcheckRecords.setId(Long.valueOf(gxyFollowupFzcheckRecordsId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 查询高血压随访记录用药详情 获取高血压随访记录ID
+			Map<String, Object> gxtMap =gxyFollowupFzcheckRecordsService.getGxyFollowupFzcheckRecordsDetail(gxyFollowupFzcheckRecords);
+			if (gxtMap == null || gxtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("followupRecords.empty"));
+			}
+			Integer serviceRespTaskId = (Integer) gxtMap.get("serviceRespTaskId");
+			//判断 服务响应 是否存在
+			if (serviceRespTaskId==null) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 判断记录是否属于该医生
+			if ((int)userMap.get("id") != (int)gxtMap.get("doctorId")) {
+				return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR, Message.bundle("record.is.outside.doctor"));
+			}
+			//设置默认值  数据更新时间
+			gxyFollowupFzcheckRecords.setUpdateTime(new Date());
+			//执行修改操作
+			if (gxyFollowupFzcheckRecordsService.updateGxyFollowupFzcheckRecords(gxyFollowupFzcheckRecords)>0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+			
+		}else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> deleteGxyFollowupFzcheckRecords(Integer gxyFollowupFzcheckRecordsId,
+			GxyFollowupFzcheckRecords gxyFollowupFzcheckRecords, BindingResult result, String token) {
+		gxyFollowupFzcheckRecords.setId(Long.valueOf(gxyFollowupFzcheckRecordsId));
+		// 缓存中获取医生数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			// 查询高血压随访记录用药详情 获取高血压随访记录ID
+			Map<String, Object> gxtMap =gxyFollowupFzcheckRecordsService.getGxyFollowupFzcheckRecordsDetail(gxyFollowupFzcheckRecords);
+			if (gxtMap == null || gxtMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("followupRecords.empty"));
+			}
+			Integer serviceRespTaskId = (Integer) gxtMap.get("serviceRespTaskId");
+			//判断 服务响应 是否存在
+			if (serviceRespTaskId==null) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("serviceRespTask.empty"));
+			}
+			// 判断记录是否属于该医生
+			if ((int)userMap.get("id") != (int)gxtMap.get("doctorId")) {
+				return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR, Message.bundle("record.is.outside.doctor"));
+			}
+			//执行删除操作
+			if (gxyFollowupFzcheckRecordsService.deleteGxyFollowupFzcheckRecords(gxyFollowupFzcheckRecords)>0) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+			
+		}else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+}

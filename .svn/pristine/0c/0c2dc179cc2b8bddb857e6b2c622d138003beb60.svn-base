@@ -1,0 +1,63 @@
+package org.system.entity.hospital;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+public class HospiDepartDoctorRelation extends BaseEntity {
+	
+	@NotNull(message = "{hospital.id.notnull.valid}", groups = { Groups.Select.class })
+    private Integer hospitalId;
+
+    private Integer departmentId;
+
+    private Integer doctorId;
+    
+    private String departmentName;
+    
+
+    public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
+
+	public Integer getHospitalId() {
+        return hospitalId;
+    }
+
+    public void setHospitalId(Integer hospitalId) {
+        this.hospitalId = hospitalId;
+    }
+
+    public Integer getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Integer departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public Integer getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(Integer doctorId) {
+        this.doctorId = doctorId;
+    }
+    
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

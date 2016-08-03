@@ -1,0 +1,66 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.Doctor;
+
+public interface IDoctorService {
+	
+	/**
+	 * 新增医生
+	 * @param doctor
+	 * @return int
+	 */
+    public int insertDoctor(Doctor doctor);
+	
+    /**
+	 * 修改医生
+	 * @param doctor
+	 * @return int
+	 */
+	public int updateDoctor(Doctor doctor);
+	
+	/**
+	 * 删除医生
+	 * @param doctor
+	 * @return int
+	 */
+	public int deleteDoctor(Doctor doctor);
+	
+	/**
+	 * 全部医生列表
+	 * @param doctor
+	 * @return  List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getDoctorList(Doctor doctor);
+	
+	/**
+	 * 医生详细信息
+	 * @param doctor
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getDoctorDetail(Doctor doctor);
+	
+	/**
+	 * 检查医生唯一性
+	 * @param doctor
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getDoctorByFiled(Doctor doctor);
+	/*
+	*//**
+	 * 得到医生详细信息通过医生id
+	 * @param doctor
+	 * @return Map<String, Object>
+	 *//*
+	public Map<String, Object> getDoctorDetailByDoctorId(Doctor doctor);
+	
+	
+	/**
+	 * 获得医生最大的id值
+	 * @param doctor
+	 * @return int
+	 */
+	public int getDoctorMaxId(Doctor doctor);
+}

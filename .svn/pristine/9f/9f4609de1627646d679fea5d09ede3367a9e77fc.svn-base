@@ -1,0 +1,31 @@
+package org.system.controller.iface.service;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.ProductService;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IProductServiceController {
+
+	/**
+	 * 查询服务列表
+	 * 
+	 * @param productService
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/productServices", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getUserServicePackList(
+			@Validated({ Groups.Select.class }) ProductService productService, BindingResult result
+			,@RequestHeader(value = "token", required = false) String token);
+
+}

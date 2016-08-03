@@ -1,0 +1,42 @@
+package org.system.controller.impl.userService;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.userService.IUserServicePackController;
+import org.system.entity.userService.UserServicePack;
+import org.system.message.Message;
+import org.system.service.iface.userService.IUserServicePackService;
+@Controller
+public class UserServicePackController implements IUserServicePackController{
+    
+	Logger log = LoggerFactory.getLogger(UserServicePackController.class);
+	@Resource
+	private IUserServicePackService userServicePackService;
+	
+	@Override
+	public Map<String, Object> getUserServicePackList(UserServicePack userServicePack, BindingResult result,
+			HttpServletRequest req) {
+		Map<String, Object> resultMap = new HashMap<>();
+		 List<Map<String, Object>> dataList = userServicePackService.getUserServicePackList(userServicePack);
+		 if (dataList != null && dataList.size() > 0) {
+			 resultMap.put(Global.DATA_TOTAL, userServicePack.getTotal());
+			 resultMap.put(Global.DATA_ROWS, dataList);
+			 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		 }
+		 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+}

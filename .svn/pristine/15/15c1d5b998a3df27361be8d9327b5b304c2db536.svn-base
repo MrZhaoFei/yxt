@@ -1,0 +1,33 @@
+package org.system;
+
+public class Global {
+     
+	
+	// 用户信息
+	public static final String CACHE_ADMINUSER = "adminUserCache";
+	// 用户信息缓存
+	public static final String CACHE_USER = "userCache";
+	// 医生信息缓存
+	public static final String CACHE_DOCTOR = "doctorCache";
+	// 记录总数标识
+	public static final String DATA_TOTAL = "total";
+	// 记录主体标识
+	public static final String DATA_ROWS = "rows";
+	// 验证码缓存
+	public static final String SESSION_CODE = "validCode";
+	public static final String WECHAT_SERVER = "http://weixin.99kst.com";
+	public static final String WECHAT_CONTRACT_SUCCESS = "/SendMsg/SignSuccess";
+	public static final String WECHAT_CONTRACT_FAIL = "/SendMsg/SignFail";
+	public static final String WECHAT_CONTRACT_ARRANGEFILE = "/SendMsg/ArrangeFile";
+	// 签约状态
+	public static final Integer CONTRACT_STATE_SURE = 1;
+	public static final Integer CONTRACT_STATE_REFUSED = 2;
+	public static final String SYSTEM_PHONE = "0826-4552711";
+	// 订单状态
+	public static final Integer ORDER_START = 0; // 待支付
+	public static final Integer ORDER_SURE = 1; // 确认
+
+	// 用户服务包状态
+	public static final Integer SERVICE_PACK_USE = 0; // 可以使用
+	public static final int STORE_ACQUISITIVE = 10;
+}

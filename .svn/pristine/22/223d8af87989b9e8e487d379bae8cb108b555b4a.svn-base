@@ -1,0 +1,23 @@
+package org.system.service.iface.doc;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doc.DocTmplate;
+
+
+public interface IDocTmplateService {
+
+ public   int insertDocTmplate(DocTmplate docTmplate);
+
+ public  int deleteDocTmplate(DocTmplate docTmplate);
+    
+ public   int updateDocTmplate(DocTmplate docTmplate);
+    
+ public   Map<String,Object> getDocTmplateDetail(DocTmplate docTmplate);
+    
+ public   Map<String,Object> getDocTmplateByFiled(DocTmplate docTmplate);
+
+ public   List<Map<String,Object>> getDocTmplates(DocTmplate docTmplate);
+    
+}

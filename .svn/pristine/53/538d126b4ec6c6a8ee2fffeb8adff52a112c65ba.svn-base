@@ -1,0 +1,1315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head> 
+  <base href="/yxt-admin/" /> 
+  <title>医生列表</title> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+  <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+  <meta HTTP-EQUIV="Expires" CONTENT="0"> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css" /> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/gray/easyui.css" /> 
+  <link rel="stylesheet" type="text/css" href="js/trumbowyg/design/css/trumbowyg.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/jquery.flex-images.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/icon/font-awesome.min.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/webuploader.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/style.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/web.css" /> 
+   <link rel="stylesheet" type="text/css" href="css/dialog.css" /> 
+  <link rel="stylesheet" href="/yxt-admin/webuploader/styles/default.css?ver=v1.001">
+  <link rel="stylesheet" href="/yxt-admin/webuploader/styles/webuploader.css?ver=v1.001">
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/jquery-1.12.1.min.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/webuploader.js?ver=v1.001"></script>
+  <script type="text/javascript" src="/yxt-admin/webuploader/scripts/uploader.js?ver=v1.001"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script> 
+  <script type="text/javascript" src="js/easyui/extend.easyui.js"></script> 
+  <script type="text/javascript" src="js/jquery.flex-images.min.js"></script> 
+
+
+ </head> 
+ <body> 
+  <!-- 全局日历控件 --> 
+  <!-- <div id="sc" class="easyui-calendar" data-options="validator: function(date){return date<=new Date();}"></div> --> 
+  <!-- 搜索栏 --> 
+  <div id="seach">
+    <label>医生名字</label> 
+   <input id="namedoc" name="namedoc" class="easyui-textbox" style="width: 100px;" />     
+     <label>部门名称</label> 
+    <input class="easyui-combobox" name="departmentId" id="departmentId" style="width:100px;"
+     data-options=" url:'/yxt-admin/admin/department/all',
+                editable:false, 
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"/> 
+   
+    
+     <label>医生类型</label> 
+    <input  class="easyui-combobox" name="doctorTypeId" id="doctorTypeId" style="width:150px;"
+    data-options=" url:'/yxt-admin/admin/doctorType', 
+                editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}" /> 
+   
+   
+    
+      <label>医生职称</label> 
+    <input class="easyui-combobox" name="titleId" id="titleId" style="width:150px;"
+     data-options=" url:'/yxt-admin/admin/title', 
+                editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"/> 
+    
+   
+    <a href="javascript:query()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+    <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-ban"></i> 清除搜索条件</a> 
+    <a href="javascript:add()" class="easyui-linkbutton"><i class="fa fa-plus"></i> 新增</a> 
+    <a href="javascript:re()" class="easyui-linkbutton"><i class="fa  fa-refresh"></i> 刷新当前页面</a> 
+  </div> 
+  <!-- 内容表格 --> 
+  <table id="main_table"> 
+   <thead> 
+    <tr> 
+        <th data-options="field:'id',width:20">id</th>        
+        <th data-options="field:'doctorName',width:40">医生账户名</th> 
+        <th data-options="field:'phone',width:50">电话号码</th> 
+        <th data-options="field:'delName',width:50">医生真实名</th> 
+        <th data-options="field:'idCard',width:80">身份证号</th> 
+        <th data-options="field:'doctorTypeName',width:50">医生类别名称</th>
+        <th data-options="field:'doctorLevelName',width:50">医生级别</th>      
+        <th data-options="field:'titleName',width:70">医生职称</th>
+        <th data-options="field:'registerDate',width:80">注册时间</th>
+        <th data-options="field:'registerSourceName',width:30">来源</th>
+        <th data-options="field:'isValid',width:30,formatter:_validformatter">审核</th>
+        <th data-options="field:'img',align:'center',width:60,formatter:_opformatter">操作</th> 
+    </tr> 
+   </thead> 
+  </table> 
+ 
+  <!-- 添加 --> 
+ <div id="dialog" style=" display: none" class="dialog"> 
+   <form id="form" method="post"> 
+   <table class="table-edit" width="100%" align="center"> 
+    <tbody> 
+     <tr>
+       <td style="width: 100px;">医生账户名</td> 
+       <td><input class="easyui-textbox" name="doctorName" id="doctorName" style="width: 200px" data-options="required:true,validType:'length[0,45]',missingMessage:'医生登录名字'"/>
+       </td> 
+      <td style="width: 100px;">医生手机号码</td> 
+       <td><input class="easyui-textbox" name="phone" id="phone" style="width: 200px" data-options="required:true,validType:['phoneRex'],missingMessage:'医生手机号不能为空'"/>
+       </td>
+        <td style="width: 100px;">医生登录密码</td> 
+       <td><input class="easyui-textbox" name="password" id="password" style="width: 200px" data-options="required:true,validType:'checkPsd',missingMessage:'密码不能为空'"/>
+       </td> 
+     </tr>
+     <tr>
+    
+       <td style="width: 100px;">医生真实名</td> 
+       <td><input class="easyui-textbox" name="delName" id="name" style="width: 200px" data-options="required:true,validType:'length[0,30]',missingMessage:'医生真实名字'"/>
+       </td> 
+        <td style="width: 100px;">身份证号</td> 
+       <td><input class="easyui-textbox" name="idCard" id ="idCard" style="width: 200px" data-options="required:true,validType:'idCard',missingMessage:'身份证号不能为空'" />
+       </td> 
+        <td style="width: 100px;">毕业学校</td> 
+       <td><input class="easyui-textbox" name="school"  id="school" style="width: 200px" data-options="required:true,validType:'length[0,30]',missingMessage:'毕业学校不能为空'"/>
+       </td>
+     
+     </tr>
+     <tr>
+     <td style="width: 100px;">医生类型</td> 
+       <td><input class="easyui-combobox"  name="doctorTypeName" id="doctorTypeName" style="width:200px;"  
+               data-options=" url:'/yxt-admin/admin/doctorType', 
+                editable:false,
+                required:true,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}"/>
+       </td>
+     
+     
+        <td style="width: 100px;">来源</td> 
+       <td> <input class="easyui-combobox"  name="registerSourceName" id="registerSourceName" style="width:200px;" 
+                data-options=" url:'/yxt-admin/admin/registerSource', 
+                editable:false,
+                required:true,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+			}"/> 
+       </td>
+          
+       <td style="width: 100px;">医生职称</td> 
+       <td><input class="easyui-combobox"  name="titleName" id="titleName" style="width:200px;" 
+        data-options=" url:'/yxt-admin/admin/title', 
+                required:true,
+                 editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'name',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}">
+       </td>  
+            </tr>
+     <tr>
+        <td style="width: 100px;">状态</td> 
+       <td><select class="easyui-combobox" name="state" id="state" style="width:200px;" data-options="required:true,editable:false,panelHeight:'auto'">   
+		     <option value="0">正常</option>   
+		    <option value="1">异常</option>  
+		</select> 
+       </td> 
+        <td style="width: 100px;">等级</td> 
+       <td> <input class="easyui-combobox"  name="doctorLevelName" id="doctorLevelName" style="width:200px;"
+        data-options=" url:'/yxt-admin/admin/doctorLevel', 
+              
+                 editable:false,
+			    method:'get',
+			    valueField:'id',    
+			    textField:'doctorLevelName',
+			    loadFilter:function(data){
+					 return data.data.rows;
+					}">
+       </td>
+       <td style="width: 100px;">是否审核</td> 
+       <td> <select class="easyui-combobox"  id="isValid" name="isValid" style="width:200px;" data-options="required:true,editable:false,panelHeight:'auto'">   
+		    <option value="1">已审核</option>  
+		     <option value="0">未审核</option>   
+		</select> 
+       </td>  
+       
+     </tr>
+      <tr>
+       <td style="width: 100px;">医生职务</td> 
+       <td><input class="easyui-textbox" name="zwName" id ="zwName" style="width: 200px" data-options="validType:'length[0,64]'"/>
+       </td>
+       <td style="width: 100px;">描述</td> 
+       <td><input class="easyui-textbox" name="remark" id="remark" style="width: 200px" data-options="validType:'length[0,45]'"/>
+       </td> 
+        <td style="width: 100px;">医生 ITV 帐号</td> 
+       <td><input class="easyui-textbox" name="itvNumber" id="itvNumber" style="width: 200px" data-options="validType:'length[0,24]'"/>
+       </td>  
+     </tr>
+     <tr>
+       <td style="width: 100px;">出生日期</td> 
+       <td><input class="easyui-datetimebox" name="birthday" id="birthday" style="width: 200px" data-options="required:true, editable:false,validType:'comperTime',missingMessage:'出生日期不能为空'"/>
+       </td> 
+    <td style="width: 100px;">执行证号</td> 
+       <td><input class="easyui-textbox" name="zxzNumber" id ="zxzNumber" style="width: 200px" data-options="validType:'length[0,64]'"/>
+       </td> 
+       
+       <td style="width: 100px;">地址</td>       
+       <td>
+       <input class="easyui-textbox" name="addressDetail" id="addressDetail" style="width: 200px"/>
+       </td>
+     </tr>
+     <tr>
+       
+      <td style="width: 100px;">评价等级</td> 
+       <td><input class="easyui-numberbox" name="grade" id ="grade" style="width: 200px" prompt="请填写整数数字" data-options="required:true,missingMessage:'评价等级不能为空',min:0"/>
+       </td> 
+       <td style="width: 100px;">擅长</td> 
+       <td><input class="easyui-textbox" name="gootat" id ="gootat" style="width: 200px;height:50px"  data-options="multiline:true" />
+       </td>
+       <td style="width: 100px;">个人简历</td> 
+       <td><input class="easyui-textbox" name="profile" id ="profile" style="width: 200px;height:50px"  data-options="multiline:true" />
+       </td>   
+       
+     </tr>
+     
+     <tr>
+			    <td colspan="6" style="height:100px">
+			     <a href="javascript:mainAddHos()" class="easyui-linkbutton" id="mainAdd" ><i class="fa fa-plus"></i>新增主聘医疗机构科室</a>  
+				     <table id="main_main_table" style="height:100px">      
+				   <thead> 
+				    <tr>     
+				        <th data-options="field:'hName',width:100">主聘医疗机构</th> 
+				        <th data-options="field:'deptName',width:100">主聘科室</th>	
+				        <th data-options="field:'zpDepartmentId',hidden:true"></th> 
+				        <th data-options="field:'zpHospitalId',hidden:true"></th>	         
+				        <th data-options="field:'img',align:'center',width:60,formatter:_opformatterhospDept">操作</th> 
+				    </tr> 
+				   </thead> 
+				  </table> 
+			    </td>
+		     </tr>
+     
+		    <tr>
+			    <td colspan="6" style="height:100px">
+			     <a href="javascript:addHos()" class="easyui-linkbutton"><i class="fa fa-plus"></i>新增科室</a>  
+				     <table id="hos_main_table">      
+				   <thead> 
+				    <tr>
+				    
+				  <!--   "departmentName":"内科","hosptitalId":2,"doctorID":43,"deptId":2,"hosptitalName":"成华区第四人民医院"      -->
+				       <th data-options="field:'hosptitalName',width:100">机构</th> 
+				       <th data-options="field:'departmentName',width:100">科室</th>
+				       <th data-options="field:'hospId',hidden:true"></th>
+				       <th data-options="field:'deptId',hidden:true"></th> 
+				        		       
+				       <th data-options="field:'img',align:'center',width:60,formatter:_opformatterhosp">操作</th> 
+				    </tr> 
+				   </thead> 
+				  </table> 
+			    </td>
+		     </tr>
+		      <tr>
+       <td colspan="6" align="left"> 
+                   医生头像： <div id="photo" > 
+        </div>  <span style="color:red"> (提示:推荐上传295px*412px的图片 ,支持图片格式 gif,jpg,jpeg,bmp,png)</span> 
+        </td> 
+     </tr> 
+       </tbody> 
+     </table> 
+   </form>   
+  </div>
+
+<div id="hospout">
+ <div id="look">
+ <label>    省:</label>     <input class="easyui-combobox" name="codeName" id="codeName" style="width:120px;" data-options="editable:false"/> 
+ <label>	市  :</label>   <input class="easyui-combobox" name="code_nameShi" id="code_nameShi" style="width:120px;" data-options="editable:false"/>
+ <label>	区/县:</label>  <input class="easyui-combobox" name="code_nameQu" id="code_nameQu" style="width:120px;" data-options="editable:false"/> 
+ <label>	街道: </label>  <input class="easyui-combobox" name="code_namebut" id="code_namebut" style="width:150px;" data-options="editable:false"/>	
+ <label>	 社区:</label>   <input class="easyui-combobox" name="code_nameSheQu" id="code_nameSheQu" style="width:150px" data-options="editable:false"/><br>
+  <label>	 医疗机构名称:</label> <input  class="easyui-textbox" style="width: 200px;" name="lookhosName" id="lookhosName"/>
+   <input name="addressId" id="addressId" style="display:none" >
+    <a href="javascript:queryhos()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a>
+     <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-search"></i>清除搜索条件</a>  
+ </div>
+ <div id="hospdialog" style=" display: none" class="dialog" > 
+   <form id="hospform" method="post"> 
+ 
+    <div id="left1" data-options="region:'north'" style="display:inline-block;height:321px;overflow-y:scroll;border:1px solid #ccc">
+     <table id="hosp_table" class="easyui-datagrid">   
+       <thead> 
+        <tr>     
+       <th data-options="field:'hospName',width:335">医疗机构(单选)</th> 
+       </tr>
+       </thead>
+       <tbody>   
+    	</tbody>   
+     </table>
+     </div>
+	            <div id="right1" data-options="region:'center'" style="display:inline-block;vertical-align:top;height:321px;overflow-y:scroll;border:1px solid #ccc;" >
+	         <table id="dept_table" style="float:right">
+	           <thead> 
+	        <tr>     
+	       <th data-options="field:'name',width:335">科室(单选)</th> 
+	       </tr>
+	         </thead>
+	       
+	      </table>
+	      </div> 
+   </form>
+  </div>
+</div>
+ </body>
+</html>
+
+  <script type="text/javascript">
+      var adresscode="";	 
+	  var hosName="";
+	  var addHospName="";
+	  var addHospId="";
+	  var addDeptName="";
+	  var hospnewId="";
+	     
+  $(function() {
+	  $('#titleName').combobox('reload');
+	  $('#doctorLevelName').combobox('reload');
+	  $('#doctorTypeName').combobox('reload');
+	  $('#registerSourceName').combobox('reload');
+	  $('#titleId').combobox('reload');
+	  $('#doctorTypeId').combobox('reload');
+	  $('#departmentId').combobox('reload');
+	  addressbox.ReSet();
+	 
+	  /*初始化控件*/
+	  $('#main_table').datagrid({
+	    method: 'get',
+	    url: '/yxt-admin/admin/doctor?ran=' + Math.random(),
+	    toolbar: '#seach',
+	    pageSize:20,
+	    pagination: true,
+	    fit: true,
+	    fitColumns: true,
+	    border: false,
+	    rownumbers: true,
+	    singleSelect: true,
+	    loadFilter: function(data) {
+	    	if(data.stateCode=='205'){
+	    		top.location.href="/yxt-admin/adminLogin.html";
+	    		return;
+	    	}else if(data.stateCode=='203'){
+	    		return {total:0,rows:[]};
+	    	}
+	    	var rows = data.data.rows,rowslen = rows.length,i;
+	    	for(i = 0 ; i < rowslen; ++i){
+		    	rows[i].registerDate = DateToString(rows[i].registerDate);
+		    
+	    	}
+	      return data.data;
+	    }
+	  });
+	  
+ 	  $('#hosp_table').datagrid({
+		    method: 'get',
+		    url: '/yxt-admin/admin/hospital',
+		   toolbar: '#look',
+		     width:400, 
+		    rownumbers: true,
+		    singleSelect: true ,
+	 	    fitColumns: true,
+		    frozenColumns:[[
+			                {field:'id',checkbox:true}
+			    		]],
+		  loadFilter: function(data) {
+		    	if(data.stateCode=='205'){
+		    		top.location.href="/yxt-admin/adminLogin.html";
+		    		return;
+		    	}else if(data.stateCode=='203'){
+		    		return {total:0,rows:[]};
+		    	}
+		      return data.data;
+		    }, 
+		    onClickRow:function(index, row){
+		        hospnewId=row.id;
+		        hosName=row.hospName;
+		        addHospId=row.id;
+		        addHospName=row.hospName;
+		      
+		    }
+	  }); 
+	  $('#dept_table').datagrid({
+		    method: 'get',
+		    url: '/yxt-admin/admin/department/all',
+		    width:400,
+		    rownumbers: true,
+		    singleSelect: true,
+		    frozenColumns:[[
+			                {field:'id',checkbox:true}
+			    		]],
+			    		 loadFilter: function(data) {
+			    		    	if(data.stateCode=='205'){
+			    		    		top.location.href="/yxt-admin/adminLogin.html";
+			    		    		return;
+			    		    	}
+			    		      return data.data;
+			 }
+	  });
+	});
+  
+  function _validformatter(value, row, index) {
+	  if (value == 0) {
+	    return "未审核";
+	  }if (value == 1){
+	  return "已审核";
+		  
+	  }
+	}
+  
+  function _stateformatter(value, row, index) {
+	  if (value == 0) {
+	    return "正常";
+	  }if (value == 1){
+	  return "异常";
+		  
+	  }
+	}
+  
+	function query() {
+	  $('#main_table').datagrid('load', {
+		  name: $('#namedoc').textbox('getValue'),
+		  doctorTypeId: $('#doctorTypeId').combobox('getValue'),
+		  departmentId: $('#departmentId').combobox('getValue'),
+		  titleId: $('#titleId').combobox('getValue'),
+		 
+	  });
+	  $('#main_table').datagrid('reload');
+	  
+	}
+	function clear() {
+		$('#namedoc').textbox('clear');
+		$('#doctorTypeId').combobox('clear');
+		 $('#departmentId').combobox('clear');
+		 $('#titleId').combobox('clear');
+		 $('#lookhosName').textbox('clear');		
+		 $('#codeName').combobox('clear');
+		 $('#code_nameShi').combobox('clear');
+		 $('#code_nameQu').combobox('clear');
+		 $('#code_namebut').combobox('clear');
+		 $('#code_nameSheQu').combobox('clear');
+	}
+	
+	 function re(){
+   	  history.go(0) 
+     }
+	
+	function _opformatter(value, row, index) {
+	  var a = '&nbsp;<a href="javascript:edit(\'' + index + '\',' + row.id + ')" title="编辑和详情"><i class="fa fa-pencil"></i></a>';	
+	  var c = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<a href="javascript:del(\'' + row.id + '\')" title="删除"><i class="fa fa-trash"></i></a>';
+	  return a + c ;
+	}
+	
+	function _opformatterhosp(value, row, index) {
+		  var c = '&nbsp;&nbsp;&nbsp;<a href="javascript:delhosp(\'' + index + '\' )" title="删除"><i class="fa fa-trash"></i></a>'; 
+		  return c ;
+		}
+	
+	
+	function _opformatterhospDept(value, row, index) {
+		  var c = '&nbsp;&nbsp;&nbsp;<a href="javascript:delHospDept(\'' + index + '\' )" title="删除"><i class="fa fa-trash"></i></a>'; 
+		  return c ;
+		}
+	
+	 function _priceformatter(value, row, index) {
+		  if (value == null || value==0) {
+		    return "￥ 0.00";
+		  }if(value!=null){
+			  var f = value.toFixed(2);	
+			  return  "￥"+f;
+		  }
+		}	
+	
+
+	
+	function add() {
+	var height=	document.body.clientHeight;
+	
+	
+		$('#registTime').hide();
+		$('#hospout').hide();
+		$('#hos_main_table').datagrid({
+		    method: 'get',
+		   url: '/yxt-admin/admin/hospiDepartDoctorRelation/' +1000000000,
+		    fit: true,
+		    fitColumns: true,
+		    border: true,
+		    rownumbers: true,
+		    singleSelect: true,
+		    loadFilter: function(data) {
+		    	if(data.stateCode=='203'){		    		
+		        	return {total:0,rows:[]};
+		    	}
+		    }
+		  });
+		 $('#main_main_table').datagrid({
+		    method: 'get',
+		   url: '/yxt-admin/admin/hospiDepartDoctorRelation/' +1000000000,
+		    fit: true,
+		    pagination: false,
+		    fitColumns: true,
+		    border: true,
+		    rownumbers: true,
+		    singleSelect: true,
+		    loadFilter: function(data) {
+		    	if(data.stateCode=='203'){
+		        	return {total:0,rows:[]};
+		    	}
+		    }
+		  }); 
+		$('#doctorName').textbox('readonly',false);
+		 if($(".dialog").css("display") == "none"){
+             $(".dialog").show();
+         }
+		 $('#photo').html("");
+         var imgup = new NebFiles.ImageUp({
+             show: true,
+             maxnum: 1
+         });
+         imgup.AddTo($('#photo'));
+	  $('#form').form('reset');
+	  // 通过身份证号查询出出生时间
+	  $('#idCard').textbox({
+		  onChange:function(newValue,oldValue){
+			  if(newValue != null && newValue != ""){ 
+				  var  birthdayByIdCard="";
+				  if(newValue.length == 15){  
+					  birthdayByIdCard = "19"+newValue.substr(6,6);  
+			         } else if(newValue.length == 18){  
+			        	 birthdayByIdCard = newValue.substr(6,8);  
+			         }  
+				  birthdayByIdCard = birthdayByIdCard.replace(/(.{4})(.{2})/,"$1-$2-"); 
+			       $('#birthday').datebox('setValue',birthdayByIdCard);
+			  }
+			  
+		  }
+	  })
+	  
+	
+	  
+	  
+	  $('#dialog').dialog({
+		  title: '添加信息',
+		     width: 1050,
+		    height: height>760 ? 760 :height-100,
+		    draggable:true,
+		    closed: false,
+		    modal: true,
+		    buttons: [{
+		    	  text: '确定添加',
+			      handler: function(){
+			    	  var hospIdd=hospnewId;		    	  	
+				    	 var birthday=$('#birthday').datetimebox('getValue');
+				    	 birthday=birthday.replace(/-/g,"/");
+					     var datebirthday=new Date(birthday);
+			             var v = $('#form').form('validate');
+			             if(v){
+			            	$.ajax({
+			            		 type: 'POST',
+				                  url:'/yxt-admin/admin/doctor/insert',
+				                  data:{
+				             		    registerSourceId:$('#registerSourceName').combobox('getValue'),
+				             			doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+				             			doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+				             			titleId:$('#titleName').combobox('getValue'),
+				                	    name:$('#doctorName').textbox('getValue'),
+				                	    phone:$('#phone').textbox('getValue'),
+				                	    password:$('#password').textbox('getValue'),				                	   	 
+				                	    isValid:$('#isValid').combobox('getValue'),
+				                	    idCard:$('#idCard').textbox('getValue'),
+				                	    state:$('#state').combobox('getValue'),
+				                	    remark:$('#remark').textbox('getValue'),
+				                	    password:$('#password').textbox('getValue'),
+				                	    itvNumber:$('#itvNumber').textbox('getValue'),
+				                	    zwName:$('#zwName').textbox('getValue'),
+				                	    zxzNumber:$('#zxzNumber').textbox('getValue')
+				                 },
+				                 success:function(data){
+				                	if(data.stateCode==200){
+				               		 $.ajax({
+			                    		    type:'get',
+		  		                       		url:'/yxt-admin/admin/doctorMax',
+		  		                       		success:function(data){
+		  		                       			var id=data.data.rows.id;
+		  		                       			$.ajax({// doctorDetail
+		  		                       			 type: 'POST',
+		  			   			                  url:'/yxt-admin/admin/doctorDetail/insert',
+		  			   			                  data:{
+		  			   			                	doctorId:id,
+		  			   			                	idCard:$('#idCard').textbox('getValue'),
+		  			   			                	addressDetail:$('#addressDetail').val(),			                	
+		  			   			                	name:$('#name').textbox('getValue'),
+		  			   			                	birthday:datebirthday,
+		  			   			                	school:$('#school').textbox('getValue'),				   			                
+		  			   			                	grade:$('#grade').numberbox('getValue'),
+		  			   			                	profile:$('#profile').textbox('getValue'),
+		  			   			                	gootat:$('#gootat').textbox('getValue'),
+		  			   			                    photo:imgup.GetImages().length==0 ? null : imgup.GetImages().toString(),
+		  			   			                    zpHospitalId:$('#main_main_table').datagrid('getData').total==0 ? null : $('#main_main_table').datagrid('getData').rows[0].zpHospitalId,
+		  			   			                    zpDepartmentId:$('#main_main_table').datagrid('getData').total==0 ? null : $('#main_main_table').datagrid('getData').rows[0].zpDepartmentId
+		  			   			                 },
+		  			   			                 success:function(data){
+		  			   			                	 if(data.stateCode==200){
+		  			   			                	 var data=$('#hos_main_table').datagrid('getData');
+		 	  				                		 var num=data.rows.length;
+		  			   			                	 for(var j=0;j<num;j++){
+		  		  				                		 var row = $('#hos_main_table').datagrid('getData').rows[j];
+		  			   			                	 $.ajax({
+			  			   			            			//添加hospi_depart_doctor_relation
+			  			   			            			  type: 'POST',
+			  		                                          url:'/yxt-admin/admin/hospiDepartDoctorRelation/insert',
+			  		                                          data:{
+			  			   			            		    doctorId:id,
+			  			   			            		    hospId:$('#hos_main_table').datagrid('getData').total==0 ? null : $('#hos_main_table').datagrid('getData').rows[j].hospId,
+			  			   			            		    depeId:$('#hos_main_table').datagrid('getData').total==0 ? null : $('#hos_main_table').datagrid('getData').rows[j].deptId
+			  		                                          },
+			  		                                          success:function(data){
+			  		                                         /*  $('#dialog').dialog('close');
+			  		             		                      $('#main_table').datagrid('reload');
+			  		             		                      
+			  		             		                     $('#main_main_table').datagrid('reload');
+			  		             		                      $.messager.show({
+			  		             		                        title: '提示消息',
+			  		             		                        msg: data.message,
+			  		             		                        timeout: 5000,
+			  		             		                        showType: 'slide'
+			  		             		                      }); */  
+			  		                                          }
+			  			   			            		})
+		  			   			                	 }
+		  			   			                 $('#dialog').dialog('close');
+		             		                      $('#main_table').datagrid('reload');
+		             		                     $('#main_main_table').datagrid('reload');
+		             		                      $.messager.show({
+		             		                        title: '提示消息',
+		             		                       msg: '新增成功',
+		             		                        timeout: 5000,
+		             		                        showType: 'slide'
+		             		                      });  
+		             		                   
+		  			   			                	 };
+		  			   			                	 }
+		  			   			                 }) 
+		  			   			                 
+		  		                       		
+		  		                       			
+			                 			}
+			                 			 });
+				               	 
+				                	} else {
+					                      $.messager.show({
+						                        title: '提示',
+						                        msg: data.message
+						                      });
+						                    } 
+				                 },error: function(XMLHttpRequest, textStatus, errorThrown) {
+					                    $.messager.show({
+						                      title: '提示',
+						                      msg: '请求发生错误请联系开发者'
+						                    });
+						                  } 
+			            	}) 
+			             }
+			      }
+		    },{
+		    	 text: '取消关闭',
+			      handler: function(){
+			    	  $('#dialog').dialog('close'); 
+			      }
+		    }]
+	
+		   
+	  });
+	
+	}
+
+	function edit(index, id) {
+		var heightedit=	document.body.clientHeight;
+		 $('#registTime').show();
+	   var doctorId=id;
+	   $('#main_main_table').datagrid({
+		      method: 'get',
+		      url: '/yxt-admin/admin/doctorDetail/' + doctorId + '/detail',
+		      height:100,
+		      pagination: false,
+		      fit: true,
+		      fitColumns: true,
+		      border: true,
+		      rownumbers: true,
+		      singleSelect: true,
+		      loadFilter: function(data) {		    		    	
+		        if(data.stateCode=='203'){
+		        	return {total:0,rows:[]};
+		        }else if(data.stateCode=='200'){
+		        	if(data.data.zpHospitalId!=undefined && data.data.zpDepartmentId!=undefined){
+		        	  $('#main_main_table').datagrid('insertRow',{
+   					        index:1, 
+			    			row:{
+			    				 hName:data.data.hName,
+				    			 deptName:data.data.deptName,
+				    			 zpHospitalId:data.data.zpHospitalId,
+				    			 zpDepartmentId:data.data.zpDepartmentId
+			    			}
+			    		}); 
+		        	}else if(data.data.zpHospitalId==undefined && data.data.zpDepartmentId==undefined){
+		        		return {total:0,rows:[]};
+		        	}
+		        }
+		    }
+		  }); 
+		$('#hos_main_table').datagrid({
+		      method: 'get',
+		      url: '/yxt-admin/admin/hospiDepartDoctorRelation/' + doctorId,
+		      height:200,
+		      pagination: true,
+		      fit: true,
+		      fitColumns: true,
+		      border: true,
+		      rownumbers: true,
+		      singleSelect: true,
+		      loadFilter: function(data) {		    		    	
+		        if(data.stateCode=='203'){
+		        	return {total:0,rows:[]};
+		        }else if(data.stateCode=='200'){
+		        	return data.data;
+		        }
+		    }
+		  });
+		
+		
+	 	
+	
+	
+		  $('#form').form('reset');
+		 if($(".dialog").css("display") == "none"){
+             $(".dialog").show();
+         }
+	      $('#photo').html("");
+		 var imgup = new NebFiles.ImageUp({
+	            show: true ,
+	            maxnum: 1
+	        });		   
+	        imgup.AddTo($('#photo')); 
+	  $.get('/yxt-admin/admin/doctor/' + id + '/detail',
+	  function(data) {
+		  data.data.registerDate=DateToString(data.data.registerDate);
+		  data.data.delBirthday=DateToString(data.data.delBirthday);
+		  $('#form').form('load', data.data)
+		  // 显示图片
+          var pic=data.data.photo;
+		  if(pic!=null && pic!=''){
+	    imgup.AddImages(data.data.photo.split(","));
+        imgup.AddTo($('#photo'));
+		  }
+	  });
+	   
+	    $('#dialog').dialog({
+	    title: '编辑/查看信息',
+	    width: 1000,
+	    height: heightedit>760 ? 760:heightedit-100,
+	    closed: false,
+	    modal: true,
+	    buttons: [{
+	      text: '确定修改',
+	      handler: function() {
+	    	  var updatehospIdd=hospnewId;
+	    	//科室的id值   
+	    	  var temID="";
+	    	  var selRow = $("#dept_table").datagrid('getSelections');
+	    		if(selRow.length >=1){
+					 
+					 for (var i = 0; i < selRow.length;i++) {  
+			                if (temID =="") {  
+			                    temID = selRow[i].id ; 
+			                } else {  
+			                    temID = selRow[i].id + "," + temID;  
+			                }                 
+			            }
+	    		}
+	        var v = $('#form').form('validate');
+	      
+	        if (v) {
+	          //AJAX提交
+	          $.ajax({
+	            type: 'put',
+	            url: '/yxt-admin/admin/doctor/' + id + '/update',
+	            data:{
+	            	 registerSourceId:$('#registerSourceName').combobox('getValue'),      			
+         			 titleId:$('#titleName').combobox('getValue'),
+         			 name:$('#doctorName').textbox('getValue'), 
+            	     idCard:$('#idCard').textbox('getValue'),
+         			 doctorLevelId:$('#doctorLevelName').combobox('getValue'),
+            	     phone:$('#phone').textbox('getValue'),
+            	     password:$('#password').textbox('getValue'),
+            	     isValid:$('#isValid').combobox('getValue')==true?1:0,
+            	     state:$('#state').combobox('getValue'),
+            	     remark:$('#remark').textbox('getValue'),
+            	     doctorTypeId:$('#doctorTypeName').combobox('getValue'),
+            	     itvNumber:$('#itvNumber').textbox('getValue'),
+            	     zwName:$('#zwName').textbox('getValue'),
+             	     zxzNumber:$('#zxzNumber').textbox('getValue')
+		                 }, 
+		                 
+	            success: function(data) {
+	              if (data.stateCode == 200) {
+	            	  var time=$('#birthday').datetimebox('getValue');
+				    	time=time.replace(/-/g,"/");
+				    	var date=new Date(time);
+	
+				    	var back=$('#main_main_table').datagrid('getData');
+                 		var num=back.rows.length;
+                 		
+                 		if(num>0){
+      	            	  $.ajax({
+      			                  type: 'put',
+      			                  url:'/yxt-admin/admin/doctorDetail/' + id + '/update',
+      			                  data:{
+      			                	doctorId:id,
+      			                	idCard:$('#idCard').textbox('getValue'),
+      			                	birthday:date,
+      			                	addressDetail:$('#addressDetail').val(),
+      			                	name:$('#name').val(),
+      			                	school:$('#school').textbox('getValue'),
+      			                	grade:$('#grade').numberbox('getValue'),
+      			                	profile:$('#profile').textbox('getValue'),
+      			                	gootat:$('#gootat').textbox('getValue')	,
+      			                	photo:imgup.GetImages().length==0 ? null : imgup.GetImages().toString(),
+      			                	zpHospitalId:$('#main_main_table').datagrid('getData').rows[0].zpHospitalId,
+      			  				    zpDepartmentId:$('#main_main_table').datagrid('getData').rows[0].zpDepartmentId
+      			                			
+      			                 },
+      			                 success:function(data){
+      			                	 if(data.stateCode == 200){
+      			                		    var hosdata=$('#hos_main_table').datagrid('getData');
+      				                		var num=hosdata.rows.length;
+      				                		
+      				                		if(num>0){
+      				                			
+      				                			for(var j=0;j<num;j++){
+      	      				                		 var row = $('#hos_main_table').datagrid('getData').rows[j];
+      	      				                		 $.ajax({
+      	      			   			            			//添加hospi_depart_doctor_relation
+      	      			   			            			  type: 'POST',
+      	      		                                          url:'/yxt-admin/admin/hospiDepartDoctorRelation/insert',
+      	      		                                          data:{
+      	      			   			            		    doctorId:id,
+      	      			   			            		    hospId:$('#hos_main_table').datagrid('getData').rows[j].hospId,
+      	      			   			            		    depeId:$('#hos_main_table').datagrid('getData').rows[j].deptId	
+      	      		                                          },
+      	      		                                          success:function(data){
+      	      		                                         $('#dialog').dialog('close');
+      	      		                     	                $('#form').form('reset');
+      	      		                     	                $('#main_table').datagrid('reload');
+      	      		                     	               /*  $.messager.show({
+      	      		                     	                  title: '提示消息',
+      	      		                     	                  msg: data.message,
+      	      		                     	                  timeout: 5000,
+      	      		                     	                  showType: 'slide'
+      	      		                     	                }); */
+      	      		                                          }
+      	      		                            	
+      	      			   			            		})
+      	      							    			 
+      	      							    		 }
+      				                		}else{
+      				                			/* var doctorId=id; */
+      				                			
+      				                				$.ajax({
+      	      				                			 type:'DELETE',
+      	    											   url:'/yxt-admin/admin/hospiDepartDoctorRelations/'+id+'/delete'
+      	      				                		});
+      											
+       				                			 $('#dialog').dialog('close');
+             				       	             $('#form').form('reset');
+             				       	             $('#main_table').datagrid('reload');
+      				                		
+      				                		}
+      				                		 
+      		   			            	}
+      			                 }
+      	            	  });
+                 		}else{
+      	            	  $.ajax({
+      			                  type: 'put',
+      			                  url:'/yxt-admin/admin/doctorDetail/' + id + '/update',
+      			                  data:{
+      			                	doctorId:id,
+      			                	idCard:$('#idCard').textbox('getValue'),
+      			                	birthday:date,
+      			                	addressDetail:$('#addressDetail').val(),
+      			                	name:$('#name').val(),
+      			                	school:$('#school').textbox('getValue'),
+      			                	grade:$('#grade').numberbox('getValue'),
+      			                	profile:$('#profile').textbox('getValue'),
+      			                	gootat:$('#gootat').textbox('getValue')	,
+      			                	photo:imgup.GetImages().length==0 ? null : imgup.GetImages().toString(),
+      			                	zpHospitalId:1==2? null:null,
+      	      			  			zpDepartmentId:1==2? null:null
+      			                 },
+      			                 success:function(data){
+      			                	 if(data.stateCode == 200){
+      			                		 var datadata=$('#hos_main_table').datagrid('getData');
+      				                		var num=datadata.rows.length;
+      				                		if(num>0){
+      				                			
+      				                			 for(var j=0;j<num;j++){
+      	      				                		 var row = $('#hos_main_table').datagrid('getData').rows[j];
+      	      				                		 $.ajax({
+      	      			   			            			  type: 'POST',
+      	      		                                          url:'/yxt-admin/admin/hospiDepartDoctorRelation/insert',
+      	      		                                          data:{
+      	      			   			            		    doctorId:id,
+      	      			   			            		    hospId:$('#hos_main_table').datagrid('getData').rows[j].hospId,
+      	      			   			            		    depeId:$('#hos_main_table').datagrid('getData').rows[j].deptId	
+      	      		                                          },
+      	      		                                          success:function(data){
+      	      		                                        	/*  $('#dialog').dialog('close');
+      	      		      				       	                $('#form').form('reset');
+      	      		      				       	                $('#main_table').datagrid('reload');
+      	      		      				       	                $.messager.show({
+      	      		      				       	                  title: '提示消息',
+      	      		      				       	                  msg: data.message,
+      	      		      				       	                  timeout: 5000,
+      	      		      				       	                  showType: 'slide'
+      	      		      				       	                }); */
+      	      		                                          }
+      	      		                            	
+      	      			   			            		})
+      	      							    			 
+      	      							    		 }
+      				                		}else {
+      				                			var  doctorId=id;
+      				                			$.ajax({
+         				                			 type:'DELETE',
+       											   url:'/yxt-admin/admin/hospiDepartDoctorRelations/'+id+'/delete'
+         				                		});
+      				                			 $('#dialog').dialog('close');
+            				       	             $('#form').form('reset');
+            				       	             $('#main_table').datagrid('reload');
+      				                		}
+      				                		
+      				                		
+      				                		/* else{
+      				                			 $('#dialog').dialog('close');
+           				       	                $('#form').form('reset');
+           				       	                $('#main_table').datagrid('reload');
+           				       	                $.messager.show({
+           				       	                  title: '提示消息',
+           				       	                  msg: data.message,
+           				       	                  timeout: 5000,
+           				       	                  showType: 'slide'
+           				       	                });
+      				                		} */
+      				                		
+      		   			            	}
+      			                 }
+      	            	  });
+                 		}
+	                $('#main_table').datagrid('reload');
+	                $('#dialog').dialog('close');
+	                $('#form').form('reset');
+	                $.messager.show({
+	                  title: '提示消息',
+	                  msg: '修改成功！',
+	                  timeout: 5000,
+	                  showType: 'slide'
+	                });
+	                $('#main_main_table').datagrid('deleteRow',0); 
+	              } else {
+	                $.messager.show({
+	                  title: '提示',
+	                  msg: data.message
+	                });
+	              }
+	            },
+	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+	              $.messager.show({
+	                title: '提示',
+	                msg: '请求发生错误请联系开发者'
+	              });
+	            }
+	          });
+	        }
+	      }
+	    },
+	    {
+	      text: '取消关闭',
+	      handler: function() {
+	    	  var data=$('#main_main_table').datagrid('getData');
+       		  var num=data.rows.length;
+       		  if(num>0){
+	    	  $('#main_main_table').datagrid('deleteRow',0); 
+       		  } 
+	        $('#dialog').dialog('close');
+	      }
+	    }],
+	    onClose:function(){
+	    	  var data=$('#main_main_table').datagrid('getData');
+       		  var num=data.rows.length;
+       		  if(num>0){
+	    	  $('#main_main_table').datagrid('deleteRow',0); 
+       		  } 
+	    }
+	  });
+	}
+	
+	
+	
+	// 先删除从表  再删主表
+	function del(id) {		
+	  $.messager.confirm('确认', '您确认想要删除记录吗？',
+	  function(r) {
+	    if (r) {
+	      $.ajax({
+    		  type: 'delete',
+  	        url: '/yxt-admin/admin/doctor/' + id + '/delete',
+  	        success:function(data){
+  	        	if(data.stateCode == 200){
+  	        		 $('#main_table').datagrid('reload');
+  		            $.messager.show({
+  		              title: '提示消息',
+  		              msg: data.message,
+  		              timeout: 5000,
+  		              showType: 'slide'
+  		            });
+  	        	}
+  	        }
+    	  });  
+	    }
+	  });
+	}
+
+	// 时间转化
+	 function DateToString(date, format) {
+        if (!date) return "";
+        format = format || "yyyy-MM-dd HH:mm:ss";
+        switch (typeof date) {
+            case "string":
+                date = new Date(date.replace(/-/, "/"));
+                break;
+            case "number":
+                date = new Date(date);
+                break;
+        }
+        if (!date instanceof Date) return "";
+        var dict = {
+            "yyyy": date.getFullYear(),
+            "yy": (date.getFullYear() + "").substr(2),
+            "M": date.getMonth() + 1,
+            "d": date.getDate(),
+            "H": date.getHours(),
+            "m": date.getMinutes(),
+            "s": date.getSeconds(),
+            "MM": ("" + (date.getMonth() + 101)).substr(1),
+            "dd": ("" + (date.getDate() + 100)).substr(1),
+            "HH": ("" + (date.getHours() + 100)).substr(1),
+            "mm": ("" + (date.getMinutes() + 100)).substr(1),
+            "ss": ("" + (date.getSeconds() + 100)).substr(1)
+        };
+        return format.replace(/(yyyy|yy|MM?|dd?|HH?|ss?|mm?)/g, function () {
+            return dict[arguments[0]];
+        });
+    }
+
+  
+	function addHos(){
+		var id="";
+		$('#hospdialog').dialog({
+			title:'机构科室',
+			toolbar: '#look',
+			width:860,
+			height:480,
+			 closed: false,
+			 modal: true,			 
+			 buttons: [{
+			      text: '确定添加',
+			      handler:function(){
+			    	  var hospJgName=hosName;
+			    	  var inserthospIdd=hospnewId;
+			    	//科室的id值   
+			    	  var temID="";
+			    	  var deptName="";
+			    	  var selRow = $("#dept_table").datagrid('getSelections');
+			    		if(selRow.length >=1){
+							// ;  
+							 for (var i = 0; i < selRow.length;i++) {  
+					                if (temID =="") {  
+					                    temID = selRow[i].id ; 
+					                    deptName=selRow[i].name;
+					                } else {  
+					                    temID = selRow[i].id + "," + temID; 
+					                    deptName=selRow[i].name+","+deptName;
+					                }                 				            	
+					            }
+			    		}	
+			    		
+			    		// 追加数据
+			    		 for(var i=0;i<selRow.length;i++){
+			    		 $('#hos_main_table').datagrid('insertRow',{
+			    			row:{
+			    				 hosptitalName: hospJgName,
+				    			 departmentName:selRow[i].name,
+				    			 hospId:inserthospIdd,
+				    			 deptId:selRow[i].id
+			    			}
+			    		});  
+			    		} 
+			    		 $('#hospdialog').dialog('close');
+			    		
+			      }			 
+			 },{
+				 text:'取消关闭',
+				 handler: function() {
+				   $('#hospdialog').dialog('close');
+				      }
+			 }],
+		});
+	}
+// 增加主聘医院 科室
+	function mainAddHos(){
+		var id="";
+		$('#hospdialog').dialog({
+			title:'科室',
+			toolbar: '#look',
+			width:860,
+			height:480,
+			 closed: false,
+			 modal: true,			 
+			 buttons: [{
+			      text: '确定添加',
+			      handler:function(){
+			    	  var hospJgName=addHospName;
+			    	  var inserthospIdd=addHospId;
+			    	//科室的id值   
+			    	  var temID="";
+			    	  var depName="";
+			    	  var selRow = $("#dept_table").datagrid('getSelections');
+			    		 if(selRow.length >=1){
+							// ;  
+							 for (var i = 0; i < selRow.length;i++) {  
+					                if (temID =="") {  
+					                    temID = selRow[i].id ; 
+					                    depName=selRow[i].name;
+					                } else {  
+					                    temID = selRow[i].id + "," + temID; 
+					                    depName=selRow[i].name+","+depName;
+					                }                 				            	
+					            }
+			    		}	
+			    		// 追加数据
+			    		  for(var i=0;i<1;i++){			    			 
+			    			  if($('#main_main_table').datagrid('getData').rows.length==0){ 
+			    				  $('#main_main_table').datagrid('insertRow',{
+			    					  index:1,
+						    			row:{
+						    				 hName: hospJgName,
+							    			 deptName:selRow[0].name,
+							    			 zpHospitalId:inserthospIdd,
+							    			 zpDepartmentId:selRow[0].id
+						    			}
+						    		});
+			    				  $('#hospdialog').dialog('close');
+			    			  }else{
+			    				  $('#main_main_table').datagrid('deleteRow',0); 
+			    				  $('#main_main_table').datagrid('insertRow',{
+			    					     index:1,
+						    			 row:{
+						    				 hName: hospJgName,
+							    			 deptName:selRow[0].name,
+							    			 zpHospitalId:inserthospIdd,
+							    			 zpDepartmentId:selRow[0].id
+						    			}
+						    		}); 
+			    				  $('#hospdialog').dialog('close');
+			    			  } 
+			    	} 
+			      }			 
+			 },{
+				 text:'取消关闭',
+				 handler: function() {
+				   $('#hospdialog').dialog('close');
+				      }
+			 }],
+		});
+	}
+	
+	 // 地址联动
+	  var AddressBox = function () {
+		   var self = this;
+		   this.selectboxs = ["codeName", "code_nameShi", "code_nameQu", "code_namebut", "code_nameSheQu"];
+		   var len = this.selectboxs.length, i, obj;
+		   for (i = 0; i < len; ++i) {					  
+		        obj = $("#" + this.selectboxs[i]);				       
+		        if(i<len){
+			        obj.combobox({
+			        	valueField:'code_value',   
+			            textField:'name',
+			            onChange: (function (index) {
+			                return function (newValue, oldValue) {
+			                	if(newValue && newValue.length > 0){
+				                    self.Clear(index + 1);
+				                    self.Load(index + 1, newValue);
+			                    }
+			                	
+			                };
+			            })(i)
+			        });				        	
+		        }
+		        
+		    }
+		};
+		
+		AddressBox.prototype = {
+		    Clear: function (index) {
+		        var i, ob;
+		        index = index || 0;
+		        for (i = index; i < this.selectboxs.length; ++i) {
+		            ob = $("#" + this.selectboxs[i]);
+                  ob.combobox("clear");	
+                  ob.combobox("loadData", []);
+		        }
+		    },
+		    Load: function (index, pid, initvalue, fun) {//加载数据 (索引 pid 初始化 回调函数)
+		    	index = index || 0 ;
+		    	pid = pid || "156";
+		        if (pid) {
+			        var self = this;
+		            $.ajax({
+		                url: '/yxt-admin/admin/address/' + pid + '/name',
+		                success: function (back) {
+		                	if(back.data) {
+			                	var rows = back.data.rows, ob = $("#" + self.selectboxs[index]);					          
+		                        ob.combobox("loadData", rows);
+			                	if(initvalue !== undefined && initvalue !== null){
+			                		ob.combobox("setValue", parseInt(initvalue));
+			                	}
+			                	if(fun){
+			                		fun(ob.combobox("getValue"));
+			                	}
+	                        }
+		                    self = null;
+		                    pid = null;
+		                    v = null;
+		                }
+		            });
+		        }
+		    },
+		    ReSet:function(){// 返回的结果
+				 this.Clear();
+				 // obj = [];
+				 if(window.parent && window.parent.__hospital_adressdata){
+					 var adressdata = window.parent.__hospital_adressdata ,len = this.selectboxs.length, i;
+					 for (i = 0; i < len; ++i) {
+						this.Load(i, adressdata[i-1], adressdata[i]);                        
+					 }
+				 }else{
+				     this.Load();
+				 }
+		    },
+		    GetVal:function(){// 获取combobox里的值   （实际上是code_value）
+				   var len = this.selectboxs.length, i, val, selectlv = 0, code = "", selectlv = 1, code = 0;
+				   for (i = len - 1; i >= selectlv; --i) {					  
+					   val = $('#' + this.selectboxs[i]).combobox('getValue');
+					   if(val.length>0){
+						   code = val;
+						   break;
+					   }		        
+				    }
+				  return code;
+		    },
+		    SetAddress:function(code){// 修改地址的时候  先加载 set值		    	
+		    	var codes = code.split(";"), len = codes.length, i=0 , pid = null;
+		    	for(; i<len; ++i){
+		    		this.Load(i, pid, codes[i]);
+		    		pid = codes[i];
+		    	}
+		    	this.Load(i, pid);
+		    	return this;
+		    }
+		};
+
+		var addressbox = new AddressBox();
+
+function queryhos(){		
+	$('#hosp_table').datagrid('load', {
+		 name: $('#lookhosName').textbox('getValue')==null ? null : $('#lookhosName').textbox('getValue'),
+		 addressCode: addressbox.GetVal()==0 ? null : addressbox.GetVal()
+	})
+	$('#hosp_table').datagrid('reload');		
+			
+	}	
+ function delhosp(index){
+	 $('#hos_main_table').datagrid('deleteRow',index);
+ }	
+ function delHospDept(index){
+	 $('#main_main_table').datagrid('deleteRow',index); 
+ }
+</script> 
+

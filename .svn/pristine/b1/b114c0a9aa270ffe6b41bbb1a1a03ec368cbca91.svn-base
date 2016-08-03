@@ -1,0 +1,332 @@
+package org.system.controller.impl.doctor;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.store.file.StoreFactory;
+import org.store.his.HisFactory;
+import org.store.phone.PhoneFactory;
+import org.system.Global;
+import org.system.controller.iface.doctor.IDoctorController;
+import org.system.entity.doctor.Doctor;
+import org.system.entity.doctor.SysDoctorLogs;
+import org.system.message.Message;
+import org.system.service.iface.doctor.IDoctorService;
+import org.system.service.iface.doctor.ISysDoctorLogsService;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class DoctorController implements IDoctorController {
+	Logger log = LoggerFactory.getLogger(DoctorController.class);
+	@Resource
+	private IDoctorService doctorService;
+	@Resource
+	private ISysDoctorLogsService sysDoctorLogsService;
+
+	@Resource
+	private CacheManager cache;
+
+	@Override
+	public Map<String, Object> login(String validCode, Doctor doctor, BindingResult result, HttpSession session,
+			HttpServletRequest request) {
+		// 获取验证码
+		Object obj = session.getAttribute(Global.SESSION_CODE);
+		// 判断验证码是否为空
+		if (obj == null) {
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.empty"));
+		} else {
+			// 比较验证码
+			if (!validCode.equalsIgnoreCase(obj.toString()) || "abc".equalsIgnoreCase(obj.toString())) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.error"));
+			} else {
+				// 正确移除验证码
+				session.removeAttribute(Global.SESSION_CODE);
+			}
+		}
+		// 查询用户
+		Map<String, Object> doctorMap = doctorService.getDoctor(doctor);
+		Map<String, Object> resultMap = new HashMap<>();
+		// 用户存在
+		if (doctorMap != null) {
+			resultMap.put("token", session.getId());
+			Cache oc = cache.getCache(Global.CACHE_DOCTOR);
+			for (Object key : oc.getKeys()) {
+				Element element = oc.get(key);
+				if (element != null && element.getObjectValue().equals(doctorMap)) {
+					oc.remove(key);
+					break;
+				}
+			}
+			oc.put(new Element(session.getId(), doctorMap));
+			// 登录成功 进行日志记录
+			SysDoctorLogs sysDoctorLogs = new SysDoctorLogs();
+			sysDoctorLogs.setDoctorId((int) doctorMap.get("id"));
+			sysDoctorLogs.setIp(getIpAddr(request));
+			sysDoctorLogs.setLogLevel(1);
+			sysDoctorLogs.setLogContent(Message.bundle("doctor.log.login.success", doctor.getName()));
+			sysDoctorLogs.setCreateTime(new Date());
+			if (sysDoctorLogsService.insertSysDoctorLogs(sysDoctorLogs) > 0) {
+				// 存入缓存
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("doctor.login.success"));
+			}
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("doctor.login.error"));
+	}
+
+	@Override
+	public Map<String, Object> updatePassword(Doctor doctor, BindingResult result, String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			doctor.setId((Integer) userMap.get("id"));
+			// 校验原密码是否正确
+			Map<String, Object> user = doctorService.getDoctorDetil(doctor);
+			if (user != null && user.size() > 0) {
+				// 原密码正确 修改密码
+				if (doctorService.updateById(doctor) > 0) {
+					// 移除缓存
+					cache.getCache(Global.CACHE_DOCTOR).remove(token);
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+				}
+			} else {
+				// 原密码错误
+				return ResultMap.convertMap(ResultCode.CODE_FAIL,
+						Message.bundle("doctor.update.password.old.password.error"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+
+	}
+
+	@Override
+	public Map<String, Object> retrievePassword(String validCode, Doctor doctor, BindingResult result) {
+		Element element = cache.getCache(Global.CACHE_CODE).get(doctor.getName());
+		if (element == null) {
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.empty"));
+		} else {
+			// 比较验证码
+			if (!validCode.equalsIgnoreCase(element.getObjectValue().toString())) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.error"));
+			} else {
+				// 正确移除验证码
+				if (doctorService.updateByName(doctor) > 0) {
+					cache.getCache(Global.CACHE_CODE).remove(doctor.getName());
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+				}
+			}
+
+		}
+	}
+
+	@Override
+	public Map<String, Object> updatePhone(String validCode, Doctor doctor, BindingResult result, String token) {
+		Element element = cache.getCache(Global.CACHE_CODE).get(token);
+		if (element == null) {
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.empty"));
+		} else {
+			// 比较验证码
+			if (!validCode.equalsIgnoreCase(element.getObjectValue().toString())) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.error"));
+			} else {
+				// 缓存中获取医生数据
+				Element elementUser = cache.getCache(Global.CACHE_DOCTOR).get(token);
+				if (elementUser != null) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> userMap = (Map<String, Object>) elementUser.getObjectValue();
+					doctor.setId((Integer) userMap.get("id"));
+					if (doctorService.updateById(doctor) > 0) {
+						// 正确移除验证码
+						cache.getCache(Global.CACHE_CODE).remove(doctor.getPhone());
+						// 更新缓存中电话
+						@SuppressWarnings("unchecked")
+						Map<String, Object> doctorMap = (Map<String, Object>) elementUser.getObjectValue();
+						doctorMap.put("phone", doctor.getPhone());
+						cache.getCache(Global.CACHE_DOCTOR).put(new Element(token, doctorMap));
+						return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+					} else {
+						return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+					}
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("permission.no.login"));
+				}
+			}
+		}
+	}
+
+	@Override
+	public Map<String, Object> getDoctorsList(Doctor doctor, BindingResult result, String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 查询医生信息
+			Map<String, Object> resultMap = new HashMap<>();
+			// 查询数据主体
+			doctor.setId((Integer) doctorMap.get("id"));
+			List<Map<String, Object>> dataList = doctorService.getDoctorList(doctor);
+			if (dataList != null && dataList.size() > 0) {
+				// 得到总数
+				resultMap.put(Global.DATA_TOTAL, doctor.getTotal());
+				resultMap.put(Global.DATA_ROWS, dataList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getStoreToken(String token, String chooseStr) {
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			Map<String, Map<String, Object>> resultMap = new HashMap<String, Map<String, Object>>();
+			if ("file".equals(chooseStr)) {
+				resultMap.put("file", StoreFactory.getInstance().getPermissionToken(Global.STORE_ACQUISITIVE));
+			} else if ("phone".equals(chooseStr)) {
+				resultMap.put("phone", PhoneFactory.getInstance().getPermissionToken(Global.PHONE_ACQUISITIVE));
+			} else if ("his".equals(chooseStr)) {
+				resultMap.put("his", HisFactory.getInstance().getPermissionToken(Global.HIS_ACQUISITIVE));
+			} else if ("all".equals(chooseStr)) {
+				resultMap.put("file", StoreFactory.getInstance().getPermissionToken(Global.STORE_ACQUISITIVE));
+				resultMap.put("phone", PhoneFactory.getInstance().getPermissionToken(Global.PHONE_ACQUISITIVE));
+				resultMap.put("his", HisFactory.getInstance().getPermissionToken(Global.HIS_ACQUISITIVE));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getDoctorPatientsList(Doctor doctor, BindingResult result, String token) {
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 查询医生信息
+			Map<String, Object> resultMap = new HashMap<>();
+			// 查询数据主体
+			doctor.setId((Integer) doctorMap.get("id"));
+			List<Map<String, Object>> dataList = doctorService.getDoctorPatientsList(doctor);
+			if (dataList != null && dataList.size() > 0) {
+				// 得到总数
+				resultMap.put(Global.DATA_TOTAL, doctor.getTotal());
+				resultMap.put(Global.DATA_ROWS, dataList);
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	public Map<String, Object> getDoctorInfo(String token) {
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userMap = (Map<String, Object>) element.getObjectValue();
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, userMap, Message.bundle("query.success"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+
+	}
+
+	@Override
+	public Map<String, Object> bingDoctor(String validCode, Doctor doctor, BindingResult result) {
+		Element element = cache.getCache(Global.CACHE_CODE).get(doctor.getPhone());
+		if (element == null) {
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.empty"));
+		} else {
+			// 比较验证码
+			if (!validCode.equalsIgnoreCase(element.getObjectValue().toString())) {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("valid.code.error"));
+			} else {
+				cache.getCache(Global.CACHE_CODE).remove(doctor.getPhone());
+				// 查询医生是否存在 存在进行修改，不存在提示 用户不存在
+				Map<String, Object> doctorMapForPhone = doctorService.getDoctorByFiled(doctor);
+				if (doctorMapForPhone != null && doctorMapForPhone.size() > 0) {
+					// 进行修改
+					if (doctorService.updateByPhone(doctor) > 0) {
+						return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+					} else {
+						return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+					}
+				} else {
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("doctor.empty"));
+				}
+			}
+		}
+	}
+
+	@Override
+	public Map<String, Object> logoffDoctor(String token, HttpServletRequest request) {
+		Cache cacheDoctor = cache.getCache(Global.CACHE_DOCTOR);
+		Element element = cacheDoctor.get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 登录成功 进行日志记录
+			SysDoctorLogs sysDoctorLogs = new SysDoctorLogs();
+			sysDoctorLogs.setDoctorId((int) doctorMap.get("id"));
+			sysDoctorLogs.setIp(getIpAddr(request));
+			sysDoctorLogs.setLogLevel(1);
+			sysDoctorLogs.setLogContent(Message.bundle("doctor.log.loginout.success", doctorMap.get("name")));
+			sysDoctorLogs.setCreateTime(new Date());
+			// 执行新增日志记录
+			if (sysDoctorLogsService.insertSysDoctorLogs(sysDoctorLogs) > 0) {
+				// 移除医生信息
+				cacheDoctor.remove(token);
+				// 存入缓存
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("logoff.success"));
+			} else {
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("logoff.fail"));
+			}
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	private String getIpAddr(HttpServletRequest request) {
+		String ipAddress = null;
+		ipAddress = request.getHeader("x-forwarded-for");
+		if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+			ipAddress = request.getHeader("Proxy-Client-IP");
+		}
+		if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+			ipAddress = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+			ipAddress = request.getRemoteAddr();
+		}
+		return ipAddress;
+	}
+}

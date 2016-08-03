@@ -1,0 +1,54 @@
+package org.system.entity.order;
+
+import java.math.BigDecimal;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.utils.spring.Groups;
+
+
+public class PayInfo extends BaseEntity{
+	
+	private Integer id;
+	
+	
+	private String orderNum;
+	
+	@NotNull(message = "{payType.id.notnull.valid}", groups = { Groups.Insert.class })
+	private Integer payTypeId;
+	
+	@NotNull(message = "{payInfo.payAmount.notnull.valid}", groups = { Groups.Insert.class })
+	private BigDecimal payAmount;
+	
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getOrderNum() {
+		return orderNum;
+	}
+	public void setOrderNum(String orderNum) {
+		this.orderNum = orderNum;
+	}
+	
+	public Integer getPayTypeId() {
+		return payTypeId;
+	}
+	public void setPayTypeId(Integer payTypeId) {
+		this.payTypeId = payTypeId;
+	}
+
+	
+	public BigDecimal getPayAmount() {
+		return payAmount;
+	}
+	public void setPayAmount(BigDecimal payAmount) {
+		this.payAmount = payAmount;
+	}
+
+	
+}

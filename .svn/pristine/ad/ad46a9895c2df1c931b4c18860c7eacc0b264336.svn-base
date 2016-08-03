@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.doctor.DoctorMapper" >
+
+
+<!--新增  -->
+<insert id="insert" parameterType="org.system.entity.doctor.Doctor" useGeneratedKeys="true" keyProperty="id">
+		insert into doctor (register_source_id,doctor_type_id,doctor_level_id,title_id,name,phone,password,wechat_id,is_valid,ID_Card,state,register_date,remark,itv_number,zw_name,zxz_number) 
+		values (#{registerSourceId},#{doctorTypeId},#{doctorLevelId},#{titleId},#{name},#{phone},#{password},#{wechatId},
+		#{isValid},#{idCard},#{state},now(),#{remark},#{itvNumber},#{zwName},#{zxzNumber})
+</insert>
+
+
+<!-- 查询所有 -->
+<select id="queryAll" parameterType="org.system.entity.doctor.Doctor" resultType="map">
+select d.id, d.name doctorName,d.phone phone,d.password password,d.is_valid isValid,d.ID_Card idCard,d.state state,
+d.register_date registerDate,d.remark remark,d.itv_number itvNumber,d.zw_name zwName,d.zxz_number zxzNumber,
+ rs.name registerSourceName,dt.name doctorTypeName,dl.doctor_level_name doctorLevelName,h.name hosptitalName,dept.name departmentName,t.name titleName,
+  del.doctor_id delID ,del.name delName,del.birthday birthday,del.school school,del.profile profile,del.grade grade,
+  del.gootat gootat,del.address_detail addressDetail ,del.photo photo,
+  del.zp_hospital_id zpHospitalId,del.zp_department_id zpDepartmentId,h.name hName,dept.name deptName
+ from doctor d left join register_source rs on  d.register_source_id=rs.id
+ left join doctor_type dt on d.doctor_type_id = dt.id
+ left join doctor_level dl on d.doctor_level_id = dl.id
+ left join title t on d.title_id=t.id
+ left join doctor_detail del on d.id=del.doctor_id
+ LEFT join hospital h on h.id=del.zp_hospital_id
+left join department dept on dept.id=del.zp_department_id
+ <where>
+  <if test="id !=null">
+		and d.id=#{id}
+	</if>
+	 <if test="name !=null and name!=''">
+		and d.name like CONCAT(CONCAT('%', #{name}), '%')
+	</if>
+	<if test="registerSourceId !=null">
+		and rs.id=#{registerSourceId}
+	</if>
+	<if test="doctorTypeId !=null">
+		and dt.id=#{doctorTypeId}
+	</if>
+	<if test="doctorLevelId !=null">
+		and doctor_level_id=#{doctorLevelId}
+	</if>
+	<if test="titleId !=null">
+		and t.id=#{titleId}
+	</if>
+	<if test="doctorRealName !=null and doctorRealName!=''">
+		and del.name like CONCAT(CONCAT('%', #{doctorRealName}), '%')
+	</if>
+ </where>
+ group by d.id
+</select>
+
+
+<!-- 修改 -->
+<update id="update"  parameterType="org.system.entity.doctor.Doctor" >
+ update doctor 
+   <set>
+		<if test="password !=null and password!=''">
+			password=#{password},
+		</if>
+		<if test="name !=null and name!=''">
+			name=#{name},
+		</if>
+		<if test="phone !=null and phone!=''">
+			phone=#{phone},
+		</if>
+		<if test="isValid !=null and isValid!=''">
+			is_valid=#{isValid},
+		</if>
+		<if test="state !=null"> 
+			state=#{state},
+		</if>
+		<if test="remark !=null and remark!=''">
+			remark=#{remark},
+		</if>
+		<if test="doctorTypeId !=null and doctorTypeId!=''">
+			doctor_type_id=#{doctorTypeId},
+		</if>
+		 <if test="doctorLevelId!=null ">
+		  doctor_level_id=#{doctorLevelId},
+		 </if>
+		  <if test="registerSourceId!=null ">
+		 register_source_id =#{registerSourceId},
+		 </if> 		 
+		  <if test="titleId!=null ">
+		  title_id=#{titleId},
+		 </if> 
+		  <if test="idCard!=null and idCard!='' ">
+		  ID_Card=#{idCard},
+		 </if> 
+		  <if test="itvNumber!=null and itvNumber!=''">
+		  itv_number=#{itvNumber},
+		 </if> 
+		  <if test="registerDate!=null">
+		  register_date=date(#{registerDate,jdbcType=TIMESTAMP}),
+		 </if> 
+		  <if test="zwName!=null and zwName!=''">
+		  zw_name=#{zwName},
+		 </if> 
+		  <if test="zxzNumber!=null and zxzNumber!=''">
+		  itv_number=#{zxzNumber},
+		 </if> 
+	</set>
+	where id=#{id}
+</update>
+
+<!-- 根据id查询数据 -->
+<select id="queryOne" parameterType="org.system.entity.doctor.Doctor" resultType="map"> 
+ select d.id, d.name doctorName,d.phone,d.password,d.is_valid isValid,d.ID_Card idCard,d.state,d.register_date registerDate,d.remark,d.itv_number itvNumber,
+  rs.id registerSourceName,dt.id doctorTypeName,dl.id doctorLevelName,t.id titleName, d.zw_name zwName,d.zxz_number zxzNumber,
+  del.doctor_id delID ,del.name delName,del.birthday birthday,del.school school,del.profile profile,del.grade grade,
+  del.gootat gootat,del.address_detail addressDetail ,del.photo photo,
+  del.zp_hospital_id zpHospitalId,del.zp_department_id zpDepartmentId,h.name hName,dept.name deptName
+ from doctor d left join register_source rs on  d.register_source_id=rs.id
+ left join doctor_type dt on d.doctor_type_id = dt.id
+ left join doctor_level dl on d.doctor_level_id = dl.id
+ left join title t on d.title_id=t.id
+ left join doctor_detail del on d.id=del.doctor_id
+ LEFT join hospital h on h.id=del.zp_hospital_id
+left join department dept on dept.id=del.zp_department_id
+  where d.id=#{id}
+</select>
+
+  <!--检查数据重复  -->
+		<select id="checkExists"  parameterType="org.system.entity.doctor.Doctor" resultType="map">
+		select id,name,phone, ID_Card,wechat_id from doctor 
+		<where>
+		<if test="name!=null and name!=''">
+		  name=#{name} 
+		</if>		
+		<if test="phone!=null and phone!=''">
+		 and  phone=#{phone} 
+		</if>
+		<if test="idCard!=null and idCard!=''">
+		 and ID_Card=#{idCard} 
+		</if>
+		</where>
+		</select>
+
+<!-- 删除 -->
+   <delete id="delete" parameterType="org.system.entity.doctor.Doctor">
+		DELETE FROM doctor WHERE id=#{id}
+	</delete>
+	
+	
+	
+		<!-- <select id="queryByDoctorId" parameterType="org.system.entity.doctor.Doctor" resultType="map">
+		select d.id,d.name doctorName ,dd.doctor_id,d.ID_Card idCard,dd.birthday,dd.school,dd.profile,dd.grade,dd.gootat,dd.address_detail addressDetail,dd.photo  from doctor d left join doctor_detail dd  on d.id=dd.doctor_id
+		where dd.doctor_id=#{id}
+		</select> -->
+
+<!--  得到最大的医生id值  -->
+		<select id="queryMaxId"  parameterType="org.system.entity.doctor.Doctor" resultType="int">
+		 select  max(id) id from doctor;
+		</select> 
+
+
+</mapper>

@@ -1,0 +1,29 @@
+package org.system.mapper.address;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.SysCodeRecods;
+
+public interface SysCodeRecodsMapper extends IBaseMapper<SysCodeRecods> {
+
+	 public List<Map<String, Object>> queryPro(SysCodeRecods sysCodeRecode);
+	 
+	 /**
+	  * 模糊查询
+	  * @param sysCodeRecode
+	  * @return
+	  */
+	 public List<Map<String, Object>> queryLike(SysCodeRecods sysCodeRecode);
+	 
+	 /**
+	  * 查询医院机构
+	  * @param sysCodeRecode
+	  * @return
+	  */
+	 public List<Map<String, Object>> queryHospital(SysCodeRecods sysCodeRecode);
+	 
+	 
+	 
+}

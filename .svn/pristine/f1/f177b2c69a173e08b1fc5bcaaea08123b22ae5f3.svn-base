@@ -1,0 +1,17 @@
+package org.system.mapper.sms;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.sms.SmsSendTask;
+
+public interface SmsSendTaskMapper extends IBaseMapper<SmsSendTask> {
+
+	List<Map<String, Object>> getSmsSendHistoryList(SmsSendTask sms);
+
+	int insertByMap(Map<String, Object> param);
+	
+	int deleteByMap(Map<String, Object> param);
+    
+}

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.user.UserDetailMapper" >
+  <insert id="insert" parameterType="org.system.entity.user.UserDetail" >
+    insert into user_detail (user_id, residence_address, home_address, 
+       id_card, name,nation,degree,sex, occupation,islocal, marriage_type,contact,birthday)
+    values (#{userId,jdbcType=BIGINT}, #{residenceAddress}, #{homeAddress,jdbcType=VARCHAR}, 
+       #{idcard,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{nation,jdbcType=VARCHAR}, #{degree,jdbcType=VARCHAR},
+      #{sex,jdbcType=BIT}, #{occupation,jdbcType=VARCHAR}, 
+      #{islocal,jdbcType=BIT}, #{marriageType,jdbcType=INTEGER},#{contact},#{birthday})
+  </insert>
+  <update id="update" parameterType="org.system.entity.user.UserDetail">
+    update user_detail set user_id=#{userId}
+    <if test="residenceAddress !=null and residenceAddress !=''">
+    	,residence_address=#{residenceAddress}
+    </if>
+    <if test="homeAddress !=null and homeAddress !=''">
+    	,home_address=#{homeAddress}
+    </if>
+    <if test="idcard !=null and idcard !=''">
+    	,id_card=#{idcard}
+    </if>
+    <if test="name !=null and name !=''">
+    	,name=#{name}
+    </if>
+    <if test="nation !=null and nation !=''">
+    	,nation=#{nation}
+    </if>
+    <if test="degree !=null and degree !=''">
+    	,degree=#{degree}
+    </if>
+    <if test="sex !=null">
+    	,sex=#{sex}
+    </if>
+    <if test="occupation !=null and occupation !=''">
+    	,occupation=#{occupation}
+    </if>
+    <if test="contact !=null and contact !=''">
+    	,contact=#{contact}
+    </if>
+    <if test="islocal !=null">
+    	,islocal=#{islocal}
+    </if>
+    <if test="isMember !=null">
+    	,is_member=#{isMember}
+    </if>
+    <if test="transaction !=null and transaction!=''">
+    	,transaction=#{transaction}
+    </if>
+    <if test="evidence !=null and evidence!=''">
+    	,evidence=#{evidence}
+    </if>
+    <if test="marriageType !=null">
+    	,marriage_type=#{marriageType}
+    </if>
+    <if test="birthday !=null">
+    	,birthday=#{birthday}
+    </if>
+    where user_id=#{userId}
+  </update>
+  
+  <select id="queryOne"  parameterType="org.system.entity.user.UserDetail" resultType="map">
+	select 
+	u.id,
+	u.phone,
+	ud.residence_address residenceAddress,
+	ud.id_card idcard,
+	(DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(ud.birthday)), '%Y')+0) age,
+	ud.degree,
+	ud.home_address homeAddress,
+	ud.islocal,
+	ud.marriage_type marriageType,
+	ud.name,
+	ud.nation,
+	ud.occupation,
+	sp.id servicePackId,
+	ud.contact,
+	ud.is_member isMember,
+	ud.evidence,
+	ud.transaction,
+	sp.name servicePackName,
+	ud.sex,hi.yxt_jkdabh yxtJkdabh,c.id contractId
+	from user_detail ud 
+		left join user u on u.id=ud.user_id
+		left join contract c on c.user_id=u.id
+		left join service_pack_condition spc on spc.package_source_id=c.source_id
+		left join service_pack sp on sp.id=spc.service_pack_id and sp.package_type_id=1
+		left join health_info hi on hi.user_id=ud.user_id
+		where ud.user_id=#{userId} group by u.id
+  </select>
+  
+  <select id="checkExists" parameterType="org.system.entity.user.UserDetail" resultType="map" >
+  	select user_id from user_detail where id_card=#{idcard}
+  	<if test="userId!=null">
+  		and user_id !=#{userId}
+  	</if>
+  </select>
+  
+  <select id="getPushInfo" parameterType="org.system.entity.user.UserDetail" resultType="map" >
+  	select u.wechat_id openId,dg.name groupName,d.name doctorName,a.name groupAddress,sp.name packageName,d.phone doctorPhone
+	from contract c
+	left join doctor_group dg on dg.id=c.doctor_group_id
+    left join address a on a.id=dg.address_id
+    left join doctor_doctor_group ddg on ddg.doctor_group_id=dg.id and ddg.role_id=1
+    left join doctor d on d.id=ddg.doctor_id
+		left join user u on u.id=c.user_id
+		left join user_service_pack usp on usp.user_id=c.user_id
+		left join service_pack sp on sp.id=usp.service_pack_id
+    where c.user_id=#{userId} and sp.package_type_id=1
+  </select>
+</mapper>

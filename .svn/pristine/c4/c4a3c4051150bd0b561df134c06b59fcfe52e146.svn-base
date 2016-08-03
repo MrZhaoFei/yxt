@@ -1,0 +1,54 @@
+package org.system.controller.impl.doctor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.doctor.IRoleController;
+import org.system.entity.doctor.Role;
+import org.system.message.Message;
+import org.system.service.iface.doctor.IRoleService;
+
+@Controller
+public class RoleController implements IRoleController {
+
+	
+	Logger log = LoggerFactory.getLogger(RoleController.class);
+	
+	@Resource
+	private IRoleService roleService;
+	@Override
+	public Map<String, Object> getRoleList(Role role, BindingResult result,HttpServletRequest req) {
+		
+		 HttpSession session=req.getSession();
+		 if(session.getAttribute("user")!=null){
+			 
+			 Map<String, Object> resultMap = new HashMap<>();
+			 //得到返回数据
+			 List<Map<String, Object>> dataList = roleService.getRoleList(role);
+			 
+			 if (dataList != null && dataList.size() > 0) {
+				 //得到数据总数
+				 resultMap.put(Global.DATA_TOTAL, role.getTotal());
+				 resultMap.put(Global.DATA_ROWS, dataList);
+				 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			 }
+			 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			 
+		 }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		 }
+	}
+
+}

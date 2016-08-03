@@ -1,0 +1,19 @@
+package org.system.mapper.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.doctor.Doctor;
+
+public interface DoctorMapper extends IBaseMapper<Doctor> {
+	
+	public Map<String, Object> queryByDoctorId(Doctor doctor);
+	
+	
+	public List<Map<String, Object>> querycheciDoctorList(Doctor doctor);
+	
+	
+	public Map<String, Object> queryMaxId(Doctor doctor);
+	
+}

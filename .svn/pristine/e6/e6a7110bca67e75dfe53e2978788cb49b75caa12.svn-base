@@ -1,0 +1,13 @@
+package org.system.mapper.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.service.PackageService;
+
+public interface PackageServiceMapper extends IBaseMapper<PackageService>{
+
+	List<Map<String, Object>> queryMany(PackageService packageService);
+
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.user.healthinfo.DiseaseHistoryMapper" >
+  <delete id="delete" parameterType="org.system.entity.user.healthinfo.DiseaseHistory" >
+    delete from disease_history where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="org.system.entity.user.healthinfo.DiseaseHistory" >
+    insert into disease_history (jbsid,  jbbm, jbmc, 
+      qzrq, bz, zfbz, update_time, 
+      health_info_id)
+    values (#{jbsid,jdbcType=VARCHAR}, #{jbbm,jdbcType=VARCHAR}, #{jbmc,jdbcType=VARCHAR}, 
+      #{qzrq,jdbcType=TIMESTAMP}, #{bz,jdbcType=VARCHAR}, #{zfbz,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{healthInfoId,jdbcType=BIGINT})
+  </insert>
+  <update id="update" parameterType="org.system.entity.user.healthinfo.DiseaseHistory" >
+    update disease_history set id=#{id} 
+    <if test="jbsid !=null and jbsid !=''">
+     	,jbsid= #{jbsid}
+    </if>
+    <if test="jbbm !=null and jbbm !=''">
+     	,jbbm= #{jbbm}
+    </if>
+    <if test="jbmc !=null and jbmc !=''">
+     	,jbmc= #{jbmc}
+    </if>
+    <if test="qzrq !=null">
+     	,qzrq= #{qzrq}
+    </if>
+    <if test="bz !=null and bz !=''">
+     	,bz= #{bz}
+    </if>
+    <if test="zfbz !=null and zfbz !=''">
+     	,zfbz= #{zfbz}
+    </if>
+    <if test="updateTime !=null">
+     	,update_time= #{updateTime}
+    </if>
+    <if test="healthInfoId !=null">
+     	,health_info_id= #{healthInfoId}
+    </if>
+    where id = #{id}
+  </update>
+  <select id="queryOne" resultType="map" parameterType="org.system.entity.user.healthinfo.DiseaseHistory" >
+    select id, jbsid, jbbm,fn_print_sys_code_result(jbbm,';','CV02.10.005') jbbmName,  jbmc, qzrq, bz, zfbz, update_time updateTime, health_info_id healthInfoId
+    from disease_history
+    where id = #{id}
+  </select>
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.user.healthinfo.DiseaseHistory" >
+    select id, jbsid, jbbm,fn_print_sys_code_result(jbbm,';','CV02.10.005') jbbmName, jbmc, qzrq, bz, zfbz, update_time updateTime, health_info_id healthInfoId
+    from disease_history
+    <where>
+    	<if test=" healthInfoId !=null">
+    		health_info_id=#{healthInfoId}
+    	</if>
+    </where>
+    
+  </select>
+</mapper>

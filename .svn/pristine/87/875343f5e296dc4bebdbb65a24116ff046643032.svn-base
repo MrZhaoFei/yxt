@@ -1,0 +1,13 @@
+package org.system.mapper.address;
+
+import java.util.List;
+import java.util.Map;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.address.Address;
+
+public interface AddressMapper extends IBaseMapper<Address> {
+	List<Map<String, Object>> getAddressListByRaidus(Map<String, Object> map);
+
+	Map<String, Object> getAddressListByPid(String id);
+}

@@ -1,0 +1,27 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.Doctor;
+
+public interface IDoctorService {
+	
+    public int insertDoctor(Doctor doctor);
+	
+	public int updateDoctor(Doctor doctor);
+	
+	public int deleteDoctor(Doctor doctor);
+	
+	public List<Map<String, Object>> getDoctorList(Doctor doctor);
+	
+	public Map<String, Object> getDoctorDetail(Doctor doctor);
+	
+	public Map<String, Object> getDoctorByFiled(Doctor doctor);
+	
+	public Map<String, Object> getDoctorDetailByDoctorId(Doctor doctor);
+	
+	public List<Map<String, Object>> getquerycheciDoctorList(Doctor doctor);
+	
+	public Map<String, Object> getDoctorMaxId(Doctor doctor);
+}

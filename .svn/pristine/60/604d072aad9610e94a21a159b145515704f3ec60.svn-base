@@ -1,0 +1,82 @@
+package org.utils.spring;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+
+public class RESTClient {
+	static ExecutorService pool = Executors.newFixedThreadPool(20);
+	private static Logger log = LoggerFactory.getLogger(RESTClient.class);
+	private static HttpClient httpClient = HttpClientBuilder.create().build();
+	private static RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000)
+			.build();// 设置请求和传输超时时间
+
+	public static void post(String url, String method, Map<String, Object> param) {
+		pool.execute(new Runnable() {
+			@Override
+			public void run() {
+				HttpPost post = new HttpPost(url + method);
+				post.setConfig(requestConfig);
+				// 设置需要提交的参数
+				List<NameValuePair> list = new ArrayList<NameValuePair>();
+				for (Entry<String, Object> entry : param.entrySet()) {
+					Object objValue = entry.getValue();
+					list.add(new BasicNameValuePair(entry.getKey(), objValue == null ? "" : objValue.toString()));
+				}
+				try {
+					post.setEntity(new UrlEncodedFormEntity(list, "UTF-8"));
+					HttpResponse response = httpClient.execute(post);
+					String resposeText = EntityUtils.toString(response.getEntity());
+					if (response.getStatusLine().getStatusCode() == HttpStatus.OK.value()) {
+						log.info("Send  To {} Success  Result is {} param is {}", url + method, resposeText, param);
+					}
+					log.warn("Send  To {} Fail  Result is {} param is {}", url + method, resposeText, param);
+				} catch (IOException e) {
+					log.error("Send  To {} Error Message:{}", url + method, e);
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public static String postForSynchronize(String url, String method, Map<String, Object> param) {
+		HttpPost post = new HttpPost(url + method);
+		post.setConfig(requestConfig);
+		// 设置需要提交的参数
+		List<NameValuePair> list = new ArrayList<NameValuePair>();
+		for (Entry<String, Object> entry : param.entrySet()) {
+			list.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
+		}
+		try {
+			post.setEntity(new UrlEncodedFormEntity(list, "UTF-8"));
+			HttpResponse response = httpClient.execute(post);
+			String resposeText = EntityUtils.toString(response.getEntity());
+			if (response.getStatusLine().getStatusCode() == HttpStatus.OK.value()) {
+				log.info("Send  To {} Success  Result is {} param is {}", url + method, resposeText, param);
+				return resposeText;
+			}
+			log.warn("Send  To {} Success  Result is {} param is {}", url + method, resposeText, param);
+		} catch (IOException e) {
+			log.error("Send  To {} Error Message:{}", url + method, e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+}

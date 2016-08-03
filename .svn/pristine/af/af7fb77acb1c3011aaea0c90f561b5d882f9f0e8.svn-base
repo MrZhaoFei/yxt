@@ -1,0 +1,47 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.UserServicePack;
+import org.system.mapper.service.UserServicePackMapper;
+import org.system.service.iface.service.IUserServicePackService;
+
+@Service
+public class UserServicePackService implements IUserServicePackService {
+	@Resource
+	private UserServicePackMapper mapper;
+
+	@Override
+	public Map<String, Object> getUserServicePackByFild(UserServicePack userUserServicePack) {
+		return mapper.checkExists(userUserServicePack);
+	}
+
+	@Override
+	public int insertUserServicePack(UserServicePack userUserServicePack) {
+		return mapper.insert(userUserServicePack);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserServicePackList(UserServicePack userUserServicePack) {
+		return mapper.queryAll(userUserServicePack);
+	}
+
+	@Override
+	public Map<String, Object> getUserServicePackDetail(UserServicePack userUserServicePack) {
+		return mapper.queryOne(userUserServicePack);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserComboListByUser(UserServicePack userServicePack) {
+		return mapper.getUserComboListByUser(userServicePack);
+	}
+
+	@Override
+	public List<Map<String, Object>> getNoExpireUserServicePackList(UserServicePack userServicePack) {
+		return mapper.getNoExpireUserServicePackList(userServicePack);
+	}
+}

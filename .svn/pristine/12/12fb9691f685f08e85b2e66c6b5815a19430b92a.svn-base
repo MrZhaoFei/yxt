@@ -1,0 +1,48 @@
+package org.system.service.impl.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.UserService;
+import org.system.mapper.service.UserServiceMapper;
+import org.system.service.iface.service.IUserServiceService;
+
+@Service
+public class UserServiceService implements IUserServiceService {
+	@Resource
+	private UserServiceMapper mapper;
+
+	@Override
+	public int insertUserService(UserService userService) {
+		return mapper.insert(userService);
+	}
+
+	@Override
+	public int updateUserService(UserService userService) {
+		return mapper.update(userService);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserServiceList(UserService userService) {
+		return mapper.queryAll(userService);
+	}
+
+	@Override
+	public Map<String, Object> getUserServiceDetail(UserService userService) {
+		return mapper.queryOne(userService);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserServicesByUserList(UserService userService) {
+		return mapper.getUserServicesByUserList(userService);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserServicesByUserUsedList(UserService userService) {
+		return mapper.getUserServicesByUserUsedList(userService);
+	}
+
+}

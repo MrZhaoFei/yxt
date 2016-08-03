@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head> 
+  <base href="/yxt-admin/" /> 
+  <title>试题答案列表</title> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+   <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+   <META HTTP-EQUIV="Expires" CONTENT="0">
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css" /> 
+  <link rel="stylesheet" type="text/css" href="js/easyui/themes/gray/easyui.css" /> 
+  <link rel="stylesheet" type="text/css" href="js/trumbowyg/design/css/trumbowyg.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/jquery.flex-images.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/icon/font-awesome.min.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/webuploader.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/upload/style.css" /> 
+  <link rel="stylesheet" type="text/css" href="css/web.css" /> 
+  <script type="text/javascript" src="js/jquery.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script> 
+  <script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script> 
+  <script type="text/javascript" src="js/easyui/extend.easyui.js"></script> 
+  <script type="text/javascript" src="js/jquery.flex-images.min.js"></script> 
+  <script type="text/javascript" src="js/trumbowyg/trumbowyg.min.js"></script> 
+  <script type="text/javascript">
+  $(function() {
+	  $('#questionId').combobox('reload');
+	  $('#main_table').datagrid({
+	    method: 'get',
+	    url: '/yxt-admin/admin/selfTestAnswers?ran=' + Math.random(),
+	    toolbar: '#seach',
+	    pagination: true,
+	    fit: true,
+	    pageSize:20,
+	    fitColumns: true,
+	    border: false,
+	    rownumbers: true,
+	    singleSelect: true,
+	    loadFilter: function(data) {
+	    	if(data.stateCode=='205'){
+	    		top.location.href=document.getElementsByTagName("base")[0].getAttribute("href")+ "adminLogin.html";
+	    		return;
+	    	}else if(data.stateCode=='203'){
+	    		return {total:0,rows:[]};
+	    	}
+	      return data.data;
+	    }
+	  });
+	});    
+  // 查询
+	function query() {
+	  $('#main_table').datagrid('load', { 
+		  score: $('#testName').textbox('getValue')
+		
+	  });
+	}
+	
+	
+	function clear() {
+	  $('#testName').textbox('clear');
+	}
+	
+	 function re(){
+	   	  history.go(0) 
+	     }
+	// 操作
+	function _opformatter(value, row, index) {
+	  var a = '&nbsp;<a href="javascript:edit(\'' + index + '\',' + row.id + ')" title="编辑和详情"><i class="fa fa-pencil"></i></a>';	
+	  var c = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp<a href="javascript:del(\'' + row.id + '\')" title="删除"><i class="fa fa-trash"></i></a>'; 
+	
+	  return a + c ;
+	}
+	
+// 添加数据
+	function add() {	
+	  $('#form').form('reset');	 
+	  $('#dialog').dialog({
+		    title: '添加信息',
+		    width: 400,
+		    height: 320,
+		    closed: false,
+		    modal: true,
+		    buttons: [{
+		      text: '确定添加',
+		      handler: function(){
+		    	 
+		        var v = $('#form').form('validate');
+		        if (v) {      	
+		        	 $.ajax({
+		                  type: 'POST',
+		                  url:'/yxt-admin/admin/selfTestAnswer',
+		                  data:{
+		                	  questionId:$('#questionId').combobox('getValue'),		                	  
+		                	  answer:$('#answer').textbox('getValue'),
+		                	  score:$('#score').numberbox('getValue') 
+		                  }, 
+		                /*   data: $('#form').serialize(), */
+		                  success: function(data) {
+		                    if (data.stateCode == 200) {
+		                      $('#dialog').dialog('close');
+		                      $('#main_table').datagrid('reload');
+		                      $.messager.show({
+		                        title: '提示消息',
+		                        msg: data.message,
+		                        timeout: 5000,
+		                        showType: 'slide'
+		                      });
+		                    } else {
+		                      $.messager.show({
+		                        title: '提示',
+		                        msg: data.message
+		                      });
+		                    }
+		                  },
+		                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                    $.messager.show({
+		                      title: '提示',
+		                      msg: '请求发生错误请联系开发者'
+		                    });
+		                  }
+		                });
+		               
+		          }
+		        }
+		      },
+
+		    {
+		      text: '取消关闭',
+		      handler: function() {
+		        $('#dialog').dialog('close');
+		      }
+		    }]
+		  
+		  
+		  });
+	}
+	
+	
+	
+	// 修改
+	function edit(index, id) {
+	  $('#form').form('load',$('#main_table').datagrid('getData').rows[index]);
+	  $.get('/yxt-admin/admin/selfTestAnswer/' + id,
+	  function(data) {
+	    $('#form').form('load', data.data);
+	  }); 
+	  $('#dialog').dialog({
+	    title: '查看/编辑信息',
+	    width: 400,
+	    height: 420,
+	    closed: false,
+	    modal: true,
+	    buttons: [{
+	      text: '确定修改',
+	      handler: function() {	    	  
+	        var v = $('#form').form('validate');
+	        if (v) {
+	          //AJAX提交
+	          $.ajax({
+	            type: 'put',
+	            url: '/yxt-admin/admin/selfTestAnswer/' + id,
+	            data:{
+	            	 questionId:$('#questionId').combobox('getValue'),		                	  
+               	  answer:$('#answer').textbox('getValue'),
+               	  score:$('#score').numberbox('getValue') 
+	            },
+	            success: function(data) {
+	              if (data.stateCode == 200) {
+	                $('#dialog').dialog('close');
+	                $('#form').form('reset');
+	                $('#main_table').datagrid('reload');
+	                $.messager.show({
+	                  title: '提示消息',
+	                  msg: data.message,
+	                  timeout: 5000,
+	                  showType: 'slide'
+	                });
+	              } else {
+	                $.messager.show({
+	                  title: '提示',
+	                  msg: data.message
+	                });
+	              }
+	            },
+	            error: function(XMLHttpRequest, textStatus, errorThrown) {
+	              $.messager.show({
+	                title: '提示',
+	                msg: '请求发生错误请联系开发者'
+	              });
+	            }
+	          });
+	        }
+	      }
+	    },
+	    {
+	      text: '取消关闭',
+	      handler: function() {
+	        $('#dialog').dialog('close');
+	      }
+	    }]
+	  });
+	}
+	function del(id) {
+	  $.messager.confirm('确认', '您确认想要删除记录吗？',
+	  function(r) {
+	    if (r) {
+	      $.ajax({
+	        type: 'delete',
+	        url: '/yxt-admin/admin/selfTestAnswer/' + id,
+	        success: function(data) {
+	          if (data.stateCode == 200) {
+	            $('#main_table').datagrid('reload');
+	            $.messager.show({
+	              title: '提示消息',
+	              msg: data.message,
+	              timeout: 5000,
+	              showType: 'slide'
+	            });
+	          } else {
+	            $.messager.show({
+	              title: '提示',
+	              msg: data.message
+	            });
+	          }
+	        },
+	        error: function(XMLHttpRequest, textStatus, errorThrown) {
+	          $.messager.show({
+	            title: '提示',
+	            msg: '请求发生错误请联系开发者'
+	          });
+	        }
+	      });
+	    }
+	  });
+	}
+</script> 
+ </head> 
+ <body> 
+  <!-- 全局日历控件 --> 
+  <!-- <div id="sc" class="easyui-calendar" data-options="validator: function(date){return date<=new Date();}"></div> --> 
+  <!-- 搜索栏 --> 
+  <div id="seach"> 
+   <label>分数:</label> 
+   <input id="testName" class="easyui-textbox" style="width: 120px;" />    
+   <a href="javascript:query()" class="easyui-linkbutton"><i class="fa fa-search"></i> 搜索</a> 
+    <a href="javascript:clear()" class="easyui-linkbutton"><i class="fa fa-ban"></i> 清除搜索条件</a>
+   <a href="javascript:add()" class="easyui-linkbutton"><i class="fa fa-plus"></i> 新增</a>
+    <a href="javascript:re()" class="easyui-linkbutton"><i class="fa  fa-refresh"></i> 刷新当前页面</a>  
+  </div> 
+  <!-- 内容表格 --> 
+  <table id="main_table"> 
+   <thead> 
+    <tr> 
+   <!--   <th data-options="field:'name',width:90">所属试题</th>  -->
+   <th data-options="field:'id',width:20">id</th> 
+      <th data-options="field:'answer',width:90">答案</th> 
+        <th data-options="field:'score',width:90">对应分数</th> 
+     <th data-options="field:'img',align:'center',width:30,formatter:_opformatter">操作</th> 
+    </tr> 
+   </thead> 
+  </table> 
+ 
+  <!-- 添加 --> 
+  <div id="dialog">  
+   <form id="form" method="post"> 
+    <table class="table-edit" width="100%" align="center"> 
+     <tbody> 
+     <tr>
+  <td style="width: 110px;">所属试题</td> 
+      <td>
+       <input class="easyui-combobox" name="questionId" id="questionId"style="width: 200px"   
+     data-options=" url:'/yxt-admin/admin/selfTestQuestions', 
+			    method:'get',
+			     editable:false,
+			    valueField:'id',    
+			    textField:'question' ,
+		    	loadFilter:function(data){
+					 return data.data.rows;
+					} " /> 
+      </td>
+     </tr>
+     <tr> 
+       <td style="width: 110px;">试题答案</td> 
+       <td><input class="easyui-textbox" name="answer" id="answer"style="width: 200px" data-options="required:true,validType:'length[0,128]'"/>
+       </td> 
+       </tr> 
+      <tr> 
+       <td style="width: 110px;">分数</td> 
+       <td><input class="easyui-numberbox" name="score" id="score" style="width: 200px" data-options="validType:'length[0,2048]'"/>
+       </td> 
+       </tr>
+                    
+     </tbody> 
+    </table> 
+   </form>    
+  </div> 
+  
+  
+  
+   
+ </body>
+</html>

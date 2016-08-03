@@ -1,0 +1,14 @@
+package org.system.service.iface.content;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.content.ContentType;
+
+
+public interface IContentTypeService {
+	
+	public List<Map<String, Object>> getContentTypeList(ContentType contentType);
+
+	
+}

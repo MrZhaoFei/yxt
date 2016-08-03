@@ -1,0 +1,42 @@
+package org.system.service.impl.contract;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.contract.ContractFeedback;
+import org.system.mapper.contract.ContractFeedbackMapper;
+import org.system.service.iface.contract.IContractFeedbackService;
+
+@Service
+public class ContractFeedbackService implements IContractFeedbackService {
+	@Resource
+	private ContractFeedbackMapper mapper;
+
+	@Override
+	public Map<String, Object> getContractFeedbackByFild(ContractFeedback contractFeedback) {
+		return mapper.checkExists(contractFeedback);
+	}
+
+	@Override
+	public int insertContractFeedback(ContractFeedback contractFeedback) {
+		return mapper.insert(contractFeedback);
+	}
+
+	@Override
+	public int updateContractFeedback(ContractFeedback contractFeedback) {
+		return mapper.update(contractFeedback);
+	}
+
+	@Override
+	public List<Map<String, Object>> getContractFeedbackList(ContractFeedback contractFeedback) {
+		return mapper.queryAll(contractFeedback);
+	}
+
+	@Override
+	public Map<String, Object> getContractFeedbackDetail(ContractFeedback contractFeedback) {
+		return mapper.queryOne(contractFeedback);
+	}
+}

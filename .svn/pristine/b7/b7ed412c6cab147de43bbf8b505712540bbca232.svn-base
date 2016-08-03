@@ -1,0 +1,19 @@
+package org.system.service.iface.user.healthtest;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.user.healthtest.UserDailyBloodPressure;
+
+public interface IUserDailyBloodPressureService {
+
+	Map<String, Object> getUserDailyBloodPressureByFild(UserDailyBloodPressure userDailyBloodPressure);
+
+	int insertUserDailyBloodPressure(UserDailyBloodPressure userDailyBloodPressure);
+
+	int updateUserDailyBloodPressure(UserDailyBloodPressure userDailyBloodPressure);
+
+	List<Map<String, Object>> getUserDailyBloodPressureList(UserDailyBloodPressure userDailyBloodPressure);
+
+	Map<String, Object> getUserDailyBloodPressureDetail(UserDailyBloodPressure userDailyBloodPressure);
+}

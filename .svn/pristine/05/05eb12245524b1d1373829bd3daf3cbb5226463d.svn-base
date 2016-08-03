@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.sys.SysHintMessageMapper" >
+
+
+	<!-- 删除 -->
+  <delete id="delete" parameterType="org.system.entity.sys.SysHintMessage" >
+    delete from sys_hint_message
+    where id in 
+	  	<foreach collection="idss" open="("  close=")"  separator="," item="ids" >
+	  		#{ids}
+	  	</foreach>
+  </delete>
+	<!-- 新增 -->
+  <insert id="insert" parameterType="org.system.entity.sys.SysHintMessage" >
+  	INSERT INTO `sys_hint_message` (`from_doctor_id`, `to_doctor_id`, `user_id`, `package_service_id`, `msg_content`, `start_time`, `end_time`, `msg_url`, `msg_type`,`sms_send_time`) 
+  	VALUES 
+  	<foreach collection="toDoctorIds" separator="," item="dId">
+	  	<foreach collection="userIds" separator="," item="uId" >
+	  		(#{fromDoctorId}, #{dId}, #{uId}, #{packageServiceId}, #{msgContent}, #{startTime}, #{endTime}, #{msgUrl}, #{msgType},#{sendTime})
+	  	</foreach>
+  	</foreach>
+  </insert>
+	<!-- 修改 -->
+  <update id="update" parameterType="org.system.entity.sys.SysHintMessage" >
+	 update sys_hint_message set id=#{id}
+	    <if test="fromDoctorId !=null ">
+	    	,from_doctor_id=#{fromDoctorId}
+	    </if>
+	    <if test="toDoctorId !=null ">
+	    	,to_doctor_id=#{toDoctorId}
+	    </if>
+	    <if test="userId !=null ">
+	    	,user_id=#{userId}
+	    </if>
+	    <if test="msgContent !=null and msgContent !=''">
+	    	,msg_content=#{msgContent}
+	    </if>
+	    <if test="startTime !=null ">
+	    	,start_time=#{startTime}
+	    </if>
+	    <if test="endTime !=null ">
+	    	,end_time=#{endTime}
+	    </if>
+	    <if test="msgState !=null ">
+	    	,msg_state=#{msgState}
+	    </if>
+	    <if test="msgUrl !=null and msgUrl !='' ">
+	    	,msg_url=#{msgUrl}
+	    </if>
+	    <if test="msgType !=null ">
+	    	,msg_type=#{msgType}
+	    </if>
+	    <if test="packageServiceId !=null ">
+	    	,package_service_id=#{packageServiceId}
+	    </if>
+	    where id = #{id}
+  </update>
+  <select id="getSysHintMessageMap" resultType="map" parameterType="org.system.entity.sys.SysHintMessage">
+	select id,from_doctor_id fromDoctorId, to_doctor_id toDoctorId,user_id userId,start_time startTime,end_time endTime,msg_state msgState,msg_type msgType,sms_send_time smsSendTime
+	from sys_hint_message
+	where start_time &gt; now() and id in 
+  	<foreach collection="idss" open="("  close=")"  separator="," item="ids" >
+	  		#{ids}
+	 </foreach>
+  </select>
+	<!-- 所有 -->
+  <select id="queryAll" resultType="map" parameterType="org.system.entity.sys.SysHintMessage">
+select shm.id,shm.from_doctor_id fromDoctorId,fdd.`name` fromDoctorName, shm.to_doctor_id toDoctorId,tdd.`name` toDoctorName,shm.user_id userId,shm.msg_content msgContent,shm.start_time startTime,
+	shm.end_time endTime,shm.msg_state msgState,shm.msg_url msgUrl,shm.msg_type msgType,shm.package_service_id packageServiceId ,
+	ud.`name` userName,ud.id_card idCard,(DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(ud.birthday)), '%Y')+0) age,ud.sex,ud.contact,u.phone,
+	CASE 
+	WHEN shm.sms_send_time &gt; NOW() THEN '已设置'
+	WHEN shm.sms_send_time &lt;= NOW() THEN '已提醒'
+	ELSE '未设置' 
+	END smsState
+	from sys_hint_message shm
+	left join `user` u on u.id=shm.user_id
+	left join user_detail ud on ud.user_id=u.id
+	left join doctor_detail fdd on fdd.doctor_id=shm.from_doctor_id
+	left join doctor_detail tdd on tdd.doctor_id=shm.to_doctor_id
+	where shm.start_time &lt;= now()
+		<if test=" fromDoctorId !=null ">
+			and shm.from_doctor_id =#{fromDoctorId}
+		</if>
+		<if test=" id !=null ">
+			and shm.id=#{id}
+		</if>
+		<if test=" toDoctorId !=null ">
+			and shm.to_doctor_id =#{toDoctorId}
+		</if>
+		<if test=" userId !=null ">
+			and shm.user_id =#{userId}
+		</if>
+		<if test=" msgContent !=null and msgContent !=''">
+			and shm.msg_content like CONCAT(CONCAT('%', #{msgContent}), '%') 
+		</if>
+		<if test="userDetail !=null">
+			<if test="userDetail.name !=null and userDetail.name !=''">
+				and ud.name like CONCAT(CONCAT('%', #{userDetail.name}), '%')
+			</if>
+			<if test="userDetail.idcard !=null and userDetail.idcard !=''">
+				and ud.id_card like CONCAT(CONCAT('%', #{userDetail.idcard}), '%')
+			</if>
+			<if test="userDetail.sex !=null">
+				and ud.sex=#{userDetail.sex}
+			</if>
+		<choose>
+			<when test="userDetail.age !=null and userDetail.endAge !=null">
+				and ud.birthday between DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.endAge} YEAR),'%Y-1-1') and DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.age} YEAR),'%Y-12-31')
+				<!-- and ud.age between #{userDetail.age} and #{userDetail.endAge} -->
+			</when>
+			<otherwise>
+				<if test="userDetail.age !=null">
+					and ud.birthday &lt;= DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.age} YEAR),'%Y-12-31')
+					<!-- and ud.age &gt;= #{userDetail.age} -->
+				</if>
+				<if test="userDetail.endAge !=null">
+					and ud.birthday &gt;= DATE_FORMAT(DATE_SUB(NOW(),INTERVAL #{userDetail.endAge} YEAR),'%Y-1-1')
+					<!-- and ud.age &lt;= #{userDetail.endAge} -->
+				</if>
+			</otherwise>
+		</choose>
+		</if>
+		<if test="user !=null">
+			<if test="user.phone !=null">
+				and u.phone like CONCAT(CONCAT('%', #{user.phone}), '%')
+			</if>
+		</if>
+		<choose>
+			<when test="startDate !=null and endDate !=null">
+				and shm.start_time BETWEEN #{startDate} and #{endDate}
+			</when>
+			<otherwise>
+				<if test="startDate !=null">
+					and shm.start_time &gt; #{startDate}
+				</if>
+				<if test="endDate !=null">
+					and shm.start_time &lt; #{endDate}
+				</if>
+			</otherwise>
+		</choose>
+		<if test=" startTime !=null ">
+			and shm.start_time =#{startTime}
+		</if>
+		<if test=" endTime !=null">
+			and shm.end_time =#{endTime}
+		</if>
+		<if test=" msgState !=null">
+			and shm.msg_state =#{msgState}
+		</if>
+		<if test=" msgType !=null">
+			and shm.msg_type =#{msgType}
+		</if>
+		<if test=" packageServiceId !=null">
+			and shm.package_service_id =#{packageServiceId}
+		</if>
+	order by startTime desc
+  </select>
+</mapper>

@@ -1,0 +1,73 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.DoctorDoctorGroup;
+
+public interface IDoctorDoctorGroupService {
+	/**
+	 * 新增医生_医生团队
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return int
+	 */
+	public int insertDoctorDoctorGroup(DoctorDoctorGroup doctorDoctorGroup);
+
+	/**
+	 * a删除医生_医生团队
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return int
+	 */
+	public int deleteDoctorDoctorGroup(DoctorDoctorGroup doctorDoctorGroup);
+
+	/**
+	 * 修改医生_医生团队
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return int
+	 */
+	public int updateDoctorDoctorGroup(DoctorDoctorGroup doctorDoctorGroup);
+
+	/**
+	 * 检查医生_医生团队的唯一性
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> getDoctorDoctorGroupByFiled(DoctorDoctorGroup doctorDoctorGroup);
+
+	/**
+	 * 全部医生_医生团队列表
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return List<Map<String, Object>>
+	 */
+	public List<Map<String, Object>> getDoctorDoctorGroups(DoctorDoctorGroup doctorDoctorGroup);
+
+	/**
+	 * 判断团队长只有一个
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return int
+	 */
+	public int getOneTeamer(DoctorDoctorGroup doctorDoctorGroup);
+
+	/**
+	 * 医生团队 医生关系表 doctor_group_id and doctor_id 不能重复
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return int
+	 */
+	public int getOneDoctorGroup(DoctorDoctorGroup doctorDoctorGroup);
+
+	/**
+	 * 该医生是否存在有团队
+	 * 
+	 * @param doctorDoctorGroup
+	 * @return int
+	 */
+	public int getOneDoctorExistsGroup(DoctorDoctorGroup doctorDoctorGroup);
+
+}

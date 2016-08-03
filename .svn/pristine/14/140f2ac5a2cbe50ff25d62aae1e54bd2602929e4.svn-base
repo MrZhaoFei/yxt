@@ -1,0 +1,43 @@
+package org.system.service.impl.service.visits;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.service.visits.GxyFollowupRecords;
+import org.system.mapper.service.visits.GxyFollowupRecordsMapper;
+import org.system.service.iface.service.visits.IGxyFollowupRecordsService;
+
+@Service
+public class GxyFollowupRecordsService implements IGxyFollowupRecordsService {
+
+	
+	@Resource
+	private GxyFollowupRecordsMapper mapper;
+
+	@Override
+	public int insertGxyFollowupRecords(GxyFollowupRecords gxyFollowupRecords) {
+		return mapper.insert(gxyFollowupRecords);
+	}
+
+	@Override
+	public int updateGxyFollowupRecords(GxyFollowupRecords gxyFollowupRecords) {
+		return mapper.update(gxyFollowupRecords);
+	}
+
+	@Override
+	public List<Map<String, Object>> getGxyFollowupRecords(GxyFollowupRecords gxyFollowupRecords) {
+		return mapper.queryAll(gxyFollowupRecords);
+	}
+
+	@Override
+	public Map<String, Object> getGxyFollowupRecordsDetail(GxyFollowupRecords gxyFollowupRecords) {
+		return mapper.queryOne(gxyFollowupRecords);
+	}
+	
+
+	
+	
+}

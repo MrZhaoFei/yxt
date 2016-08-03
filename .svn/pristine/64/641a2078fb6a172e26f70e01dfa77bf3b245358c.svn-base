@@ -1,0 +1,86 @@
+package org.system.entity;
+
+
+
+import org.core.entity.BaseEntity;
+
+public class AdminUser extends BaseEntity {
+
+	private Integer id;
+/*	@NotBlank(message = "{username.notblank.valid}", groups = { Groups.Select.class})*/
+	private String username;
+	/*@NotBlank(message = "{password.notblank.valid}", groups = { Groups.Update.class,Groups.Select.class})*/
+	private String password;
+	private Integer state;
+	private String remark;
+	private Integer userType;
+
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	
+	 
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+
+	@Override
+	public String toString() {
+		return "AdminUser [id=" + id + ", username=" + username + ", password=" + password + ", state=" + state
+				+ ", remark=" + remark + "]";
+	}
+	@Override
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+	
+	
+}

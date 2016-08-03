@@ -1,0 +1,733 @@
+package org.system.entity.user.healthinfo;
+
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.system.entity.contract.Contract;
+import org.system.entity.user.User;
+import org.utils.spring.Groups;
+
+public class HealthInfo extends BaseEntity {
+    private Long id;
+
+    private Contract contract;
+    @NotNull(message = "{user.id.notnull.valid}", groups = { Groups.Insert.class,Groups.Select.class })
+    private Integer userId;
+
+    //@NotBlank(message = "{yljgbm.notblank.valid}", groups = { Groups.Insert.class })
+    private String yljgbm;
+
+    private String jkdabh;
+
+    private String yxtJkdabh;
+
+    private String yljgmc;
+
+    private String zjlx;
+
+    @NotBlank(message = "{zjhm.notblank.valid}", groups = { Groups.Insert.class })
+    private String zjhm;
+
+    private String jmjkkh;
+
+    private String xm;
+
+    private String xbbm;
+
+    private String jmlxbm;
+
+    private String hyzkbm;
+    
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date csrq;
+
+    private String mzbm;
+
+    private String gjbm;
+
+    private String czlxbm;
+
+    private String xxbm;
+
+    private String rhyxbm;
+
+    private String xlcdbm;
+
+    private String mqzybm;
+
+    private String cyzkbm;
+
+    private String gzdwmc;
+
+    private String ylzffsbm;
+
+    private String sjhm;
+
+    private String dhhm;
+
+    private String lxrxm;
+
+    private String lxrdhhm;
+
+    private String lxrgxdm;
+
+    private String xzz;
+
+    private String xzzProbm;
+
+    private String xzzCitybm;
+
+    private String xzzAreabm;
+
+    private String xzzStrbm;
+
+    private String xzzVillage;
+
+    private String xzzNum;
+
+    private String jg;
+
+    private String jgProbm;
+
+    private String jgCitybm;
+
+    private String jgAreabm;
+
+    private String jgStrbm;
+
+    private String blsbm;
+
+    private String ycbsbz;
+
+    private String ycbsmc;
+
+    private String mxbbm;
+
+    private String cjqkbm;
+
+    private String cjzh;
+
+    private String xwwxysbm;
+
+    private String cfpfssbz;
+
+    private String cfpfssbm;
+
+    private String rllxbm;
+
+    private String ysbm;
+
+    private String csbm;
+
+    private String qclbm;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date jdrq;
+
+    private String jdyljgbm;
+
+    private String zrysbh;
+
+    private String zrysxm;
+
+    private String zrysdh;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date djrq;
+
+    private String djrbh;
+
+    private String djrxm;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date dcrq;
+
+    private String dczbh;
+
+    private String dczxm;
+
+    private Date updateTime;
+    
+    private String grxgbh;
+    
+    private Integer lastDoctorId;
+    
+    private User user;
+    
+    
+    public Integer getLastDoctorId() {
+		return lastDoctorId;
+	}
+
+	public void setLastDoctorId(Integer lastDoctorId) {
+		this.lastDoctorId = lastDoctorId;
+	}
+
+	public String getGrxgbh() {
+		return grxgbh;
+	}
+
+	public void setGrxgbh(String grxgbh) {
+		this.grxgbh = grxgbh;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Contract getContract() {
+		return contract;
+	}
+
+	public void setContract(Contract contract) {
+		this.contract = contract;
+	}
+
+	public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getYljgbm() {
+        return yljgbm;
+    }
+
+    public void setYljgbm(String yljgbm) {
+        this.yljgbm = yljgbm;
+    }
+
+    public String getJkdabh() {
+        return jkdabh;
+    }
+
+    public void setJkdabh(String jkdabh) {
+        this.jkdabh = jkdabh;
+    }
+
+    public String getYljgmc() {
+        return yljgmc;
+    }
+
+    public void setYljgmc(String yljgmc) {
+        this.yljgmc = yljgmc;
+    }
+
+    public String getZjlx() {
+        return zjlx;
+    }
+
+    public void setZjlx(String zjlx) {
+        this.zjlx = zjlx;
+    }
+
+    public String getZjhm() {
+        return zjhm;
+    }
+
+    public void setZjhm(String zjhm) {
+        this.zjhm = zjhm;
+    }
+
+    public String getJmjkkh() {
+        return jmjkkh;
+    }
+
+    public void setJmjkkh(String jmjkkh) {
+        this.jmjkkh = jmjkkh;
+    }
+
+    public String getXm() {
+        return xm;
+    }
+
+    public void setXm(String xm) {
+        this.xm = xm;
+    }
+
+    public String getXbbm() {
+        return xbbm;
+    }
+
+    public void setXbbm(String xbbm) {
+        this.xbbm = xbbm;
+    }
+
+    public String getJmlxbm() {
+        return jmlxbm;
+    }
+
+    public void setJmlxbm(String jmlxbm) {
+        this.jmlxbm = jmlxbm;
+    }
+
+    public String getHyzkbm() {
+        return hyzkbm;
+    }
+
+    public void setHyzkbm(String hyzkbm) {
+        this.hyzkbm = hyzkbm;
+    }
+
+    public Date getCsrq() {
+        return csrq;
+    }
+
+    public void setCsrq(Date csrq) {
+        this.csrq = csrq;
+    }
+
+    public String getMzbm() {
+        return mzbm;
+    }
+
+    public void setMzbm(String mzbm) {
+        this.mzbm = mzbm;
+    }
+
+    public String getGjbm() {
+        return gjbm;
+    }
+
+    public void setGjbm(String gjbm) {
+        this.gjbm = gjbm;
+    }
+
+    public String getCzlxbm() {
+        return czlxbm;
+    }
+
+    public void setCzlxbm(String czlxbm) {
+        this.czlxbm = czlxbm;
+    }
+
+    public String getXxbm() {
+        return xxbm;
+    }
+
+    public void setXxbm(String xxbm) {
+        this.xxbm = xxbm;
+    }
+
+    public String getRhyxbm() {
+        return rhyxbm;
+    }
+
+    public void setRhyxbm(String rhyxbm) {
+        this.rhyxbm = rhyxbm;
+    }
+
+    public String getXlcdbm() {
+        return xlcdbm;
+    }
+
+    public void setXlcdbm(String xlcdbm) {
+        this.xlcdbm = xlcdbm;
+    }
+
+    public String getMqzybm() {
+        return mqzybm;
+    }
+
+    public void setMqzybm(String mqzybm) {
+        this.mqzybm = mqzybm;
+    }
+
+    public String getCyzkbm() {
+        return cyzkbm;
+    }
+
+    public void setCyzkbm(String cyzkbm) {
+        this.cyzkbm = cyzkbm;
+    }
+
+    public String getGzdwmc() {
+        return gzdwmc;
+    }
+
+    public void setGzdwmc(String gzdwmc) {
+        this.gzdwmc = gzdwmc;
+    }
+
+    public String getYlzffsbm() {
+        return ylzffsbm;
+    }
+
+    public void setYlzffsbm(String ylzffsbm) {
+        this.ylzffsbm = ylzffsbm;
+    }
+
+    public String getSjhm() {
+        return sjhm;
+    }
+
+    public void setSjhm(String sjhm) {
+        this.sjhm = sjhm;
+    }
+
+    public String getDhhm() {
+        return dhhm;
+    }
+
+    public void setDhhm(String dhhm) {
+        this.dhhm = dhhm;
+    }
+
+    public String getLxrxm() {
+        return lxrxm;
+    }
+
+    public void setLxrxm(String lxrxm) {
+        this.lxrxm = lxrxm;
+    }
+
+    public String getLxrdhhm() {
+        return lxrdhhm;
+    }
+
+    public void setLxrdhhm(String lxrdhhm) {
+        this.lxrdhhm = lxrdhhm;
+    }
+
+    public String getLxrgxdm() {
+        return lxrgxdm;
+    }
+
+    public void setLxrgxdm(String lxrgxdm) {
+        this.lxrgxdm = lxrgxdm;
+    }
+
+    public String getXzz() {
+        return xzz;
+    }
+
+    public void setXzz(String xzz) {
+        this.xzz = xzz;
+    }
+
+    public String getXzzProbm() {
+        return xzzProbm;
+    }
+
+    public void setXzzProbm(String xzzProbm) {
+        this.xzzProbm = xzzProbm;
+    }
+
+    public String getXzzCitybm() {
+        return xzzCitybm;
+    }
+
+    public void setXzzCitybm(String xzzCitybm) {
+        this.xzzCitybm = xzzCitybm;
+    }
+
+    public String getXzzAreabm() {
+        return xzzAreabm;
+    }
+
+    public void setXzzAreabm(String xzzAreabm) {
+        this.xzzAreabm = xzzAreabm;
+    }
+
+    public String getXzzStrbm() {
+        return xzzStrbm;
+    }
+
+    public void setXzzStrbm(String xzzStrbm) {
+        this.xzzStrbm = xzzStrbm;
+    }
+
+    public String getXzzVillage() {
+        return xzzVillage;
+    }
+
+    public void setXzzVillage(String xzzVillage) {
+        this.xzzVillage = xzzVillage;
+    }
+
+    public String getXzzNum() {
+        return xzzNum;
+    }
+
+    public void setXzzNum(String xzzNum) {
+        this.xzzNum = xzzNum;
+    }
+
+    public String getJg() {
+        return jg;
+    }
+
+    public void setJg(String jg) {
+        this.jg = jg;
+    }
+
+    public String getJgProbm() {
+        return jgProbm;
+    }
+
+    public void setJgProbm(String jgProbm) {
+        this.jgProbm = jgProbm;
+    }
+
+    public String getJgCitybm() {
+        return jgCitybm;
+    }
+
+    public void setJgCitybm(String jgCitybm) {
+        this.jgCitybm = jgCitybm;
+    }
+
+    public String getJgAreabm() {
+        return jgAreabm;
+    }
+
+    public void setJgAreabm(String jgAreabm) {
+        this.jgAreabm = jgAreabm;
+    }
+
+    public String getJgStrbm() {
+        return jgStrbm;
+    }
+
+    public void setJgStrbm(String jgStrbm) {
+        this.jgStrbm = jgStrbm;
+    }
+
+    public String getBlsbm() {
+        return blsbm;
+    }
+
+    public void setBlsbm(String blsbm) {
+        this.blsbm = blsbm;
+    }
+
+    public String getYcbsbz() {
+        return ycbsbz;
+    }
+
+    public void setYcbsbz(String ycbsbz) {
+        this.ycbsbz = ycbsbz;
+    }
+
+    public String getYcbsmc() {
+        return ycbsmc;
+    }
+
+    public void setYcbsmc(String ycbsmc) {
+        this.ycbsmc = ycbsmc;
+    }
+
+    public String getMxbbm() {
+        return mxbbm;
+    }
+
+    public void setMxbbm(String mxbbm) {
+        this.mxbbm = mxbbm;
+    }
+
+    public String getCjqkbm() {
+        return cjqkbm;
+    }
+
+    public void setCjqkbm(String cjqkbm) {
+        this.cjqkbm = cjqkbm;
+    }
+
+    public String getCjzh() {
+        return cjzh;
+    }
+
+    public void setCjzh(String cjzh) {
+        this.cjzh = cjzh;
+    }
+
+    public String getXwwxysbm() {
+        return xwwxysbm;
+    }
+
+    public void setXwwxysbm(String xwwxysbm) {
+        this.xwwxysbm = xwwxysbm;
+    }
+
+    public String getCfpfssbz() {
+        return cfpfssbz;
+    }
+
+    public void setCfpfssbz(String cfpfssbz) {
+        this.cfpfssbz = cfpfssbz;
+    }
+
+    public String getCfpfssbm() {
+        return cfpfssbm;
+    }
+
+    public void setCfpfssbm(String cfpfssbm) {
+        this.cfpfssbm = cfpfssbm;
+    }
+
+    public String getRllxbm() {
+        return rllxbm;
+    }
+
+    public void setRllxbm(String rllxbm) {
+        this.rllxbm = rllxbm;
+    }
+
+    public String getYsbm() {
+        return ysbm;
+    }
+
+    public void setYsbm(String ysbm) {
+        this.ysbm = ysbm;
+    }
+
+    public String getCsbm() {
+        return csbm;
+    }
+
+    public void setCsbm(String csbm) {
+        this.csbm = csbm;
+    }
+
+    public String getQclbm() {
+        return qclbm;
+    }
+
+    public void setQclbm(String qclbm) {
+        this.qclbm = qclbm;
+    }
+
+    public Date getJdrq() {
+        return jdrq;
+    }
+
+    public void setJdrq(Date jdrq) {
+        this.jdrq = jdrq;
+    }
+
+    public String getJdyljgbm() {
+        return jdyljgbm;
+    }
+
+    public void setJdyljgbm(String jdyljgbm) {
+        this.jdyljgbm = jdyljgbm;
+    }
+
+    public String getZrysbh() {
+        return zrysbh;
+    }
+
+    public void setZrysbh(String zrysbh) {
+        this.zrysbh = zrysbh;
+    }
+
+    public String getZrysxm() {
+        return zrysxm;
+    }
+
+    public void setZrysxm(String zrysxm) {
+        this.zrysxm = zrysxm;
+    }
+
+    public String getZrysdh() {
+        return zrysdh;
+    }
+
+    public void setZrysdh(String zrysdh) {
+        this.zrysdh = zrysdh;
+    }
+
+    public Date getDjrq() {
+        return djrq;
+    }
+
+    public void setDjrq(Date djrq) {
+        this.djrq = djrq;
+    }
+
+    public String getDjrbh() {
+        return djrbh;
+    }
+
+    public void setDjrbh(String djrbh) {
+        this.djrbh = djrbh;
+    }
+
+    public String getDjrxm() {
+        return djrxm;
+    }
+
+    public void setDjrxm(String djrxm) {
+        this.djrxm = djrxm;
+    }
+
+    public Date getDcrq() {
+        return dcrq;
+    }
+
+    public void setDcrq(Date dcrq) {
+        this.dcrq = dcrq;
+    }
+
+    public String getDczbh() {
+        return dczbh;
+    }
+
+    public void setDczbh(String dczbh) {
+        this.dczbh = dczbh;
+    }
+
+    public String getDczxm() {
+        return dczxm;
+    }
+
+    public void setDczxm(String dczxm) {
+        this.dczxm = dczxm;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+    
+	public String getYxtJkdabh() {
+		return yxtJkdabh;
+	}
+
+	public void setYxtJkdabh(String yxtJkdabh) {
+		this.yxtJkdabh = yxtJkdabh;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class,Groups.Other.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class,Groups.Other.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+}

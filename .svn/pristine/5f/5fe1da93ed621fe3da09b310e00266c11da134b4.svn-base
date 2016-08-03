@@ -1,0 +1,58 @@
+package org.system.service.impl.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.doctor.DoctorGroup;
+import org.system.mapper.doctor.DoctorGroupMapper;
+import org.system.service.iface.doctor.IDoctorGroupService;
+
+@Service
+public class DoctorGroupService implements IDoctorGroupService {
+	@Resource
+	private DoctorGroupMapper doctorGroupMapper;
+
+	@Override
+	public int insertDoctorGroup(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.insert(doctorGroup);
+	}
+
+	@Override
+	public int updateDoctorGroup(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.update(doctorGroup);
+	}
+
+	@Override
+	public int deleteDoctorGroup(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.delete(doctorGroup);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorGroupList(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.queryAll(doctorGroup);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorGroupDetail(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.queryOne(doctorGroup);
+	}
+
+	@Override
+	public Map<String, Object> getDoctorGroupByFiled(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.checkExists(doctorGroup);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorGroupDoctorList(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.getDoctorGroupDoctorList(doctorGroup);
+	}
+
+	@Override
+	public List<Map<String, Object>> getDoctorGroupDoctorListNotIn(DoctorGroup doctorGroup) {
+		return doctorGroupMapper.getDoctorGroupDoctorListNotIn(doctorGroup);
+	}
+
+}

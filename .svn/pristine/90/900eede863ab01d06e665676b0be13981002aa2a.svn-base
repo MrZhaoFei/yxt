@@ -1,0 +1,103 @@
+package org.system.entity.sys;
+
+import javax.validation.constraints.NotNull;
+
+import org.core.entity.BaseEntity;
+import org.hibernate.validator.constraints.NotBlank;
+import org.utils.spring.Groups;
+
+public class SysCodeRecords extends BaseEntity {
+	private Integer id;
+
+	private String codeValue;
+
+	private String codeName;
+
+	@NotBlank(message = "{sysCodeRecords.codeType.notblank.valid}", groups = { Groups.Select.class })
+	private String codeType;
+
+	private String codeDesc;
+
+	private String codeRemark;
+
+	private Boolean isParent;
+
+	private Integer pid;
+
+	public Boolean getIsParent() {
+		return isParent;
+	}
+
+	public void setIsParent(Boolean isParent) {
+		this.isParent = isParent;
+	}
+
+	public Integer getPid() {
+		return pid;
+	}
+
+	public void setPid(Integer pid) {
+		this.pid = pid;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCodeValue() {
+		return codeValue;
+	}
+
+	public void setCodeValue(String codeValue) {
+		this.codeValue = codeValue;
+	}
+
+	public String getCodeName() {
+		return codeName;
+	}
+
+	public void setCodeName(String codeName) {
+		this.codeName = codeName;
+	}
+
+	public String getCodeType() {
+		return codeType;
+	}
+
+	public void setCodeType(String codeType) {
+		this.codeType = codeType;
+	}
+
+	public String getCodeDesc() {
+		return codeDesc;
+	}
+
+	public void setCodeDesc(String codeDesc) {
+		this.codeDesc = codeDesc;
+	}
+
+	public String getCodeRemark() {
+		return codeRemark;
+	}
+
+	public void setCodeRemark(String codeRemark) {
+		this.codeRemark = codeRemark;
+	}
+
+	@Override
+	@NotNull(message = "{page.empty}", groups = { Groups.Select.class })
+	public Integer getPage() {
+		return super.getPage();
+	}
+
+	@Override
+	@NotNull(message = "{rows.empty}", groups = { Groups.Select.class })
+	public Integer getRows() {
+		return super.getRows();
+	}
+
+}

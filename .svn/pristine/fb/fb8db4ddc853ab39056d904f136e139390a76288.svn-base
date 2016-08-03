@@ -1,0 +1,25 @@
+package org.system.service.iface.chat;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.chat.WeixinRecords;
+
+public interface IWeixinRecordsService {
+
+	Map<String, Object> getWeixinRecordsByFild(WeixinRecords weixinRecords);
+
+	int insertWeixinRecords(WeixinRecords weixinRecords);
+
+	int updateWeixinRecords(WeixinRecords weixinRecords);
+
+	Map<String, Object> getWeixinRecordsDetail(WeixinRecords weixinRecords);
+
+	int deleteWeiXinRecordsByQuery(List<Long> ids);
+
+	List<Map<String, Object>> getWeixinRecordsDetailList(WeixinRecords weixinRecords);
+
+	List<Map<String, Object>> getWeixinRecordsListByUser(WeixinRecords weixinRecords);
+
+	List<Map<String, Object>> getWeixinRecordsListByDoctor(WeixinRecords weixinRecords);
+}

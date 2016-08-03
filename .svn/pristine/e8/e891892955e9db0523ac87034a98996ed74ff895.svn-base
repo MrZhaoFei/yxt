@@ -1,0 +1,37 @@
+package org.system.service.impl.user;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.user.UserFollow;
+import org.system.mapper.user.UserFollowMapper;
+import org.system.service.iface.user.IUserFollowService;
+
+@Service
+public class UserFollowService implements IUserFollowService {
+	@Resource
+	private UserFollowMapper mapper;
+
+	@Override
+	public List<Map<String, Object>> getUserFollowByFild(UserFollow userFollow) {
+		return mapper.checkExistsMany(userFollow);
+	}
+
+	@Override
+	public int insertUserFollow(UserFollow userFollow) {
+		return mapper.insert(userFollow);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserFollowList(UserFollow userFollow) {
+		return mapper.queryAll(userFollow);
+	}
+
+	@Override
+	public int deleteUserFollow(UserFollow userFollow) {
+		return mapper.delete(userFollow);
+	}
+}

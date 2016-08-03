@@ -1,0 +1,84 @@
+package org.system.entity.user.healthtest;
+
+import org.core.entity.BaseEntity;
+
+public class SelfTestResult extends BaseEntity {
+	private Integer id;
+
+	private Integer score;
+	private Integer scoreStart;
+	private Integer scoreEnd;
+
+	private String title;
+
+	private String desc;
+
+	private String picUrl;
+
+	private Integer titleId;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getScoreStart() {
+		return scoreStart;
+	}
+
+	public void setScoreStart(Integer scoreStart) {
+		this.scoreStart = scoreStart;
+	}
+
+	public Integer getScoreEnd() {
+		return scoreEnd;
+	}
+
+	public void setScoreEnd(Integer scoreEnd) {
+		this.scoreEnd = scoreEnd;
+	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public String getPicUrl() {
+		return picUrl;
+	}
+
+	public void setPicUrl(String picUrl) {
+		this.picUrl = picUrl;
+	}
+
+	public Integer getTitleId() {
+		return titleId;
+	}
+
+	public void setTitleId(Integer titleId) {
+		this.titleId = titleId;
+	}
+
+}

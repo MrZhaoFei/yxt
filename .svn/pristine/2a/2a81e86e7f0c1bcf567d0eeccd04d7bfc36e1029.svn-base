@@ -1,0 +1,10 @@
+package org.system.mapper.doctor;
+
+import org.core.mapper.IBaseMapper;
+import org.system.entity.doctor.DoctorDetail;
+
+
+public interface DoctorDetailMapper extends IBaseMapper<DoctorDetail> {
+   
+	
+}

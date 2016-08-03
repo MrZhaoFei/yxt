@@ -1,0 +1,10 @@
+package org.system.service.iface.chat;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.chat.WeixinRecordsHistoryInfo;
+
+public interface IWeixinRecordsHistoryInfoService {
+	List<Map<String, Object>> getWeixinRecordsHistoryInfoList(WeixinRecordsHistoryInfo weixinRecordsHistoryInfo);
+}

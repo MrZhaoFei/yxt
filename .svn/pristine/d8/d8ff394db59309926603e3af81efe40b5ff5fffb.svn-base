@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.doctorType.DoctorTypeMapper" >
+
+    <!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.DoctorType" useGeneratedKeys="true" keyColumn="id">
+		insert into doctor_type (name,code,oder_level) values (#{name},#{code},#{oderLevel})
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="org.system.entity.DoctorType">
+		DELETE FROM doctor_type WHERE id=#{id}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="org.system.entity.DoctorType">
+		UPDATE doctor_type SET id=#{id}
+		<if test="name !=null and name !=''">
+			,name=#{name}
+		</if>		
+		<if test="state!=null and state!=''">
+		   ,state=#{state}
+		</if>
+		<if test="code!=null and code!=''">
+		   ,code=#{code}
+		</if>
+		<if test="oderLevel!=null and oderLevel!=''">
+		   ,oder_level=#{oderLevel}
+		</if> 
+		 WHERE id=#{id}
+	</update>
+	
+	<!-- 查询全部 -->
+	<select id="queryAll" parameterType="org.system.entity.DoctorType" resultType="map">
+		SELECT id,name,code, state,oder_level oderLevel FROM doctor_type
+		<where>
+			<if test="name!=null and name!=''">
+				name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="code!=null and code!=''">
+			and	code like CONCAT(CONCAT('%', #{code}), '%')
+			</if>
+			<!-- and state=0 -->
+		</where>
+	</select>
+	
+	
+	<!-- 根据主键查询单个 -->
+	<select id="queryOne" parameterType="org.system.entity.DoctorType" resultType="map">
+		SELECT id,name,code, state,oder_level FROM doctor_type WHERE id=#{id}
+	</select>
+	
+	<!-- 检查唯一性 -->
+    <select id="checkExists" parameterType="org.system.entity.DoctorType" resultType="map">
+	     SELECT id,name,code, state,oder_level FROM doctor_type WHERE name=#{name} and code=#{code} and state=#{state} and oder_level=#{oderLevel} 
+     </select>
+
+
+</mapper>

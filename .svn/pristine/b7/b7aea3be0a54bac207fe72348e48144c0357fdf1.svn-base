@@ -1,0 +1,10 @@
+package org.system.service.iface.userService;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.userService.UserServicePack;
+
+public interface IUserServicePackService {
+	public List<Map<String, Object>> getUserServicePackList(UserServicePack userServicePack);
+}

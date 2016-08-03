@@ -1,0 +1,134 @@
+package org.system.controller.impl.doctor;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.doctor.IDoctorDoctorGroupController;
+import org.system.entity.doctor.DoctorDoctorGroup;
+import org.system.message.Message;
+import org.system.service.iface.contract.IContractService;
+import org.system.service.iface.doctor.IDoctorDoctorGroupService;
+import org.system.service.iface.doctor.IDoctorGroupService;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
+@Controller
+public class DoctorDoctorGroupController implements IDoctorDoctorGroupController {
+
+	Logger log = LoggerFactory.getLogger(DoctorDoctorGroupController.class);
+	@Resource
+	private IDoctorGroupService doctorGroupService;
+	@Resource
+	private CacheManager cache;
+	@Resource
+	private IDoctorDoctorGroupService doctorDoctorGroupService;
+	@Resource
+	private IContractService contractService;
+
+	@Override
+	@Transactional
+	public Map<String, Object> updateDoctorGroupDoctorReject(Integer doctorGroupId, DoctorDoctorGroup doctorDoctorGroup,
+			BindingResult result, String token) {
+		// 设置团队ID
+		doctorDoctorGroup.setDoctorGroupId(doctorGroupId);
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			// 设置登录医生团队信息
+			DoctorDoctorGroup ddg = new DoctorDoctorGroup();
+			ddg.setDoctorId((Integer) doctorMap.get("id"));
+			ddg.setDoctorGroupId(doctorGroupId);
+			// 判断登录医生 是否为团队长
+			Map<String, Object> doctorDoctorGroupMap = doctorDoctorGroupService.getDoctorDoctorGroupDetail(ddg);
+			if (doctorDoctorGroupMap == null || doctorDoctorGroupMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			}
+			// 获取医生 角色ID
+			Integer roleId = (Integer) doctorDoctorGroupMap.get("roleId");
+			// 角色ID为1 团队长可以进行操作
+			if (roleId == 1) {
+				// 查询转诊是否有未完成
+				Map<String, Object> transferMap = doctorDoctorGroupService.getTransTreatDetaily(doctorDoctorGroup);
+				// 查询影响会诊是否有未完成
+				Map<String, Object> imageMap = doctorDoctorGroupService.getImageConsultationDetaily(doctorDoctorGroup);
+				if ((transferMap != null && transferMap.size() >= 0) || (imageMap != null && imageMap.size() >= 0)) {
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY,
+							Message.bundle("service.unfinished.exists"));
+				}
+				// 判断团队长自己不能踢出
+				if (doctorDoctorGroup.getDoctorId() != (int) doctorMap.get("id")) {
+					if (doctorDoctorGroupService.deleteDoctorDoctorGroup(doctorDoctorGroup) > 0) {
+						Map<String, Object> param = new HashMap<>();
+						param.put("oldDoctorId", doctorDoctorGroup.getDoctorId());
+						param.put("newDoctorId", (Integer) doctorMap.get("id"));
+						/* 踢出成功把他签约用户转移给团队长 */
+						contractService.updateContractByMap(param);
+						return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("delete.success"));
+					}
+				}
+				return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR, Message.bundle("permission.no.permission"));
+
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+
+	@Override
+	@Transactional
+	public Map<String, Object> updateDoctorGroupDoctorTransfer(Integer doctorGroupId,
+			DoctorDoctorGroup doctorDoctorGroup, BindingResult result, String token) {
+		// 设置团队ID
+		doctorDoctorGroup.setDoctorGroupId(doctorGroupId);
+		// 缓存中获取用户数据
+		Element element = cache.getCache(Global.CACHE_DOCTOR).get(token);
+		if (element != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> doctorMap = (Map<String, Object>) element.getObjectValue();
+			DoctorDoctorGroup ddg = new DoctorDoctorGroup();
+			ddg.setDoctorId((Integer) doctorMap.get("id"));
+			ddg.setDoctorGroupId(doctorGroupId);
+			// 判断登录医生 是否为团队长
+			Map<String, Object> doctorDoctorGroupMap = doctorDoctorGroupService.getDoctorDoctorGroupDetail(ddg);
+			if (doctorDoctorGroupMap == null || doctorDoctorGroupMap.size() <= 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+			}
+			// 获取医生 角色ID
+			Integer roleId = (Integer) doctorDoctorGroupMap.get("roleId");
+			if (roleId == 1) {
+				// 修改当前登录医生角色为2 普通用户 设置医生ID 和角色ID
+				ddg.setDoctorId((Integer) doctorMap.get("id"));
+				ddg.setRoleId(2);
+				// 修改转移医生为1 团队长
+				doctorDoctorGroup.setRoleId(1);
+				// 查询要转移的医生 是否存在
+				Map<String, Object> ddgMap = doctorDoctorGroupService.getDoctorDoctorGroupDetail(doctorDoctorGroup);
+				if (ddgMap == null || ddgMap.size() <= 0) {
+					return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("doctorGroup.doctr.empty"));
+				}
+				if (doctorDoctorGroupService.updateDoctorDoctorGroup(ddg) > 0
+						&& doctorDoctorGroupService.updateDoctorDoctorGroup(doctorDoctorGroup) > 0) {
+					return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+				}
+				throw new RuntimeException();
+			}
+			return ResultMap.convertMap(ResultCode.CODE_PERMISSION_ERROR, Message.bundle("permission.no.permission"));
+		} else {
+			return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		}
+	}
+}

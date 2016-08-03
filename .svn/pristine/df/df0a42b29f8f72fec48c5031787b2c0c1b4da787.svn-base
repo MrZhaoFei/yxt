@@ -1,0 +1,117 @@
+package org.system.controller.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.core.result.ResultCode;
+import org.core.result.ResultMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.system.Global;
+import org.system.controller.iface.IServiceTypeController;
+import org.system.entity.service.ServiceType;
+import org.system.message.Message;
+import org.system.service.iface.service.IServiceTypeService;
+
+@Controller
+public class ServiceTypeController implements IServiceTypeController{
+	Logger log = LoggerFactory.getLogger(ServiceTypeController.class);
+	
+	@Resource
+	private IServiceTypeService serviceTypeService;
+
+	@Override
+	public Map<String, Object> insertServiceType(ServiceType serviceType, BindingResult result) {
+              // 检查数据是否存在
+			Map<String, Object> dataMap = serviceTypeService.getServiceTypeByFiled(serviceType);					
+
+			if (dataMap != null && dataMap.size() > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+			}
+			if (serviceTypeService.insertServiceType(serviceType)> 0) {
+				Integer i=serviceType.getId();
+				serviceType.setOderBy(i);
+				// 新增成功
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("insert.success"));
+			}
+			// 新增失败
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("insert.fail"));
+	}
+
+	@Override
+	public Map<String, Object> updateServiceType(Integer id, ServiceType serviceType, BindingResult result) {
+	        //检查数据是否存在
+	        serviceType.setId(id);
+						
+			Map<String, Object> dataMap = serviceTypeService.getServiceTypeByFiled(serviceType);
+			if (dataMap != null && dataMap.size() > 0) {
+				// 数据已存在
+				return ResultMap.convertMap(ResultCode.CODE_DATA_EXISTS, Message.bundle("data.exists"));
+			}
+			// 设置实例的id属性
+			if (serviceTypeService.updateServiceType(serviceType) > 0) {
+				return ResultMap.convertMap(ResultCode.CODE_SUCCESS, Message.bundle("update.success"));
+			}
+			return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("update.fail"));
+	}
+
+	@Override
+	public Map<String, Object> getServiceTypeList(ServiceType serviceType, BindingResult result,HttpServletRequest req) {
+		 HttpSession session=req.getSession();
+		 if(session.getAttribute("user")!=null){
+			 
+			 Map<String, Object> resultMap = new HashMap<>();
+			 //得到返回数据
+			 List<Map<String, Object>> dataList = serviceTypeService.getServiceTypeList(serviceType);
+			 
+			 
+			 if (dataList != null && dataList.size() > 0) {
+				 //得到数据总数
+				 resultMap.put(Global.DATA_TOTAL, serviceType.getTotal());
+				 resultMap.put(Global.DATA_ROWS, dataList);
+				 
+				 return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultMap, Message.bundle("query.success"));
+			 }
+			 return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+		 }else{
+			 return ResultMap.convertMap(ResultCode.CODE_NO_LOGIN, Message.bundle("permission.no.login"));
+		 }
+		
+	}
+
+	@Override
+	public Map<String, Object> getServiceTypeDetail(Integer id, ServiceType serviceType) {
+		// 设置实例的id属性
+		serviceType.setId(id);
+		Map<String, Object> resultList = serviceTypeService.getServiceTypeDetail(serviceType);
+		if (resultList != null && resultList.size() > 0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS, resultList, Message.bundle("query.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY, Message.bundle("query.empty"));
+	}
+
+	@Override
+	public Map<String, Object> deleteServiceType(Integer id, ServiceType serviceType) {
+		 // 设置实例的id属性
+		serviceType.setId(id);
+	  
+		Map<String, Object> resultList = serviceTypeService.getServiceTypeDetail(serviceType);
+
+		if (resultList == null || resultList.size() <=0) {
+			return ResultMap.convertMap(ResultCode.CODE_DATA_EMPTY,Message.bundle("serviceType.empty"));
+		}
+		//执行删除
+		if (serviceTypeService.deleteServiceType(serviceType) >0) {
+			return ResultMap.convertMap(ResultCode.CODE_SUCCESS,Message.bundle("delete.success"));
+		}
+		return ResultMap.convertMap(ResultCode.CODE_FAIL, Message.bundle("delete.fail"));
+	}
+
+}

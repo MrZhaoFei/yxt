@@ -1,0 +1,22 @@
+package org.system.service.iface.hospital;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.hospital.HospiDepartDoctorRelation;
+
+public interface IHospiDepartDoctorRelationService {
+	
+	int insertHospiDepartDoctorRelation(HospiDepartDoctorRelation hospiDepartDoctorRelation);
+
+	int updateHospiDepartDoctorRelation(HospiDepartDoctorRelation hospiDepartDoctorRelation);
+
+	int deleteHospiDepartDoctorRelation(HospiDepartDoctorRelation hospiDepartDoctorRelation);
+	
+	Map<String, Object> getHospiDepartDoctorRelationFiled(HospiDepartDoctorRelation hospiDepartDoctorRelation);
+
+	Map<String, Object> getHospiDepartDoctorRelationDetail(HospiDepartDoctorRelation hospiDepartDoctorRelation);
+
+	List<Map<String, Object>> getHospiDepartDoctorRelationList(HospiDepartDoctorRelation hospiDepartDoctorRelation);
+
+}

@@ -1,0 +1,21 @@
+package org.system.service.iface.service.transfer;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.service.transfer.ImageConsultationDetaily;
+
+public interface IImageConsultationDetailyService {
+
+	Map<String, Object> getImageConsultationDetailyByFild(ImageConsultationDetaily imageConsultationDetaily);
+
+	int insertImageConsultationDetaily(ImageConsultationDetaily imageConsultationDetaily);
+
+	int updateImageConsultationDetaily(ImageConsultationDetaily imageConsultationDetaily);
+
+	List<Map<String, Object>> getImageConsultationDetailyList(ImageConsultationDetaily imageConsultationDetaily);
+
+	Map<String, Object> getImageConsultationDetailyDetail(ImageConsultationDetaily imageConsultationDetaily);
+	
+	int insertImageConsultationDetailyFiles(ImageConsultationDetaily imageConsultationDetaily);
+}

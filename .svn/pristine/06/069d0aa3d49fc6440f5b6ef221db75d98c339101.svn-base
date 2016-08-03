@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.address.AddressMapper">
+	<!-- 查询所有记录 -->
+	<select id="queryAll" parameterType="org.system.entity.address.Address"
+		resultType="map">
+		select id,pid,code_value codeValue,name from address
+		<where>
+			<if test="name !=null and name !=''">
+				name like CONCAT(CONCAT('%', #{name}), '%')
+			</if>
+			<if test="isParent == true">
+				and pid = '156'
+			</if>
+			<if test="pid !=null">
+				and pid=#{pid}
+			</if>
+		</where>
+	</select>
+
+	<resultMap type="map" id="addressMap">
+		<result column="code_value" property="codeValue"/>
+	</resultMap>
+	<!-- 查询单条记录 -->
+	<select id="queryOne" parameterType="org.system.entity.address.Address" statementType="CALLABLE" resultMap="addressMap">
+		<![CDATA[
+			{call sp_get_address_list(#{id})}
+		]]>
+	</select>
+
+	<resultMap type="map" id="tempMap">
+		<result column="id" property="id" />
+		<!-- one to one 一个用户对应一个详情 -->
+		<association property="groupTotal" column="id" javaType="map" select="getGroupTotal" />
+	</resultMap>
+
+	<select id="getGroupTotal" parameterType="map" resultType="map">
+		select count(id) total from doctor_group where hospital_id=#{id} and doctor_group_type_id=1
+	</select>
+
+	<select id="getAddressListByRaidus" parameterType="map" resultMap="tempMap">
+		select h.id,h.name,h.address,h.code_value codeValue,h.remark,h.latitude,h.longitude,h.telephone,h.website,h.picture
+		from hospital h
+		where h.longitude between #{minLng} and #{maxLng} and h.latitude between #{minLat} and #{maxLat}
+		<if test="hospitalId!=null">
+			and h.id=#{hospitalId}
+		</if>
+		<if test="type!=null">
+			and h.type=#{type}
+		</if>
+	</select>
+	<select id="getAddressListByPid" parameterType="string" resultType="map">
+		select SUBSTR(fn_getaddress_childlist(#{id}),3) text
+	</select>
+</mapper>

@@ -1,0 +1,45 @@
+package org.system.service.impl.user.healthinfo;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.system.entity.user.healthinfo.FamilyHistory;
+import org.system.mapper.user.healthinfo.FamilyHistoryMapper;
+import org.system.service.iface.user.healthinfo.IFamilyHistoryService;
+@Service
+public class FamilyHistoryService implements IFamilyHistoryService{
+
+	@Resource
+	private FamilyHistoryMapper mapper;
+
+	@Override
+	public int insertFamilyHistory(FamilyHistory familyHistory) {
+		return mapper.insert(familyHistory);
+	}
+
+	@Override
+	public int updateFamilyHistory(FamilyHistory familyHistory) {
+		return mapper.update(familyHistory);
+	}
+
+	@Override
+	public Map<String, Object> getFamilyHistoryDetail(FamilyHistory familyHistory) {
+		return mapper.queryOne(familyHistory);
+	}
+
+	@Override
+	public List<Map<String, Object>> getFamilyHistorys(FamilyHistory familyHistory) {
+		return mapper.queryAll(familyHistory);
+	}
+
+	@Override
+	public int deleteFamilyHistory(FamilyHistory familyHistory) {
+		return mapper.delete(familyHistory);
+	}
+	
+	
+
+}

@@ -1,0 +1,102 @@
+package org.system.controller.iface;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.core.annotation.RequiresPermissions;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.service.ServicePack;
+import org.utils.spring.Groups;
+
+@RequestMapping(value = { "/admin" })
+public interface IServicePackController {
+	
+	
+	
+	/**
+	 * 添加
+	 * @param servicePack
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/servicePack/insert", method = RequestMethod.POST)
+	@ResponseBody
+	@RequiresPermissions("servicePack:insert")
+	public Map<String, Object> insertServicePack(@Validated({ Groups.Insert.class }) ServicePack servicePack,
+			BindingResult result);	
+	
+    
+	/**
+	 * 所有的
+	 * @param servicePack
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/servicePack", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("servicePack:list")
+	public Map<String, Object> getServicePackList(@Validated({ Groups.Select.class }) ServicePack servicePack, BindingResult result,HttpServletRequest req);
+	
+	/**
+	 * 修改
+	 * @param id
+	 * @param servicePack
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/servicePack/{id}/update", method = RequestMethod.PUT)
+	@ResponseBody
+	@RequiresPermissions("servicePack:update")
+	public Map<String, Object> updateServicePack(@PathVariable("id") Integer id,
+			@Validated({ Groups.Update.class }) ServicePack servicePack, BindingResult result);
+	
+	
+	
+	
+	/**
+	 * 基础产品包用户购买之后  (可修改图片 描述 状态)
+	 * @param id
+	 * @param servicePack
+	 * @param result
+	 * @return
+	 */
+	@RequestMapping(value = "/servicePack/{id}/noupdate", method = RequestMethod.GET)
+	@ResponseBody
+	public int getIsBuyByUser(@PathVariable("id") Integer id,
+			@Validated({ Groups.Select.class }) ServicePack servicePack);
+	
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @param servicePack
+	 * @return
+	 */
+	@RequestMapping(value = "/servicePack/{id}/delete", method = RequestMethod.DELETE)
+	@ResponseBody
+	@RequiresPermissions("servicePack:delete")
+	public  Map<String, Object> deleteServicePack(@PathVariable("id") Integer id, ServicePack servicePack);
+	
+	
+	
+	
+	/**
+	 * 单个信息
+	 * @param ID
+	 * @param servicePack
+	 * @return
+	 */
+	@RequestMapping(value = "/servicePack/{id}/detail", method = RequestMethod.GET)
+	@ResponseBody
+	@RequiresPermissions("servicePack:detail")
+	public Map<String, Object> getServicePackDetail(@PathVariable("id") Integer id, ServicePack servicePack);
+	
+	
+	
+}

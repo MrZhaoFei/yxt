@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.system.mapper.user.healthtest.UserDailyBloodPressureMapper" >
+	<!-- 新增 -->
+	<insert id="insert" parameterType="org.system.entity.user.healthtest.UserDailyBloodPressure">
+		insert into user_daily_blood_pressure(high_pressure,low_pressure,user_id,date) values(#{highPressure},#{lowPressure},#{userId},#{date})
+	</insert>
+	
+	<!-- 查询列表 -->
+	<select id="queryAll" parameterType="org.system.entity.user.healthtest.UserDailyBloodPressure" resultType="map">
+		select id,high_pressure highPressure,low_pressure lowPressure,date from user_daily_blood_pressure
+		<where>
+			<if test="userId !=null">
+				user_id=#{userId}
+			</if>
+			<choose>
+				<when test="startDate !=null and endDate !=null">
+						and date between #{startDate} and #{endDate}
+				</when>
+				<otherwise>
+					<if test="startDate !=null">
+						and date &gt; #{startDate}
+					</if>
+					<if test="endDate !=null">
+						and date &lt; #{endDate}
+					</if>
+				</otherwise>
+			</choose>
+		</where>
+		order by date
+	</select>
+</mapper>

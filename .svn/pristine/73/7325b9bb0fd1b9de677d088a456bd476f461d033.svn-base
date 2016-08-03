@@ -1,0 +1,39 @@
+package org.system.service.iface.doctor;
+
+import java.util.List;
+import java.util.Map;
+
+import org.system.entity.doctor.DoctorDetail;
+
+public interface IDoctorDetailService {
+	
+   /**
+    * 新增医生细节
+    * @param doctorDetail
+    * @return int
+    */
+	public int insertDoctorDetail(DoctorDetail doctorDetail);
+	
+	/**
+	    * 修改医生细节
+	    * @param doctorDetail
+	    * @return int
+	    */
+	public int updateDoctorDetail(DoctorDetail doctorDetail);
+	
+	/**
+	    * 删除医生细节
+	    * @param doctorDetail
+	    * @return int
+	    */
+	public int deleteDoctorDetail(DoctorDetail doctorDetail);
+	
+	
+	public List<Map<String, Object>> getDoctorDetailList(DoctorDetail doctorDetail);
+	
+	public Map<String, Object> getDoctorDetailDetail(DoctorDetail doctorDetail);
+	
+	public Map<String, Object> getDoctorDetailByFiled(DoctorDetail doctorDetail);
+	
+	
+}

@@ -1,0 +1,92 @@
+package org.system.controller.iface.user.healthInfo;
+
+import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.system.entity.user.healthinfo.FamilyHistory;
+import org.utils.spring.Groups;
+
+@RequestMapping()
+public interface IFamilyHistoryController {
+	/**
+	 * 新增既往家族病史
+	 * 
+	 * @param familyHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/familyHistory" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> insertFamilyHistory(
+			@Validated({ Groups.Insert.class }) FamilyHistory familyHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+
+	
+	/**
+	 * 修改既往家族病史
+	 * 
+	 * @param familyHistoryId
+	 * @param familyHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/familyHistory/{archivesId}" }, method = RequestMethod.PUT)
+	@ResponseBody
+	public Map<String, Object> updatetFamilyHistory(@PathVariable("archivesId") Integer familyHistoryId,
+			@Validated({ Groups.Update.class }) FamilyHistory familyHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 查询 既往家族病史 列表
+	 * 
+	 * @param familyHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/doctor/familyHistory", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getFamilyHistoryList(@Validated({ Groups.Select.class }) FamilyHistory familyHistory,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 删除  既往家族病史
+	 * 
+	 * @param familyHistoryId
+	 * @param familyHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = { "/doctor/familyHistory/{archivesId}" }, method = RequestMethod.DELETE)
+	@ResponseBody
+	public Map<String, Object> deletetFamilyHistory(@PathVariable("archivesId") Integer familyHistoryId,
+			@Validated({ Groups.Delete.class }) FamilyHistory familyHistory, BindingResult result,
+			@RequestHeader(value = "token", required = false) String token);
+	
+	
+	/**
+	 * 用户 查询 既往家族病史 列表
+	 * 
+	 * @param familyHistory
+	 * @param result
+	 * @param token
+	 * @return
+	 */
+	@RequestMapping(value = "/user/familyHistory", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getFamilyHistoryListByUser(@Validated({ Groups.Select.class }) FamilyHistory familyHistory,
+			BindingResult result,@RequestHeader(value = "token", required = false) String token);
+	
+}
+
