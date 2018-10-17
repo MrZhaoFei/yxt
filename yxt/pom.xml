@@ -33,7 +33,7 @@
 		<druid.version>1.0.20</druid.version>
 		<commons-io.version>2.4</commons-io.version>
 		<commons-fileupload.version>1.3.1</commons-fileupload.version>
-		<jackson.version>2.7.4</jackson.version>
+		<jackson.version>2.8.11.1</jackson.version>
 		<ehcache.version>2.10.2</ehcache.version>
 		<validator.version>5.2.3.Final</validator.version>
 		<ehcache.jgroupsreplication.version>1.7</ehcache.jgroupsreplication.version>
